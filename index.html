@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PestPass">
@@ -30,8 +30,8 @@
 }
 
 /* ── Reset ── */
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);overflow:hidden;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
 
 /* No orb distractions — clean background */
 .orb{display:none;}
@@ -39,6 +39,18 @@ body::before{display:none;}
 
 /* ── App shell ── */
 #app{display:flex;flex-direction:column;height:100vh;height:100dvh;position:relative;}
+
+/* ── Desktop / tablet: render as a centered phone-width card instead of
+   stretching full-bleed. Below 640px (phones) this has zero effect. ── */
+@media (min-width:640px){
+  html,body{background:#05060a;}
+  #app{
+    max-width:480px;margin:0 auto;
+    border-left:1px solid var(--border2);border-right:1px solid var(--border2);
+    box-shadow:0 0 80px rgba(0,0,0,0.55);
+    transform:translateZ(0); /* containing block for fixed-position children */
+  }
+}
 
 /* ═══════════════════════════════════════════════
    HEADER
@@ -94,9 +106,7 @@ body::before{display:none;}
 }
 .content::-webkit-scrollbar{width:3px;}
 .content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.screen{display:none;animation:fadeIn .18s ease;}
 .screen.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ═══════════════════════════════════════════════
    SHARED PRIMITIVES
@@ -272,7 +282,7 @@ body::before{display:none;}
   background:none;border:none;color:var(--text3);font-size:18px;line-height:1;
   cursor:pointer;padding:2px 0 0 0;flex-shrink:0;opacity:0.7;
 }
-.pwa-dismiss:hover{opacity:1;}
+@media (hover:hover) and (pointer:fine){.pwa-dismiss:hover{opacity:1;}}
 /* Arrow pointer toward the share button at the bottom of the Safari toolbar */
 #pwa-banner::after{
   content:'▼';position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
@@ -304,7 +314,7 @@ body::before{display:none;}
 .fc-progress{height:2px;background:var(--border);border-radius:2px;margin-bottom:10px;overflow:hidden;}
 .fc-bar-fill{height:100%;background:var(--c-gen);border-radius:2px;transition:width .3s ease;}
 .fc-count{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:center;margin-bottom:12px;}
-.card-scene{perspective:1000px;height:260px;margin-bottom:12px;cursor:pointer;}
+.card-scene{perspective:1000px;height:260px;margin-bottom:12px;cursor:pointer;touch-action:pan-y;}
 .card-3d{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.35,0,.25,1);}
 .card-3d.flipped{transform:rotateY(180deg);}
 .card-face{
@@ -625,6 +635,255 @@ body::before{display:none;}
 .cathub-action.ch-sr .cathub-action-icon{background:rgba(77,214,140,0.1);color:#4dd68c;}
 
 /* ═══════════════════════════════════════════════
+   TERMITE MATH DRILL
+═══════════════════════════════════════════════ */
+.md-tracker{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:11px 13px 12px;margin-bottom:14px;
+}
+.md-tracker-top{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.5px;color:var(--text3);
+  margin-bottom:9px;text-transform:uppercase;
+}
+.md-tracker-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.md-tstat{text-align:center;border-left:1px solid var(--border);}
+.md-tstat:first-child{border-left:none;}
+.md-tstat-n{font-family:var(--head);font-size:16px;font-weight:800;color:var(--text);line-height:1.1;}
+.md-tstat-n.pos{color:#4dd68c;}
+.md-tstat-n.neg{color:#f87171;}
+.md-tstat-l{font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:var(--text3);margin-top:2px;}
+
+.md-q-wrap{transition:opacity .15s ease, transform .15s ease;}
+.md-q-wrap.md-entering{opacity:0;transform:translateY(4px);}
+
+.md-speed-tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:.3px;color:var(--text2);
+  text-align:center;margin:-2px 0 10px;min-height:15px;
+}
+.md-speed-tag .tier{color:#4dd68c;font-weight:700;}
+
+.md-steps{margin:0 0 2px;padding-left:18px;}
+.md-steps li{margin-bottom:5px;line-height:1.55;}
+.md-steps-answer{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-weight:600;}
+
+.md-recap{padding:18px 4px 4px;}
+.md-recap-figure{font-family:var(--head);font-size:30px;font-weight:800;letter-spacing:-.8px;color:var(--text);text-align:center;margin-bottom:2px;}
+.md-recap-sub{font-size:12.5px;color:var(--text3);text-align:center;margin-bottom:16px;}
+.md-recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.md-recap-cell{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:10px 11px;
+}
+.md-recap-cell-label{font-size:9.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
+.md-recap-cell-val{font-family:var(--head);font-size:15px;font-weight:700;color:var(--text);}
+.md-recap-note{
+  background:rgba(245,160,64,0.06);border:1px solid rgba(245,160,64,0.25);border-radius:var(--r-sm);
+  padding:11px 12px;margin-bottom:16px;font-size:12.5px;line-height:1.55;color:var(--text2);
+}
+.md-recap-note strong{color:var(--c-wdo);}
+.md-recap-btn{
+  width:100%;padding:14px;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text);font-family:var(--head);font-size:14px;font-weight:700;
+  cursor:pointer;transition:background .16s;
+}
+.md-recap-btn:active{background:var(--surface2);}
+
+.md-toolbar{display:flex;gap:8px;margin-bottom:12px;}
+.md-calc-toggle{
+  flex:1;padding:10px;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:.5px;
+  cursor:pointer;transition:background .16s;
+}
+.md-calc-toggle:active{background:var(--surface2);}
+.md-calc-toggle.on{color:var(--text);border-color:var(--text3);}
+.md-calc-panel{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border);border-radius:16px;
+  padding:14px;margin-bottom:12px;
+  box-shadow:0 10px 22px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.md-calc-display{
+  font-family:var(--mono);font-size:32px;font-weight:800;text-align:right;
+  padding:16px 14px;background:var(--bg2);border-radius:10px;
+  margin-bottom:12px;color:var(--text);overflow-x:auto;white-space:nowrap;
+  letter-spacing:.5px;border:1px solid var(--border);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.04);
+}
+.md-calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.md-calc-btn{
+  padding:17px 0;border-radius:10px;border:1px solid var(--border);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface2) 100%);
+  color:var(--text);
+  font-family:var(--mono);font-size:21px;font-weight:800;
+  cursor:pointer;text-align:center;
+  box-shadow:0 3px 0 rgba(0,0,0,0.28), 0 4px 6px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition:transform .08s ease, box-shadow .08s ease, background .12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.md-calc-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05);
+  background:linear-gradient(180deg, var(--surface2) 0%, var(--surface) 100%);
+}
+.md-calc-btn.op{
+  color:#0e1117;font-weight:800;font-size:27px;
+  background:linear-gradient(180deg, var(--c-wdo) 0%, #d88a2e 100%);
+  border-color:rgba(0,0,0,0.15);
+  box-shadow:0 3px 0 rgba(150,90,10,0.5), 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.md-calc-btn.op:active{
+  box-shadow:0 1px 0 rgba(150,90,10,0.5), 0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+  background:linear-gradient(180deg, #d88a2e 0%, var(--c-wdo) 100%);
+}
+.md-calc-btn.eq{
+  color:#0e1117;font-weight:800;font-size:24px;
+  background:linear-gradient(180deg, var(--c-wdo) 0%, #c97a1f 100%);
+  border-color:rgba(0,0,0,0.2);
+  box-shadow:0 4px 0 rgba(120,70,5,0.55), 0 6px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.md-calc-btn.eq:active{
+  box-shadow:0 1px 0 rgba(120,70,5,0.55), 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+  background:linear-gradient(180deg, #c97a1f 0%, var(--c-wdo) 100%);
+}
+.md-calc-btn.wide{grid-column:span 2;}
+
+/* ── Termite Math Drill — page-wide visual polish ──
+   Scoped to #screen-mathdrill so shared classes (.q-card, .opt, .exp-box,
+   .next-btn) keep their plain look everywhere else in the app. */
+#screen-mathdrill .md-tracker{
+  border-radius:14px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+  box-shadow:0 6px 16px -8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+#screen-mathdrill .md-tstat-n{font-size:17px;}
+
+#screen-mathdrill .q-card{
+  border-radius:14px;border-left:3px solid var(--c-wdo);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+  box-shadow:0 6px 18px -8px rgba(0,0,0,0.35);
+}
+#screen-mathdrill .q-cat-badge{box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+
+#screen-mathdrill .opt{
+  border-radius:12px;position:relative;
+  box-shadow:0 2px 6px -2px rgba(0,0,0,0.22);
+  transition:transform .1s ease, box-shadow .1s ease, border-color .12s, background .12s;
+}
+#screen-mathdrill .opt:active{transform:scale(0.98);}
+#screen-mathdrill .opt-letter{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border-radius:6px;margin-top:0;
+  background:var(--bg2);box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+#screen-mathdrill .opt.correct{box-shadow:0 3px 10px -3px rgba(77,214,140,0.4);padding-right:38px;}
+#screen-mathdrill .opt.correct::after{
+  content:'\2713';position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--green);font-weight:800;font-size:16px;
+}
+#screen-mathdrill .opt.wrong{box-shadow:0 3px 10px -3px rgba(248,113,113,0.4);padding-right:38px;}
+#screen-mathdrill .opt.wrong::after{
+  content:'\2715';position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--red);font-weight:800;font-size:14px;
+}
+
+#screen-mathdrill .exp-box{
+  border-radius:0 12px 12px 0;border-left:3px solid var(--c-wdo);
+  background:linear-gradient(180deg, rgba(245,160,64,0.08) 0%, rgba(245,160,64,0.03) 100%);
+  box-shadow:0 4px 14px -8px rgba(0,0,0,0.3);
+}
+#screen-mathdrill .exp-box strong{color:var(--c-wdo);}
+
+#screen-mathdrill .next-btn,
+#screen-mathdrill .md-recap-btn{
+  border-radius:12px;border:none;font-weight:800;color:#0e1117;
+  background:linear-gradient(180deg, var(--c-wdo) 0%, #d88a2e 100%);
+  box-shadow:0 4px 0 rgba(120,70,5,0.5), 0 6px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+#screen-mathdrill .next-btn:active,
+#screen-mathdrill .md-recap-btn:active{
+  transform:translateY(2px) scale(1);
+  box-shadow:0 1px 0 rgba(120,70,5,0.5), 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+#screen-mathdrill .md-recap-cell{
+  border-radius:12px;
+  box-shadow:0 4px 12px -8px rgba(0,0,0,0.3);
+}
+#screen-mathdrill .md-recap-figure{text-shadow:0 2px 10px rgba(245,160,64,0.2);}
+#screen-mathdrill .md-calc-toggle{
+  border-radius:12px;
+  box-shadow:0 2px 6px -2px rgba(0,0,0,0.22);
+}
+
+/* Entry splash — brief branded transition when opening a drill/game mode.
+   Generic classes so every screen (Math Drill, Boss Battle, Blitz, Survival,
+   Quiz, Spaced Repetition) can reuse the same look; each overlay just needs
+   its own unique id for the JS to target. */
+.entry-splash{
+  position:fixed;inset:0;z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+  opacity:1;transition:opacity .65s ease;text-align:center;padding:24px;
+}
+.entry-splash.hide{opacity:0;pointer-events:none;}
+.entry-splash-icon{
+  width:56px;height:56px;border-radius:16px;margin-bottom:14px;
+  background:rgba(78,201,225,0.12);color:var(--c-gen);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 20px -6px rgba(0,0,0,0.35);
+}
+.entry-splash-title{font-family:var(--head);font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.4px;}
+.entry-splash-sub{font-size:12px;color:var(--text3);margin-top:5px;max-width:260px;}
+
+/* Accuracy stat gets slightly more visual weight than the others */
+#screen-mathdrill .md-tstat-hero .md-tstat-n{color:var(--c-wdo);font-size:18px;}
+
+/* Speed tag fades in instead of appearing abruptly */
+#screen-mathdrill .md-speed-tag{opacity:0;transition:opacity .25s ease;}
+#screen-mathdrill .md-speed-tag.show{opacity:1;}
+
+/* High Scores panel — mirrors the calculator panel's card styling */
+.md-hs-panel{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border);border-radius:16px;
+  padding:14px;margin-bottom:12px;
+  box-shadow:0 10px 22px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.md-hs-title{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.md-hs-row{
+  display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);
+}
+.md-hs-row:last-child{border-bottom:none;}
+.md-hs-rank{
+  width:22px;height:22px;border-radius:6px;flex-shrink:0;
+  background:var(--bg2);color:var(--text3);font-family:var(--mono);font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.md-hs-row:first-child .md-hs-rank{background:var(--c-wdo);color:#0e1117;}
+.md-hs-body{flex:1;}
+.md-hs-xp{font-family:var(--head);font-size:14px;font-weight:800;color:var(--text);}
+.md-hs-meta{font-size:10.5px;color:var(--text3);margin-top:1px;}
+.md-hs-empty{font-size:12.5px;color:var(--text3);text-align:center;padding:12px 0;}
+
+/* Missed-question review list in the recap */
+#screen-mathdrill .md-recap-review{margin-bottom:16px;}
+#screen-mathdrill .md-recap-review-title{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;
+}
+#screen-mathdrill .md-recap-review-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;margin-bottom:7px;box-shadow:0 2px 8px -4px rgba(0,0,0,0.25);
+}
+#screen-mathdrill .md-recap-review-q{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:6px;}
+#screen-mathdrill .md-recap-review-ans{font-size:11.5px;line-height:1.6;}
+#screen-mathdrill .md-recap-review-ans .wrong-val{color:var(--red);text-decoration:line-through;}
+#screen-mathdrill .md-recap-review-ans .correct-val{color:var(--green);font-weight:600;}
+
+/* ═══════════════════════════════════════════════
    TRUE / FALSE BLITZ
 ═══════════════════════════════════════════════ */
 #screen-tfblitz{display:none;}
@@ -704,12 +963,60 @@ body::before{display:none;}
 .tfb-res-btn.secondary{background:var(--surface);border-color:var(--border);color:var(--text2);}
 
 /* ═══════════════════════════════════════════════
+   APP LOCK
+═══════════════════════════════════════════════ */
+#screen-lock{
+  position:fixed;inset:0;z-index:100000;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  transition:opacity .3s ease, visibility .3s ease;
+}
+#screen-lock.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.lock-card{width:100%;max-width:340px;text-align:center;}
+.lock-icon{
+  width:52px;height:52px;border-radius:14px;margin:0 auto 18px;
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;color:var(--c-gen);
+}
+.lock-title{font-family:var(--head);font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.4px;margin-bottom:6px;}
+.lock-sub{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:20px;}
+.lock-error{
+  background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);color:var(--red);
+  font-size:12.5px;border-radius:var(--r-sm);padding:9px 11px;margin-bottom:14px;text-align:left;
+}
+.lock-input-wrap{position:relative;margin-bottom:11px;}
+.lock-input{
+  width:100%;box-sizing:border-box;padding:13px 42px 13px 14px;border-radius:var(--r-sm);
+  border:1px solid var(--border);background:var(--surface);color:var(--text);
+  font-family:var(--mono);font-size:16px;
+}
+.lock-input:focus{outline:none;border-color:var(--text3);}
+.lock-eye-btn{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  background:none;border:none;font-size:15px;line-height:1;cursor:pointer;color:var(--text3);padding:8px;
+}
+.lock-submit-btn{
+  width:100%;padding:14px;border-radius:var(--r-sm);border:none;
+  background:var(--c-gen);color:#0e1117;font-family:var(--head);font-size:14px;font-weight:800;
+  cursor:pointer;margin-top:4px;margin-bottom:10px;transition:opacity .15s;
+}
+.lock-submit-btn:active{opacity:.85;}
+.lock-forgot-btn{
+  background:none;border:none;color:var(--text3);font-size:12.5px;
+  cursor:pointer;text-decoration:underline;padding:4px;
+}
+.lock-note{font-size:11px;color:var(--text3);line-height:1.55;margin-top:18px;}
+
+/* ═══════════════════════════════════════════════
    SPLASH SCREEN
 ═══════════════════════════════════════════════ */
 #splash-screen{
   position:fixed;inset:0;z-index:99999;background:var(--bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:opacity .35s ease, visibility .35s ease;
+}
+@media (min-width:640px){
+  #splash-screen{width:100%;max-width:480px;left:50%;right:auto;transform:translateX(-50%);
+    border-left:1px solid var(--border2);border-right:1px solid var(--border2);}
 }
 /* CSS-only safety net, armed by default: if the splash-hide script never
    gets a chance to run at all — e.g. an unrelated error earlier in the same
@@ -1595,6 +1902,12 @@ body.has-activity .hero-compact{
 // through this wrapper instead of the raw API, so a restricted
 // environment degrades to an in-memory store (progress just won't
 // persist across reloads there) instead of breaking page load.
+//
+// Multi-account support: every key EXCEPT the ones in GLOBAL_KEYS is
+// automatically namespaced under the currently signed-in account, so
+// each person's quiz history, flashcards, streaks, etc. stay separate
+// on the same device. window.authActiveUser is set (from sessionStorage)
+// by the App Lock code before any other data is read.
 var safeLS = (function(){
   var memory = {};
   var available = false;
@@ -1605,32 +1918,108 @@ var safeLS = (function(){
     available = true;
   }catch(e){ available = false; }
 
+  // Seed the active account slug as early as possible, straight from
+  // sessionStorage (not through this wrapper, to avoid a chicken-and-egg
+  // problem while this wrapper is still being built).
+  try{
+    window.authActiveUser = window.sessionStorage.getItem('auth_active_user_slug') || '';
+  }catch(e){
+    window.authActiveUser = window.authActiveUser || '';
+  }
+
+  // Keys that are shared device-wide and never namespaced per account —
+  // account list/credentials themselves, and device-level preferences.
+  var GLOBAL_KEYS = {
+    'auth_accounts': true,
+    'auth_lock_enabled': true,
+    'auth_hash': true,      // legacy single-account key, kept only for migration
+    'auth_salt': true,      // legacy
+    'auth_username': true,  // legacy
+    'lightMode': true,
+    'soundOn': true,
+    'pwaBannerDismissed': true
+  };
+
+  function nsKey(key){
+    if(GLOBAL_KEYS[key]) return key;
+    var user = window.authActiveUser || '_shared';
+    return 'u$' + user + '$' + key;
+  }
+
   function get(key){
+    var k = nsKey(key);
     if(available){
-      try{ return window.localStorage.getItem(key); }catch(e){ available = false; }
+      try{ return window.localStorage.getItem(k); }catch(e){ available = false; }
     }
-    return Object.prototype.hasOwnProperty.call(memory, key) ? memory[key] : null;
+    return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null;
   }
   function set(key, value){
+    var k = nsKey(key);
     var str = String(value);
     if(available){
-      try{ window.localStorage.setItem(key, str); return; }catch(e){ available = false; }
+      try{ window.localStorage.setItem(k, str); return; }catch(e){ available = false; }
     }
-    memory[key] = str;
+    memory[k] = str;
   }
   function remove(key){
+    var k = nsKey(key);
     if(available){
-      try{ window.localStorage.removeItem(key); return; }catch(e){ available = false; }
+      try{ window.localStorage.removeItem(k); return; }catch(e){ available = false; }
     }
-    delete memory[key];
+    delete memory[k];
   }
+  // Clears ONLY the active account's namespaced progress — used by
+  // "Reset Progress". Other accounts on the device and shared device
+  // settings (theme, sound, the account list itself) are untouched.
   function clearAll(){
+    var user = window.authActiveUser || '_shared';
+    var prefix = 'u$' + user + '$';
+    if(available){
+      try{
+        var toRemove = [];
+        for(var i=0;i<window.localStorage.length;i++){
+          var k = window.localStorage.key(i);
+          if(k && k.indexOf(prefix) === 0) toRemove.push(k);
+        }
+        toRemove.forEach(function(k){ window.localStorage.removeItem(k); });
+        return;
+      }catch(e){ available = false; }
+    }
+    Object.keys(memory).forEach(function(k){
+      if(k.indexOf(prefix) === 0) delete memory[k];
+    });
+  }
+  // Removes ALL of a specific account's namespaced data by slug —
+  // used when deleting one account without touching others.
+  function clearUserData(userSlug){
+    var prefix = 'u$' + (userSlug || '') + '$';
+    if(available){
+      try{
+        var toRemove = [];
+        for(var i=0;i<window.localStorage.length;i++){
+          var k = window.localStorage.key(i);
+          if(k && k.indexOf(prefix) === 0) toRemove.push(k);
+        }
+        toRemove.forEach(function(k){ window.localStorage.removeItem(k); });
+        return;
+      }catch(e){ available = false; }
+    }
+    Object.keys(memory).forEach(function(k){
+      if(k.indexOf(prefix) === 0) delete memory[k];
+    });
+  }
+  // Nuclear option — wipes every account and every shared setting on
+  // this device. Only used by the "reset this device completely" path.
+  function clearEverything(){
     if(available){
       try{ window.localStorage.clear(); return; }catch(e){ available = false; }
     }
     memory = {};
   }
-  return { getItem:get, setItem:set, removeItem:remove, clear:clearAll };
+  return {
+    getItem:get, setItem:set, removeItem:remove,
+    clear:clearAll, clearUserData:clearUserData, clearEverything:clearEverything
+  };
 })();
 </script>
 
@@ -1682,6 +2071,72 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
   
   
+  <!-- App Lock Screen -->
+  <div id="screen-lock">
+    <div class="lock-card">
+      <div class="lock-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div class="lock-title" id="lock-title">Enter Password</div>
+      <div class="lock-sub" id="lock-sub">Enter your password to continue.</div>
+
+      <div class="lock-error hidden" id="lock-error"></div>
+
+      <!-- Enter mode -->
+      <div id="lock-enter-fields">
+        <div class="lock-input-wrap">
+          <input type="text" id="lock-enter-username" class="lock-input" placeholder="Username" autocomplete="username" autocapitalize="none" autocorrect="off" style="padding-right:14px;">
+        </div>
+        <div class="lock-input-wrap">
+          <input type="password" id="lock-enter-input" class="lock-input" placeholder="Password" autocomplete="current-password">
+          <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-enter-input')">👁</button>
+        </div>
+        <button class="lock-submit-btn" onclick="lockSubmitEnter()">Unlock</button>
+        <button class="lock-forgot-btn" onclick="lockForgotReset()">Forgot username or password?</button>
+      </div>
+
+      <!-- Create mode -->
+      <div id="lock-create-fields" style="display:none;">
+        <div class="lock-input-wrap">
+          <input type="text" id="lock-create-username" class="lock-input" placeholder="Choose a username" autocomplete="username" autocapitalize="none" autocorrect="off" style="padding-right:14px;">
+        </div>
+        <div class="lock-input-wrap">
+          <input type="password" id="lock-create-input1" class="lock-input" placeholder="Create a password" autocomplete="new-password">
+          <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-create-input1')">👁</button>
+        </div>
+        <div class="lock-input-wrap">
+          <input type="password" id="lock-create-input2" class="lock-input" placeholder="Confirm password" autocomplete="new-password">
+          <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-create-input2')">👁</button>
+        </div>
+        <button class="lock-submit-btn" onclick="lockSubmitCreate()">Set Login &amp; Continue</button>
+      </div>
+
+      <!-- Change-password mode -->
+      <div id="lock-change-fields" style="display:none;">
+        <div class="lock-input-wrap">
+          <input type="text" id="lock-change-username" class="lock-input" placeholder="Username" autocomplete="username" autocapitalize="none" autocorrect="off" style="padding-right:14px;">
+        </div>
+        <div class="lock-input-wrap">
+          <input type="password" id="lock-change-current" class="lock-input" placeholder="Current password" autocomplete="current-password">
+          <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-change-current')">👁</button>
+        </div>
+        <div class="lock-input-wrap">
+          <input type="password" id="lock-change-new1" class="lock-input" placeholder="New password" autocomplete="new-password">
+          <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-change-new1')">👁</button>
+        </div>
+        <div class="lock-input-wrap">
+          <input type="password" id="lock-change-new2" class="lock-input" placeholder="Confirm new password" autocomplete="new-password">
+          <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-change-new2')">👁</button>
+        </div>
+        <button class="lock-submit-btn" onclick="lockSubmitChange()">Update Login</button>
+        <button class="lock-forgot-btn" onclick="lockCancelChange()">Cancel</button>
+      </div>
+
+      <div class="lock-note">Stored only on this device. There is no way to recover a forgotten username or password without resetting all app data.</div>
+    </div>
+  </div>
+  <noscript><style>#screen-lock{display:none!important;}</style></noscript>
+
   <!-- Reset Progress Overlay -->
   <div id="reset-confirm-overlay">
     <div class="reset-card">
@@ -2019,12 +2474,31 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           </div>
           <div class="cathub-action-arrow">›</div>
         </div>
+        <div class="cathub-action" id="cathub-btn-mathdrill"
+             style="display:none;border-color:rgba(245,160,64,0.25);background:rgba(245,160,64,0.05);"
+             onclick="cathubGoMathDrill()">
+          <div class="cathub-action-icon" style="background:rgba(245,160,64,0.12);color:var(--c-wdo);">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="14" cy="14.5" r="1"/><circle cx="18" cy="14.5" r="1"/><circle cx="14" cy="18" r="1"/><circle cx="18" cy="18" r="1"/></svg>
+          </div>
+          <div class="cathub-action-body">
+            <div class="cathub-action-title">Termite Math Drill</div>
+            <div class="cathub-action-sub">Trench volume, dilution & dosage calculations</div>
+          </div>
+          <div class="cathub-action-arrow">›</div>
+        </div>
       </div>
     </div>
 
 
     <!-- SURVIVAL MODE -->
     <div id="screen-survival" class="screen">
+      <div class="entry-splash" id="surv-entry-splash">
+        <div class="entry-splash-icon" id="surv-entry-splash-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>
+        </div>
+        <div class="entry-splash-title">Survival Mode</div>
+        <div class="entry-splash-sub">One mistake ends the run</div>
+      </div>
       <button class="cathub-back" id="surv-back-btn" onclick="survExit()">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         BACK
@@ -2094,6 +2568,13 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- BOSS BATTLE -->
     <div id="screen-boss" class="screen">
+      <div class="entry-splash" id="boss-entry-splash">
+        <div class="entry-splash-icon" id="boss-entry-splash-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1 3-6z"/></svg>
+        </div>
+        <div class="entry-splash-title">Boss Battle</div>
+        <div class="entry-splash-sub">Can you beat the boss?</div>
+      </div>
       <button class="cathub-back" onclick="bossExit()">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         BACK
@@ -3129,8 +3610,130 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       </defs>
     </svg>
 
+    <!-- TERMITE MATH DRILL -->
+    <div id="screen-mathdrill" class="screen">
+      <div class="entry-splash" id="md-entry-splash">
+        <div class="entry-splash-icon" style="background:rgba(245,160,64,0.12);color:var(--c-wdo);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="14" cy="14.5" r="1"/><circle cx="18" cy="14.5" r="1"/><circle cx="14" cy="18" r="1"/><circle cx="18" cy="18" r="1"/></svg>
+        </div>
+        <div class="entry-splash-title">Termite Math Drill</div>
+        <div class="entry-splash-sub">Trench volume, dilution &amp; dosage calculations</div>
+      </div>
+
+      <button class="cathub-back" onclick="showScreen('cathub')">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        BACK
+      </button>
+      <div class="qp-title">Termite Math Drill</div>
+      <div class="qp-sub">Trench volume, dilution &amp; dosage calculations</div>
+
+      <div class="md-tracker">
+        <div class="md-tracker-top">
+          <span id="md-tracker-qnum">Question 1 of 10</span>
+          <span id="md-tracker-xp">XP 0</span>
+        </div>
+        <div class="md-tracker-stats">
+          <div class="md-tstat"><div class="md-tstat-n pos" id="md-t-correct">0</div><div class="md-tstat-l">Correct</div></div>
+          <div class="md-tstat"><div class="md-tstat-n neg" id="md-t-incorrect">0</div><div class="md-tstat-l">Incorrect</div></div>
+          <div class="md-tstat"><div class="md-tstat-n" id="md-t-streak">0</div><div class="md-tstat-l">Streak</div></div>
+          <div class="md-tstat"><div class="md-tstat-n" id="md-t-best">0</div><div class="md-tstat-l">Best</div></div>
+          <div class="md-tstat md-tstat-hero"><div class="md-tstat-n" id="md-t-acc">—</div><div class="md-tstat-l">Accuracy</div></div>
+        </div>
+      </div>
+
+      <div class="md-toolbar">
+        <button class="md-calc-toggle" id="md-calc-toggle-btn" onclick="mdToggleCalc()">Calculator</button>
+        <button class="md-calc-toggle" id="md-hs-toggle-btn" onclick="mdToggleHighScores()">High Scores</button>
+      </div>
+
+      <div class="md-calc-panel hidden" id="md-calc-panel">
+        <div class="md-calc-display" id="md-calc-display">0</div>
+        <div class="md-calc-grid">
+          <button class="md-calc-btn" onclick="mdCalcClear()">C</button>
+          <button class="md-calc-btn" onclick="mdCalcBackspace()">⌫</button>
+          <button class="md-calc-btn" onclick="mdCalcSign()">±</button>
+          <button class="md-calc-btn op" onclick="mdCalcOperator('÷')">÷</button>
+
+          <button class="md-calc-btn" onclick="mdCalcDigit('7')">7</button>
+          <button class="md-calc-btn" onclick="mdCalcDigit('8')">8</button>
+          <button class="md-calc-btn" onclick="mdCalcDigit('9')">9</button>
+          <button class="md-calc-btn op" onclick="mdCalcOperator('×')">×</button>
+
+          <button class="md-calc-btn" onclick="mdCalcDigit('4')">4</button>
+          <button class="md-calc-btn" onclick="mdCalcDigit('5')">5</button>
+          <button class="md-calc-btn" onclick="mdCalcDigit('6')">6</button>
+          <button class="md-calc-btn op" onclick="mdCalcOperator('−')">−</button>
+
+          <button class="md-calc-btn" onclick="mdCalcDigit('1')">1</button>
+          <button class="md-calc-btn" onclick="mdCalcDigit('2')">2</button>
+          <button class="md-calc-btn" onclick="mdCalcDigit('3')">3</button>
+          <button class="md-calc-btn op" onclick="mdCalcOperator('+')">+</button>
+
+          <button class="md-calc-btn wide" onclick="mdCalcDigit('0')">0</button>
+          <button class="md-calc-btn" onclick="mdCalcDecimal()">.</button>
+          <button class="md-calc-btn eq" onclick="mdCalcEquals()">=</button>
+        </div>
+      </div>
+
+      <div class="md-hs-panel hidden" id="md-hs-panel">
+        <div class="md-hs-title">Top 5 Sets</div>
+        <div id="md-hs-list"></div>
+      </div>
+
+      <div id="md-session-active">
+        <div class="md-q-wrap" id="md-q-wrap">
+          <div class="q-card">
+            <div class="q-cat-badge" style="background:rgba(245,160,64,0.12);color:var(--c-wdo);">WDO · TERMITE MATH</div>
+            <div class="q-text" id="md-q-text">Problem</div>
+          </div>
+          <div class="opt-list" id="md-opts-list"></div>
+          <div class="md-speed-tag" id="md-speed-tag"></div>
+          <div class="exp-box hidden" id="md-exp-box"></div>
+          <button class="next-btn hidden" id="md-next-btn" onclick="mdContinue()">Continue →</button>
+        </div>
+      </div>
+
+      <div id="md-session-recap" class="md-recap hidden">
+        <div class="md-recap-figure" id="md-recap-figure">8 of 10</div>
+        <div class="md-recap-sub" id="md-recap-sub">correct this set</div>
+        <div class="md-recap-grid">
+          <div class="md-recap-cell">
+            <div class="md-recap-cell-label">Accuracy</div>
+            <div class="md-recap-cell-val" id="md-recap-accuracy">—</div>
+          </div>
+          <div class="md-recap-cell">
+            <div class="md-recap-cell-label">Avg Response</div>
+            <div class="md-recap-cell-val" id="md-recap-avgtime">—</div>
+          </div>
+          <div class="md-recap-cell">
+            <div class="md-recap-cell-label">Fastest Answer</div>
+            <div class="md-recap-cell-val" id="md-recap-fastest">—</div>
+          </div>
+          <div class="md-recap-cell">
+            <div class="md-recap-cell-label">Weakest Area</div>
+            <div class="md-recap-cell-val" id="md-recap-weakest">—</div>
+          </div>
+        </div>
+        <div class="md-recap-note" id="md-recap-note" style="display:none;">
+          <strong id="md-recap-note-label">Recommended practice:</strong> <span id="md-recap-recommend"></span>
+        </div>
+        <div class="md-recap-review hidden" id="md-recap-review">
+          <div class="md-recap-review-title">Review Missed Questions</div>
+          <div id="md-recap-review-list"></div>
+        </div>
+        <button class="md-recap-btn" onclick="mdStartSet()">Start Another Set</button>
+      </div>
+    </div>
+
     <!-- TRUE / FALSE BLITZ -->
     <div id="screen-tfblitz" class="screen">
+      <div class="entry-splash" id="tfb-entry-splash">
+        <div class="entry-splash-icon" id="tfb-entry-splash-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <div class="entry-splash-title">True / False Blitz</div>
+        <div class="entry-splash-sub">Fast answers, no time to overthink</div>
+      </div>
 
       <!-- Intro view -->
       <div id="tfb-intro-view">
@@ -3349,6 +3952,13 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- QUIZ -->
     <div id="screen-quiz" class="screen">
+      <div class="entry-splash" id="quiz-entry-splash">
+        <div class="entry-splash-icon" id="quiz-entry-splash-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="9"/></svg>
+        </div>
+        <div class="entry-splash-title">Practice Quiz</div>
+        <div class="entry-splash-sub">Multiple choice, at your own pace</div>
+      </div>
       <div id="quiz-picker">
 
         <!-- STEP 1: category select -->
@@ -3435,6 +4045,13 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- SPACED REPETITION SCREEN -->
     <div id="screen-sr" class="screen">
+      <div class="entry-splash" id="sr-entry-splash">
+        <div class="entry-splash-icon" id="sr-entry-splash-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
+        </div>
+        <div class="entry-splash-title">Spaced Repetition</div>
+        <div class="entry-splash-sub">Cards resurface based on how well you know them</div>
+      </div>
       <div id="sr-home-view">
         <div class="sr-home-banner">
           <div class="hero-eye">Spaced Repetition</div>
@@ -3600,6 +4217,45 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       <button onclick="menuToggleSound()" id="menu-sound-toggle" style="width:44px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:var(--c-gen);flex-shrink:0;">
         <span id="menu-sound-knob" style="position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left .2s;display:block;"></span>
       </button>
+    </div>
+  </div>
+  <div style="padding:0 18px 6px;display:none;">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:12px 0 10px;">Security</div>
+    <div id="menu-signed-in-as" style="font-size:11px;color:var(--text3);margin-bottom:10px;display:none;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);">App Lock</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:1px;" id="menu-lock-sub">Off</div>
+        </div>
+      </div>
+      <button onclick="menuToggleLock()" id="menu-lock-toggle" style="width:44px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:var(--border2);flex-shrink:0;">
+        <span id="menu-lock-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left .2s;display:block;"></span>
+      </button>
+    </div>
+    <div onclick="menuChangePassword()" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+      <div style="width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);" id="menu-changepw-label">Set Login</div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div onclick="lockOpenAddAccount()" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+      <div style="width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      </div>
+      <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);">Add Another Account</div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div onclick="lockLogout()" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+      <div style="width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+      <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);">Log Out</div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </div>
   <div style="padding:0 18px 6px;">
@@ -5045,7 +5701,7 @@ function showScreen(name) {
   if(contentEl) contentEl.scrollTop = 0;
   document.getElementById('screen-'+name).classList.add('active');
   // cathub and tfblitz are sub-screens of home — keep home nav active
-  const navName = ['cathub','tfblitz','survival','boss'].includes(name) ? 'home' : (name === 'fc-home' ? 'flashcards' : name);
+  const navName = ['cathub','tfblitz','survival','boss','mathdrill'].includes(name) ? 'home' : (name === 'fc-home' ? 'flashcards' : name);
   if(name === 'fc-home') { if(typeof renderFCHome === 'function') renderFCHome(); }
   const idx=['home','flashcards','quiz','sr','bookmarks'].indexOf(navName);
   if(idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
@@ -5179,6 +5835,10 @@ function openCatHub(cat){
     if(icon){ icon.style.background = d.iconBg; icon.style.color = d.color; }
   }
 
+  // Termite Math Drill — WDO-only action
+  var mdBtn = document.getElementById('cathub-btn-mathdrill');
+  if(mdBtn) mdBtn.style.display = (cat === 'WDO') ? 'flex' : 'none';
+
   // Boss Battle subtitle: the player's actual current level for this category
   var bossSub = document.getElementById('cathub-boss-sub');
   if(bossSub && typeof window.bossLevelFor === 'function'){
@@ -5202,6 +5862,8 @@ function cathubGoQuiz(){
   if(!_catHubCurrent) return;
   showScreen('quiz');
   if(typeof selectQCat === 'function') selectQCat(_catHubCurrent);
+  themeEntrySplashIcon('quiz-entry-splash-icon', _catHubCurrent);
+  showEntrySplash('quiz-entry-splash', 950);
 }
 
 function cathubGoSR(){
@@ -5215,6 +5877,8 @@ function cathubGoSR(){
       if(typeof srSetFilter === 'function') srSetFilter(chip);
     }
   });
+  themeEntrySplashIcon('sr-entry-splash-icon', _catHubCurrent);
+  showEntrySplash('sr-entry-splash', 950);
 }
 
 function cathubGoBlitz(){
@@ -5223,6 +5887,8 @@ function cathubGoBlitz(){
   window._tfbUsageTracked = false;
   tfbInit(_catHubCurrent);
   showScreen('tfblitz');
+  themeEntrySplashIcon('tfb-entry-splash-icon', _catHubCurrent);
+  showEntrySplash('tfb-entry-splash', 950);
 }
 
 function cathubGoSurvival(){
@@ -5232,6 +5898,8 @@ function cathubGoSurvival(){
   document.getElementById('surv-intro').style.display='block';
   document.getElementById('surv-game').style.display='none';
   document.getElementById('surv-dead').style.display='none';
+  themeEntrySplashIcon('surv-entry-splash-icon', _catHubCurrent);
+  showEntrySplash('surv-entry-splash', 950);
 }
 
 function cathubGoBoss(){
@@ -5242,7 +5910,764 @@ function cathubGoBoss(){
   document.getElementById('boss-game').style.display='none';
   document.getElementById('boss-result').style.display='none';
   if(typeof bossSetTheme === 'function') bossSetTheme(_catHubCurrent);
+  themeEntrySplashIcon('boss-entry-splash-icon', _catHubCurrent);
+  showEntrySplash('boss-entry-splash', 1050);
 }
+
+function cathubGoMathDrill(){
+  showScreen('mathdrill');
+  if(typeof mdInit === 'function') mdInit();
+  if(typeof mdShowEntrySplash === 'function') mdShowEntrySplash();
+}
+
+// ── Entry splash (generic) ──────────────────────────────────
+// Brief branded transition shown when opening a drill/game mode. Used by
+// Math Drill, Boss Battle, True/False Blitz, Survival, Quiz, and Spaced
+// Repetition — each just passes its own overlay id.
+function showEntrySplash(elId, holdMs){
+  var el = document.getElementById(elId);
+  if(!el) return;
+  el.style.display = 'flex';
+  el.classList.remove('hide');
+  void el.offsetWidth; // restart the transition if re-triggered quickly
+  setTimeout(function(){
+    el.classList.add('hide');
+    setTimeout(function(){ el.style.display = 'none'; }, 680);
+  }, holdMs || 950);
+}
+
+// Tints an entry-splash icon to match the category being entered (GEN/HPC/WDO/FUM).
+function themeEntrySplashIcon(iconElId, catFullName){
+  var el = document.getElementById(iconElId);
+  if(!el) return;
+  var key = (typeof CAT_KEY !== 'undefined' && CAT_KEY[catFullName]) ? CAT_KEY[catFullName] : 'GEN';
+  var color = (typeof CAT_COLOR !== 'undefined' && CAT_COLOR[key]) ? CAT_COLOR[key] : '#4ec9e1';
+  var hex = color.replace('#','');
+  var r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
+  el.style.color = color;
+  el.style.background = 'rgba(' + r + ',' + g + ',' + b + ',0.12)';
+}
+
+function mdShowEntrySplash(){ showEntrySplash('md-entry-splash', 950); }
+
+// ═══════════════════════════════════════════════════════════
+//  TERMITE MATH DRILL (WDO)
+// ═══════════════════════════════════════════════════════════
+var mdSessionLen = 10;
+var mdSessionRecords = [];   // { calcType, correct, timeMs } for the current set
+var mdSessionCorrect = 0;
+var mdSessionIncorrect = 0;
+var mdSessionXp = 0;
+var mdCurrentStreak = 0;
+var mdBestStreak = 0;
+var mdCalcTypeStats = {};    // persists across sets: calcType -> {correct,total}
+var mdCurrent = null;
+var mdAnswered = false;
+var mdQuestionStartTime = 0;
+
+function mdSaveCalcTypeStats(){ safeLS.setItem('md_calctype_stats', JSON.stringify(mdCalcTypeStats)); }
+function mdSaveBestStreak(){ safeLS.setItem('md_best_streak', JSON.stringify(mdBestStreak)); }
+
+function mdRandInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function mdRound(n, d){ var m = Math.pow(10, d||2); return Math.round(n*m)/m; }
+function mdFmt(n, decimals){
+  var d = (typeof decimals === 'number') ? decimals : 2;
+  var m = Math.pow(10, d);
+  var r = Math.round(n*m)/m;
+  if(r % 1 === 0) return String(r);
+  return r.toFixed(d).replace(/0+$/,'').replace(/\.$/,'');
+}
+function mdShuffle(arr){
+  for(var i=arr.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var t=arr[i]; arr[i]=arr[j]; arr[j]=t;
+  }
+  return arr;
+}
+
+// Occasional non-essential context, similar to real certification exam wording —
+// candidates must identify which details are actually needed for the calculation.
+var MD_FILLERS = [
+  'The technician arrived on site at 8:45 AM to begin the inspection.',
+  'The homeowner mentioned recent landscaping work along the west side of the structure.',
+  'The structure was originally constructed in 1994 with a poured concrete foundation.',
+  'A signed inspection graph was completed prior to treatment.',
+  'The customer requested a follow-up inspection in 90 days.',
+  'The technician\u2019s license number was recorded on the service ticket.',
+  'Weather conditions at the time of treatment were clear with a temperature of 72\u00b0F.',
+  'The service vehicle used for the job was equipped with a 300-gallon holding tank.',
+  'The property is located within a designated flood zone.',
+  'A copy of the treatment disclosure was provided to the homeowner before work began.',
+  'The technician noted minor wood rot near an unrelated exterior door frame.',
+  'The customer\u2019s real estate closing is scheduled for the following week.',
+  'The neighboring property was treated by a different company the previous month.',
+  'The homeowner asked whether the warranty could be transferred to a future buyer.',
+  'A previous WDO report on file noted no visible activity at the time.',
+  'The technician wore a company uniform with a visible ID badge.',
+  'Two dogs were secured in the backyard during the inspection.',
+  'The office scheduled the appointment through an online booking form.',
+  'The crew leader has fifteen years of field experience.',
+  'The customer paid a deposit by check at the time of scheduling.'
+];
+
+// Parallel to MD_TEMPLATES — used to weight problem selection by category before generating.
+var MD_CALC_TYPES = [
+  'Linear Footage', 'Dilution', 'Gallons', 'Volume',
+  'Linear Footage', 'Linear Footage', 'Linear Footage', 'Area', 'Dilution', 'Dilution'
+];
+
+// Base practice emphasis, independent of adaptive weighting — Linear Footage and
+// Dilution math come up the most often in real fieldwork, so they get slightly
+// more practice reps by default. This is a practice-emphasis choice, not a
+// verified breakdown of any specific exam's question distribution.
+var MD_BASE_WEIGHT = {
+  'Linear Footage': 1.25,
+  'Dilution': 1.15,
+  'Gallons': 1,
+  'Volume': 0.85,
+  'Area': 0.85
+};
+
+var MD_TEMPLATES = [
+  // 0 — Linear Footage: perimeter trench, total gallons
+  function(){
+    var perimeter = mdRandInt(6, 30) * 10;
+    var rate = [2,3,4][mdRandInt(0,2)];
+    var units = perimeter/10;
+    var ans = units*rate;
+    return {
+      q: 'A licensed pest control operator is preparing a subterranean termite soil treatment for a residential structure. The foundation perimeter to be trenched measures ' + perimeter + ' linear feet. The termiticide label specifies an application rate of ' + rate + ' gallons of finished dilution per 10 linear feet of trench. Calculate the total gallons of finished dilution required for the treatment.',
+      ans: ans, unit: ' gal', calcType: 'Linear Footage',
+      steps: [
+        'Determine the number of 10-foot units in the trench: ' + perimeter + ' \u00f7 10 = ' + units + ' units.',
+        'Multiply by the label application rate: ' + units + ' \u00d7 ' + rate + ' gal = ' + ans + ' gallons.'
+      ],
+      distractors: [ perimeter*rate, units+rate, ans/2 ]
+    };
+  },
+  // 1 — Dilution: concentrate ounces needed per gallon rate
+  function(){
+    var gallons = mdRandInt(4, 20) * 5;
+    var ozPerGal = [1,2,4][mdRandInt(0,2)];
+    var ans = gallons*ozPerGal;
+    return {
+      q: 'A technician is mixing a termiticide solution for a soil treatment. The product label directs ' + ozPerGal + ' ounces of concentrate per gallon of finished dilution. The job requires ' + gallons + ' total gallons of finished dilution. How many ounces of concentrate are required?',
+      ans: ans, unit: ' oz', calcType: 'Dilution',
+      steps: [
+        'Identify the label rate: ' + ozPerGal + ' oz of concentrate per gallon of finished dilution.',
+        'Multiply the rate by the total gallons needed: ' + gallons + ' \u00d7 ' + ozPerGal + ' oz = ' + ans + ' ounces.'
+      ],
+      distractors: [ mdRound(gallons/ozPerGal,2), ans*2, ans-gallons ]
+    };
+  },
+  // 2 — Gallons: rounding up to whole containers
+  function(){
+    var yieldPerJug = [10,15,20,25][mdRandInt(0,3)];
+    var jugsWanted = mdRandInt(3,8);
+    var gallonsNeeded = yieldPerJug*(jugsWanted-1) + mdRandInt(1, yieldPerJug-1);
+    var exact = gallonsNeeded/yieldPerJug;
+    var ans = Math.ceil(exact);
+    return {
+      q: 'A treatment requires ' + gallonsNeeded + ' gallons of finished dilution. Each jug of concentrate, when mixed according to label directions, yields ' + yieldPerJug + ' gallons of finished dilution. How many jugs of concentrate must the technician open to complete the job?',
+      ans: ans, unit: ' jugs', calcType: 'Gallons',
+      steps: [
+        'Divide the total gallons needed by the yield per jug: ' + gallonsNeeded + ' \u00f7 ' + yieldPerJug + ' = ' + mdFmt(exact) + '.',
+        'Round up to the next whole jug, since a partial jug cannot be mixed or purchased: ' + ans + ' jugs.'
+      ],
+      distractors: [ Math.max(Math.floor(exact),1), ans+1, mdFmt(exact) ]
+    };
+  },
+  // 3 — Volume: trench cross-section, cubic feet
+  function(){
+    var length = mdRandInt(8, 40) * 5;
+    var depth = [6,12][mdRandInt(0,1)];
+    var width = 6;
+    var depthFt = depth/12, widthFt = width/12;
+    var ans = mdRound(length*widthFt*depthFt, 1);
+    return {
+      q: 'A trench dug along the foundation for a termiticide soil treatment measures ' + length + ' feet long, ' + width + ' inches wide, and ' + depth + ' inches deep. Calculate the volume of soil excavated, in cubic feet.',
+      ans: ans, unit: ' cu ft', calcType: 'Volume',
+      steps: [
+        'Convert the width and depth from inches to feet: ' + width + '" = ' + widthFt + ' ft, ' + depth + '" = ' + depthFt + ' ft.',
+        'Multiply length \u00d7 width \u00d7 depth: ' + length + ' \u00d7 ' + widthFt + ' \u00d7 ' + depthFt + ' = ' + mdFmt(ans) + ' cubic feet.'
+      ],
+      distractors: [ length*width*depth, ans*2, mdRound(length*widthFt,1) ]
+    };
+  },
+  // 4 — Linear Footage: perimeter from dimensions, then gallons
+  function(){
+    var L = mdRandInt(4, 16) * 5;
+    var W = mdRandInt(4, 12) * 5;
+    var perimeter = 2*(L+W);
+    var rate = [2,4][mdRandInt(0,1)];
+    var units = perimeter/10;
+    var ans = units*rate;
+    return {
+      q: 'A rectangular single-family residence measures ' + L + ' feet by ' + W + ' feet. The termiticide label specifies ' + rate + ' gallons of finished dilution per 10 linear feet of perimeter trench. Calculate the total gallons of dilution needed to treat the full perimeter of the structure.',
+      ans: ans, unit: ' gal', calcType: 'Linear Footage',
+      steps: [
+        'Calculate the perimeter of the structure: 2 \u00d7 (' + L + ' + ' + W + ') = ' + perimeter + ' feet.',
+        'Divide the perimeter into 10-foot units: ' + perimeter + ' \u00f7 10 = ' + units + ' units.',
+        'Multiply by the label rate: ' + units + ' \u00d7 ' + rate + ' gal = ' + ans + ' gallons.'
+      ],
+      distractors: [ mdRound((L*W/10)*rate,1), perimeter*rate, units ]
+    };
+  },
+  // 5 — Linear Footage: drilling grid, number of holes
+  function(){
+    var length = mdRandInt(5, 25) * 10;
+    var spacing = 12;
+    var totalInches = length*12;
+    var unitsOfSpacing = totalInches/spacing;
+    var ans = unitsOfSpacing + 1;
+    return {
+      q: 'A horizontal barrier treatment beneath a concrete slab requires drilling injection holes every ' + spacing + ' inches along a slab edge measuring ' + length + ' linear feet. Including the starting hole, how many holes are required?',
+      ans: ans, unit: ' holes', calcType: 'Linear Footage',
+      steps: [
+        'Convert the slab edge length from feet to inches: ' + length + ' \u00d7 12 = ' + totalInches + ' inches.',
+        'Divide by the hole spacing: ' + totalInches + ' \u00f7 ' + spacing + ' = ' + unitsOfSpacing + '.',
+        'Add 1 for the starting hole: ' + unitsOfSpacing + ' + 1 = ' + ans + ' holes.'
+      ],
+      distractors: [ unitsOfSpacing, ans+1, length ]
+    };
+  },
+  // 6 — Linear Footage: depth-adjusted trench volume
+  function(){
+    var perimeter = mdRandInt(6, 30) * 10;
+    var depth = mdRandInt(1, 3);
+    var units = perimeter/10;
+    var perFoot = units*4;
+    var ans = perFoot*depth;
+    return {
+      q: 'A foundation trench measuring ' + perimeter + ' linear feet is excavated to a footing depth of ' + depth + (depth>1?' feet':' foot') + '. The termiticide label requires 4 gallons of finished dilution per 10 linear feet of trench for each foot of depth treated. Calculate the total gallons of dilution required.',
+      ans: ans, unit: ' gal', calcType: 'Linear Footage',
+      steps: [
+        'Divide the trench length into 10-foot units: ' + perimeter + ' \u00f7 10 = ' + units + ' units.',
+        'Multiply by the label rate per foot of depth: ' + units + ' \u00d7 4 gal = ' + perFoot + ' gallons per foot of depth.',
+        'Multiply by the total depth treated: ' + perFoot + ' \u00d7 ' + depth + ' = ' + ans + ' gallons.'
+      ],
+      distractors: [ perFoot, mdRound(ans/depth,1), ans*2 ]
+    };
+  },
+  // 7 — Area: vapor barrier coverage
+  function(){
+    var totalArea = mdRandInt(15, 90) * 10;
+    var pctReq = 70;
+    var ans = totalArea*(pctReq/100);
+    return {
+      q: 'During a WDO inspection, a crawlspace is found to have ' + totalArea + ' square feet of exposed soil. State minimum treatment standards require a vapor barrier covering at least ' + pctReq + '% of the exposed soil area. Calculate the minimum square footage the vapor barrier must cover.',
+      ans: ans, unit: ' sq ft', calcType: 'Area',
+      steps: [
+        'Convert the required percentage to a decimal: ' + pctReq + '% = ' + (pctReq/100) + '.',
+        'Multiply the total exposed soil area by the required coverage: ' + totalArea + ' \u00d7 ' + (pctReq/100) + ' = ' + ans + ' sq ft.'
+      ],
+      distractors: [ totalArea, totalArea*0.5, totalArea*0.9 ]
+    };
+  },
+  // 8 — Dilution: mixing ratio X:1
+  function(){
+    var ratio = [4,9,14,19,24][mdRandInt(0,4)];
+    var totalParts = ratio+1;
+    var multiplier = mdRandInt(2,6);
+    var totalGal = totalParts*multiplier;
+    var ans = multiplier;
+    return {
+      q: 'A termiticide label specifies a mixing ratio of ' + ratio + ':1 (parts water to parts concentrate). A technician needs to prepare ' + totalGal + ' total gallons of finished dilution. How many gallons of concentrate are required?',
+      ans: ans, unit: ' gal', calcType: 'Dilution',
+      steps: [
+        'Add the ratio parts together to find the total parts: ' + ratio + ' + 1 = ' + totalParts + ' parts.',
+        'Divide the total finished gallons by the total parts: ' + totalGal + ' \u00f7 ' + totalParts + ' = ' + ans + ' gallons of concentrate.'
+      ],
+      distractors: [ mdRound(totalGal/ratio,2), ans*2, totalGal-ans ]
+    };
+  },
+  // 9 — Dilution: percent concentrate, clean ratio
+  function(){
+    var productPct = [10,20,40][mdRandInt(0,2)];
+    var k = [2,4,5,10][mdRandInt(0,3)];
+    var targetPct = productPct/k;
+    var multiplier = mdRandInt(2,6);
+    var totalGal = k*multiplier;
+    var ans = multiplier;
+    return {
+      q: 'A technician needs to prepare ' + totalGal + ' gallons of a ' + targetPct + '% termiticide dilution using a concentrate that is ' + productPct + '% active ingredient. How many gallons of concentrate must be added?',
+      ans: ans, unit: ' gal', calcType: 'Dilution',
+      steps: [
+        'Divide the target concentration by the concentrate strength: ' + targetPct + '% \u00f7 ' + productPct + '% = ' + mdFmt(targetPct/productPct,3) + '.',
+        'Multiply by the total finished gallons: ' + mdFmt(targetPct/productPct,3) + ' \u00d7 ' + totalGal + ' = ' + ans + ' gallons of concentrate.'
+      ],
+      distractors: [ mdRound(totalGal/productPct,2), ans*2, totalGal-ans ]
+    };
+  }
+];
+
+// Combines two things: quietly favoring calculation types the user has struggled
+// with historically, and a base practice emphasis toward the most commonly
+// tested categories (see MD_BASE_WEIGHT above).
+function mdPickTemplateIndex(){
+  var weights = MD_CALC_TYPES.map(function(type){
+    var base = MD_BASE_WEIGHT[type] || 1;
+    var stat = mdCalcTypeStats[type];
+    if(!stat || stat.total < 3) return base;
+    var acc = Math.min(stat.correct/stat.total, 1);
+    var adaptive = 2.5 - acc*2; // perfect accuracy -> 0.5 weight, 0% accuracy -> 2.5 weight
+    return base * adaptive;
+  });
+  var total = weights.reduce(function(a,b){ return a+b; }, 0);
+  var r = Math.random()*total;
+  for(var i=0;i<weights.length;i++){
+    r -= weights[i];
+    if(r <= 0) return i;
+  }
+  return weights.length-1;
+}
+
+function mdGenerateProblem(){
+  var idx = mdPickTemplateIndex();
+  return MD_TEMPLATES[idx]();
+}
+
+function mdInit(){
+  mdCalcTypeStats = safeJSON('md_calctype_stats', {});
+  mdBestStreak = safeJSON('md_best_streak', 0);
+  mdCurrentStreak = 0;
+  mdCalcReset();
+  var panel = document.getElementById('md-calc-panel');
+  if(panel) panel.classList.add('hidden');
+  mdCalcVisible = false;
+  var toggleBtn = document.getElementById('md-calc-toggle-btn');
+  if(toggleBtn) toggleBtn.classList.remove('on');
+  var hsPanel = document.getElementById('md-hs-panel');
+  if(hsPanel) hsPanel.classList.add('hidden');
+  var hsBtn = document.getElementById('md-hs-toggle-btn');
+  if(hsBtn) hsBtn.classList.remove('on');
+  mdStartSet();
+}
+
+function mdStartSet(){
+  mdSessionRecords = [];
+  mdSessionCorrect = 0;
+  mdSessionIncorrect = 0;
+  mdSessionXp = 0;
+  var recap = document.getElementById('md-session-recap');
+  if(recap) recap.classList.add('hidden');
+  var active = document.getElementById('md-session-active');
+  if(active) active.classList.remove('hidden');
+  mdUpdateTracker();
+  mdNextProblem();
+}
+
+function mdUpdateTracker(){
+  var xpEl = document.getElementById('md-tracker-xp'); if(xpEl) xpEl.textContent = 'XP ' + mdSessionXp;
+  var c = document.getElementById('md-t-correct'); if(c) c.textContent = mdSessionCorrect;
+  var ic = document.getElementById('md-t-incorrect'); if(ic) ic.textContent = mdSessionIncorrect;
+  var st = document.getElementById('md-t-streak'); if(st) st.textContent = mdCurrentStreak;
+  var b = document.getElementById('md-t-best'); if(b) b.textContent = mdBestStreak;
+  var accEl = document.getElementById('md-t-acc');
+  var answered = mdSessionCorrect + mdSessionIncorrect;
+  if(accEl) accEl.textContent = answered > 0 ? Math.round((mdSessionCorrect/answered)*100) + '%' : '\u2014';
+}
+
+function mdNextProblem(){
+  mdAnswered = false;
+  mdCurrent = mdGenerateProblem();
+
+  if(Math.random() < 0.55){
+    var filler = MD_FILLERS[mdRandInt(0, MD_FILLERS.length-1)];
+    mdCurrent.q = (Math.random() < 0.5) ? (filler + ' ' + mdCurrent.q) : (mdCurrent.q + ' ' + filler);
+  }
+
+  var correctVal = mdFmt(mdCurrent.ans, mdCurrent.decimals);
+  var vals = [correctVal];
+  (mdCurrent.distractors||[]).forEach(function(d){
+    var f = mdFmt(d, mdCurrent.decimals);
+    if(vals.indexOf(f) === -1) vals.push(f);
+  });
+  var guard = 0;
+  while(vals.length < 4 && guard < 20){
+    guard++;
+    var pad = mdFmt(mdCurrent.ans * (1 + (mdRandInt(-30,30)/100)), mdCurrent.decimals);
+    if(vals.indexOf(pad) === -1) vals.push(pad);
+  }
+  vals = vals.slice(0,4);
+  mdShuffle(vals);
+
+  document.getElementById('md-q-text').textContent = mdCurrent.q;
+  var optsWrap = document.getElementById('md-opts-list');
+  optsWrap.innerHTML = '';
+  var letters = ['A','B','C','D'];
+  vals.forEach(function(v, i){
+    var el = document.createElement('div');
+    el.className = 'opt';
+    el.innerHTML = '<span class="opt-letter">' + letters[i] + '</span><span>' + v + mdCurrent.unit + '</span>';
+    el.onclick = function(){ mdSelectAnswer(el, v); };
+    optsWrap.appendChild(el);
+  });
+
+  var expBox = document.getElementById('md-exp-box');
+  expBox.classList.add('hidden');
+  expBox.innerHTML = '';
+  document.getElementById('md-next-btn').classList.add('hidden');
+  var tag = document.getElementById('md-speed-tag');
+  if(tag){ tag.innerHTML = ''; tag.classList.remove('show'); }
+
+  var qnumEl = document.getElementById('md-tracker-qnum');
+  if(qnumEl) qnumEl.textContent = 'Question ' + (mdSessionRecords.length+1) + ' of ' + mdSessionLen;
+
+  var wrapEl = document.getElementById('md-q-wrap');
+  if(wrapEl){
+    wrapEl.classList.add('md-entering');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ wrapEl.classList.remove('md-entering'); });
+    });
+  }
+
+  mdQuestionStartTime = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+}
+
+function mdSelectAnswer(el, chosenVal){
+  if(mdAnswered) return;
+  mdAnswered = true;
+  var now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+  var elapsedMs = now - mdQuestionStartTime;
+
+  var correctVal = mdFmt(mdCurrent.ans, mdCurrent.decimals);
+  var correctText = correctVal + mdCurrent.unit;
+  var opts = document.querySelectorAll('#md-opts-list .opt');
+  opts.forEach(function(o){
+    o.onclick = null;
+    var valText = o.querySelector('span:last-child').textContent;
+    if(valText === correctText) o.classList.add('correct');
+  });
+
+  var isCorrect = (chosenVal === correctVal);
+  var calcType = mdCurrent.calcType;
+
+  if(!mdCalcTypeStats[calcType]) mdCalcTypeStats[calcType] = { correct:0, total:0 };
+  mdCalcTypeStats[calcType].total++;
+  if(isCorrect) mdCalcTypeStats[calcType].correct++;
+  mdSaveCalcTypeStats();
+
+  var record = { calcType: calcType, correct: isCorrect, timeMs: elapsedMs };
+  if(!isCorrect){
+    record.question = mdCurrent.q;
+    record.chosenText = chosenVal + mdCurrent.unit;
+    record.correctText = correctText;
+  }
+  mdSessionRecords.push(record);
+
+  var xpEarned = 0, tier = null;
+  if(isCorrect){
+    mdSessionCorrect++;
+    mdCurrentStreak++;
+    if(mdCurrentStreak > mdBestStreak){
+      mdBestStreak = mdCurrentStreak;
+      mdSaveBestStreak();
+    }
+    var baseXp = 3;
+    if(elapsedMs <= 4000){ tier = 'Lightning'; xpEarned = baseXp + 5; }
+    else if(elapsedMs <= 8000){ tier = 'Fast'; xpEarned = baseXp + 2; }
+    else { xpEarned = baseXp; }
+    mdSessionXp += xpEarned;
+  } else {
+    mdSessionIncorrect++;
+    mdCurrentStreak = 0;
+    el.classList.add('wrong');
+  }
+
+  mdUpdateTracker();
+
+  if(isCorrect){
+    var tag = document.getElementById('md-speed-tag');
+    if(tag){
+      tag.innerHTML = tier
+        ? ('Correct \u2014 <span class="tier">' + tier + '</span> (+' + xpEarned + ' XP)')
+        : ('Correct (+' + xpEarned + ' XP)');
+      requestAnimationFrame(function(){ tag.classList.add('show'); });
+    }
+    setTimeout(function(){ mdAdvanceOrRecap(); }, 900);
+  } else {
+    var expBox = document.getElementById('md-exp-box');
+    var stepsHtml = '<ol class="md-steps">' + mdCurrent.steps.map(function(s){ return '<li>' + s + '</li>'; }).join('') + '</ol>';
+    expBox.innerHTML = stepsHtml + '<div class="md-steps-answer">Correct answer: ' + correctText + '</div>';
+    expBox.classList.remove('hidden');
+    document.getElementById('md-next-btn').classList.remove('hidden');
+  }
+}
+
+function mdContinue(){
+  mdAdvanceOrRecap();
+}
+
+function mdAdvanceOrRecap(){
+  if(mdSessionRecords.length >= mdSessionLen){
+    mdShowRecap();
+  } else {
+    mdNextProblem();
+  }
+}
+
+function mdShowRecap(){
+  var active = document.getElementById('md-session-active');
+  if(active) active.classList.add('hidden');
+  var recap = document.getElementById('md-session-recap');
+  if(recap) recap.classList.remove('hidden');
+
+  var figure = document.getElementById('md-recap-figure');
+  if(figure) figure.textContent = mdSessionCorrect + ' of ' + mdSessionLen;
+  var sub = document.getElementById('md-recap-sub');
+  if(sub) sub.textContent = 'correct this set';
+
+  var totalAnswered = mdSessionRecords.length;
+  var accuracyPct = totalAnswered > 0 ? Math.round((mdSessionCorrect/totalAnswered)*100) : 0;
+  var accEl = document.getElementById('md-recap-accuracy');
+  if(accEl) accEl.textContent = accuracyPct + '%';
+
+  var avgMs = totalAnswered > 0
+    ? mdSessionRecords.reduce(function(sum,r){ return sum + r.timeMs; }, 0) / totalAnswered
+    : 0;
+  var avgEl = document.getElementById('md-recap-avgtime');
+  if(avgEl) avgEl.textContent = (avgMs/1000).toFixed(1) + 's';
+
+  var correctRecords = mdSessionRecords.filter(function(r){ return r.correct; });
+  var fastestMs = correctRecords.length
+    ? Math.min.apply(null, correctRecords.map(function(r){ return r.timeMs; }))
+    : null;
+  var fastEl = document.getElementById('md-recap-fastest');
+  if(fastEl) fastEl.textContent = fastestMs !== null ? (fastestMs/1000).toFixed(1) + 's' : '\u2014';
+
+  var byType = {};
+  mdSessionRecords.forEach(function(r){
+    if(!byType[r.calcType]) byType[r.calcType] = { correct:0, total:0 };
+    byType[r.calcType].total++;
+    if(r.correct) byType[r.calcType].correct++;
+  });
+  var weakestType = null, weakestAcc = 1.01;
+  var strongestType = null, strongestAcc = -1;
+  Object.keys(byType).forEach(function(t){
+    var acc = byType[t].correct/byType[t].total;
+    if(acc < weakestAcc){ weakestAcc = acc; weakestType = t; }
+    if(acc > strongestAcc){ strongestAcc = acc; strongestType = t; }
+  });
+  var weakEl = document.getElementById('md-recap-weakest');
+  if(weakEl) weakEl.textContent = weakestType || '\u2014';
+
+  var noteEl = document.getElementById('md-recap-note');
+  var noteLabelEl = document.getElementById('md-recap-note-label');
+  var recEl = document.getElementById('md-recap-recommend');
+  if(noteEl && recEl && noteLabelEl){
+    if(weakestType && weakestAcc < 0.8 && byType[weakestType].total >= 2){
+      noteEl.style.display = 'block';
+      noteLabelEl.textContent = 'Recommended practice:';
+      recEl.textContent = weakestType + ' \u2014 ' + Math.round(weakestAcc*100) + '% correct this set. Additional practice in this area is recommended.';
+    } else if(strongestType && strongestAcc >= 0.9 && byType[strongestType].total >= 2 && Object.keys(byType).length > 1){
+      noteEl.style.display = 'block';
+      noteLabelEl.textContent = 'Strong set:';
+      recEl.textContent = strongestType + ' \u2014 ' + Math.round(strongestAcc*100) + '% correct this set.';
+    } else {
+      noteEl.style.display = 'none';
+    }
+  }
+
+  var reviewWrap = document.getElementById('md-recap-review');
+  var reviewList = document.getElementById('md-recap-review-list');
+  var missed = mdSessionRecords.filter(function(r){ return !r.correct; });
+  if(reviewWrap && reviewList){
+    if(missed.length){
+      reviewList.innerHTML = missed.map(function(r){
+        return '<div class="md-recap-review-item">'
+          + '<div class="md-recap-review-q">' + r.question + '</div>'
+          + '<div class="md-recap-review-ans">Your answer: <span class="wrong-val">' + r.chosenText + '</span> &nbsp;\u00b7&nbsp; Correct: <span class="correct-val">' + r.correctText + '</span></div>'
+          + '</div>';
+      }).join('');
+      reviewWrap.classList.remove('hidden');
+    } else {
+      reviewList.innerHTML = '';
+      reviewWrap.classList.add('hidden');
+    }
+  }
+
+  if(typeof mdSaveHighScore === 'function'){
+    mdSaveHighScore(mdSessionXp, mdSessionCorrect, mdSessionLen, accuracyPct);
+  }
+}
+
+// ── High scores ────────────────────────────────────────────
+function mdLoadHighScores(){
+  return safeJSON('md_high_scores', []);
+}
+function mdSaveHighScore(xp, correct, total, accuracy){
+  var scores = mdLoadHighScores();
+  scores.push({ xp: xp, correct: correct, total: total, accuracy: accuracy, date: Date.now() });
+  scores.sort(function(a,b){ return b.xp - a.xp; });
+  scores = scores.slice(0, 5);
+  safeLS.setItem('md_high_scores', JSON.stringify(scores));
+  if(typeof mdRenderHighScores === 'function') mdRenderHighScores();
+}
+function mdFormatHsDate(ts){
+  var d = new Date(ts);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()] + ' ' + d.getDate();
+}
+function mdRenderHighScores(){
+  var list = document.getElementById('md-hs-list');
+  if(!list) return;
+  var scores = mdLoadHighScores();
+  if(!scores.length){
+    list.innerHTML = '<div class="md-hs-empty">No completed sets yet \u2014 finish a set of 10 to post a score.</div>';
+    return;
+  }
+  list.innerHTML = scores.map(function(s, i){
+    return '<div class="md-hs-row">'
+      + '<div class="md-hs-rank">' + (i+1) + '</div>'
+      + '<div class="md-hs-body">'
+        + '<div class="md-hs-xp">' + s.xp + ' XP</div>'
+        + '<div class="md-hs-meta">' + s.correct + '/' + s.total + ' correct \u00b7 ' + s.accuracy + '% \u00b7 ' + mdFormatHsDate(s.date) + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+function mdToggleHighScores(){
+  var panel = document.getElementById('md-hs-panel');
+  var btn = document.getElementById('md-hs-toggle-btn');
+  if(!panel) return;
+  var show = panel.classList.contains('hidden');
+  panel.classList.toggle('hidden', !show);
+  if(btn) btn.classList.toggle('on', show);
+  if(show) mdRenderHighScores();
+  // Keep the calculator and high scores panels from being open at the same time.
+  if(show){
+    var calcPanel = document.getElementById('md-calc-panel');
+    var calcBtn = document.getElementById('md-calc-toggle-btn');
+    if(calcPanel && !calcPanel.classList.contains('hidden')){
+      calcPanel.classList.add('hidden');
+      if(calcBtn) calcBtn.classList.remove('on');
+      mdCalcVisible = false;
+    }
+  }
+}
+
+
+// ── On-screen calculator ──────────────────────────────────
+var mdCalcVisible = false;
+var mdCalc = { display:'0', prev:null, operator:null, waitingForOperand:false };
+
+function mdToggleCalc(){
+  mdCalcVisible = !mdCalcVisible;
+  var panel = document.getElementById('md-calc-panel');
+  var btn = document.getElementById('md-calc-toggle-btn');
+  if(panel) panel.classList.toggle('hidden', !mdCalcVisible);
+  if(btn) btn.classList.toggle('on', mdCalcVisible);
+  if(mdCalcVisible){
+    var hsPanel = document.getElementById('md-hs-panel');
+    var hsBtn = document.getElementById('md-hs-toggle-btn');
+    if(hsPanel && !hsPanel.classList.contains('hidden')){
+      hsPanel.classList.add('hidden');
+      if(hsBtn) hsBtn.classList.remove('on');
+    }
+  }
+}
+
+function mdCalcReset(){
+  mdCalc = { display:'0', prev:null, operator:null, waitingForOperand:false };
+  mdCalcRender();
+}
+
+function mdCalcRender(){
+  var d = document.getElementById('md-calc-display');
+  if(d) d.textContent = mdCalc.display;
+}
+
+function mdCalcDigit(digit){
+  if(mdCalc.waitingForOperand){
+    mdCalc.display = digit;
+    mdCalc.waitingForOperand = false;
+  } else {
+    mdCalc.display = (mdCalc.display === '0') ? digit : (mdCalc.display + digit);
+  }
+  mdCalcRender();
+}
+
+function mdCalcDecimal(){
+  if(mdCalc.waitingForOperand){
+    mdCalc.display = '0.';
+    mdCalc.waitingForOperand = false;
+  } else if(mdCalc.display.indexOf('.') === -1){
+    mdCalc.display += '.';
+  }
+  mdCalcRender();
+}
+
+function mdCalcSign(){
+  if(mdCalc.display.charAt(0) === '-'){
+    mdCalc.display = mdCalc.display.slice(1);
+  } else if(mdCalc.display !== '0'){
+    mdCalc.display = '-' + mdCalc.display;
+  }
+  mdCalcRender();
+}
+
+function mdCalcBackspace(){
+  if(mdCalc.waitingForOperand) return;
+  mdCalc.display = mdCalc.display.length > 1 ? mdCalc.display.slice(0,-1) : '0';
+  mdCalcRender();
+}
+
+function mdCalcClear(){
+  mdCalcReset();
+}
+
+function mdCalcCompute(a, b, op){
+  switch(op){
+    case '+': return a + b;
+    case '\u2212': return a - b;
+    case '\u00d7': return a * b;
+    case '\u00f7': return b === 0 ? NaN : a / b;
+    default: return b;
+  }
+}
+
+function mdCalcOperator(nextOp){
+  var inputVal = parseFloat(mdCalc.display);
+  if(mdCalc.prev === null){
+    mdCalc.prev = inputVal;
+  } else if(!mdCalc.waitingForOperand){
+    var result = mdCalcCompute(mdCalc.prev, inputVal, mdCalc.operator);
+    mdCalc.display = isNaN(result) ? 'Error' : mdFmt(mdRound(result, 6));
+    mdCalc.prev = isNaN(result) ? 0 : result;
+    mdCalcRender();
+  }
+  mdCalc.waitingForOperand = true;
+  mdCalc.operator = nextOp;
+}
+
+function mdCalcEquals(){
+  var inputVal = parseFloat(mdCalc.display);
+  if(mdCalc.operator === null || mdCalc.prev === null) return;
+  var result = mdCalcCompute(mdCalc.prev, inputVal, mdCalc.operator);
+  mdCalc.display = isNaN(result) ? 'Error' : mdFmt(mdRound(result, 6));
+  mdCalc.prev = null;
+  mdCalc.operator = null;
+  mdCalc.waitingForOperand = true;
+  mdCalcRender();
+}
+
+// Keyboard support for the on-screen calculator (mainly useful when testing
+// in a desktop browser — touch remains the primary input on the phone).
+document.addEventListener('keydown', function(e){
+  if(!mdCalcVisible) return;
+  var screen = document.getElementById('screen-mathdrill');
+  if(!screen || !screen.classList.contains('active')) return;
+  if(e.key >= '0' && e.key <= '9'){ mdCalcDigit(e.key); return; }
+  if(e.key === '.'){ mdCalcDecimal(); return; }
+  if(e.key === '+'){ mdCalcOperator('+'); return; }
+  if(e.key === '-'){ mdCalcOperator('\u2212'); return; }
+  if(e.key === '*'){ mdCalcOperator('\u00d7'); return; }
+  if(e.key === '/'){ e.preventDefault(); mdCalcOperator('\u00f7'); return; }
+  if(e.key === 'Enter' || e.key === '='){ e.preventDefault(); mdCalcEquals(); return; }
+  if(e.key === 'Backspace'){ mdCalcBackspace(); return; }
+  if(e.key === 'Escape' || e.key.toLowerCase() === 'c'){ mdCalcClear(); return; }
+});
 
 // ═══════════════════════════════════════════════════════════
 //  FLASHCARDS
@@ -7655,6 +9080,7 @@ window.closeMenu = function(){
 };
 
 function menuSyncState(){
+  if(typeof lockMenuSyncState === 'function'){ try{ lockMenuSyncState(); }catch(e){} }
   var isLight = document.body.classList.contains('light-mode');
   var sOn = safeLS.getItem('soundOn') !== '0'; // read directly, avoids TDZ
   var themeToggle = document.getElementById('menu-theme-toggle');
@@ -7740,8 +9166,9 @@ function launchConfetti(){
   const canvas = document.getElementById('confetti-canvas');
   if(!canvas) return;
   canvas.style.display='block';
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const _cr = canvas.getBoundingClientRect();
+  canvas.width = _cr.width || window.innerWidth;
+  canvas.height = _cr.height || window.innerHeight;
   const ctx = canvas.getContext('2d');
   const cols = ['#4ec9e1','#a78bfa','#fb923c','#f472b6','#4dd68c','#ffd166','#fff'];
   const pieces = Array.from({length:110},()=>({
@@ -8584,6 +10011,402 @@ window.pwaBannerDismiss = function(){
   safeLS.setItem('pwaBannerDismissed', '1');
 };
 
+// ── App Lock ──────────────────────────────────────────────
+// Local-only, multi-account login. Nothing here is transmitted anywhere —
+// account records (username, salt, password hash) live in localStorage on
+// this device only, and each account's app progress is stored under its
+// own namespaced keys (see the safeLS wrapper above) so multiple people can
+// share this phone without seeing each other's data. This protects against
+// a casual person picking up the phone, not a determined attacker with
+// access to the device itself — no client-side scheme can promise that.
+(function(){
+  function authSalt(){
+    try{
+      var arr = new Uint8Array(16);
+      (window.crypto || window.msCrypto).getRandomValues(arr);
+      return Array.prototype.map.call(arr, function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    }catch(e){
+      var s = '';
+      for(var i=0;i<32;i++) s += Math.floor(Math.random()*16).toString(16);
+      return s;
+    }
+  }
+
+  // Non-cryptographic fallback, only used if Web Crypto is unavailable
+  // (e.g. some non-secure local contexts). Good enough for a device-only lock.
+  function simpleHash(str){
+    var h1 = 0x811c9dc5, h2 = 0x1000193;
+    for(var i=0;i<str.length;i++){
+      h1 ^= str.charCodeAt(i);
+      h1 = (h1 * 0x01000193) >>> 0;
+      h2 = (h2 + str.charCodeAt(i) * 31) >>> 0;
+    }
+    return h1.toString(16) + h2.toString(16);
+  }
+
+  async function authHash(pw, salt){
+    var combined = salt + ':' + pw;
+    try{
+      if(window.crypto && window.crypto.subtle){
+        var enc = new TextEncoder().encode(combined);
+        var buf = await window.crypto.subtle.digest('SHA-256', enc);
+        return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+      }
+    }catch(e){ /* fall through */ }
+    var h = combined;
+    for(var i=0;i<3;i++) h = simpleHash(h + salt);
+    return h;
+  }
+
+  // ── Account storage (global, not namespaced) ──────────────
+  function getAccounts(){
+    try{ return JSON.parse(safeLS.getItem('auth_accounts') || '[]'); }catch(e){ return []; }
+  }
+  function saveAccounts(accounts){
+    safeLS.setItem('auth_accounts', JSON.stringify(accounts));
+  }
+  function slugify(username){
+    var base = username.trim().toLowerCase().replace(/\$/g, '_').replace(/\s+/g, '_');
+    return base || 'user';
+  }
+  function uniqueSlug(baseSlug, accounts){
+    var slug = baseSlug, n = 2;
+    while(accounts.some(function(a){ return a.slug === slug; })){
+      slug = baseSlug + n;
+      n++;
+    }
+    return slug;
+  }
+  function findByUsername(accounts, username){
+    var needle = username.trim().toLowerCase();
+    return accounts.find(function(a){ return a.username.trim().toLowerCase() === needle; });
+  }
+
+  // One-time migration from the earlier single-account version. The existing
+  // account keeps its existing (unprefixed) progress exactly as-is — nothing
+  // is moved — by giving it the reserved '__legacy__' namespace slug.
+  function runMigration(){
+    if(safeLS.getItem('auth_accounts') !== null) return;
+    var legacyHash = safeLS.getItem('auth_hash');
+    if(legacyHash){
+      var accounts = [{
+        username: safeLS.getItem('auth_username') || 'Account',
+        slug: '__legacy__',
+        salt: safeLS.getItem('auth_salt') || '',
+        hash: legacyHash
+      }];
+      saveAccounts(accounts);
+      safeLS.removeItem('auth_hash');
+      safeLS.removeItem('auth_salt');
+      safeLS.removeItem('auth_username');
+    } else {
+      saveAccounts([]);
+    }
+  }
+
+  function authIsEnabled(){ return safeLS.getItem('auth_lock_enabled') !== '0'; }
+
+  // ── Session (which account is active THIS app session) ───
+  // Deliberately sessionStorage, not localStorage: it survives the reload we
+  // trigger right after signing in, but clears when the app/tab is actually
+  // closed — so re-opening the app always asks for a login again.
+  function getSessionUserSlug(){
+    try{ return window.sessionStorage.getItem('auth_active_user_slug') || ''; }catch(e){ return ''; }
+  }
+  function setSessionUserSlug(slug){
+    try{ window.sessionStorage.setItem('auth_active_user_slug', slug); }catch(e){}
+    window.authActiveUser = slug;
+  }
+  function clearSessionUserSlug(){
+    try{ window.sessionStorage.removeItem('auth_active_user_slug'); }catch(e){}
+    window.authActiveUser = '';
+  }
+
+  function lockClearError(){
+    var e = document.getElementById('lock-error');
+    if(e){ e.classList.add('hidden'); e.textContent = ''; }
+  }
+  function lockShowErr(msg){
+    var e = document.getElementById('lock-error');
+    if(e){ e.textContent = msg; e.classList.remove('hidden'); }
+  }
+
+  window.lockShowMode = function(mode){
+    var enterEl = document.getElementById('lock-enter-fields');
+    var createEl = document.getElementById('lock-create-fields');
+    var changeEl = document.getElementById('lock-change-fields');
+    if(enterEl) enterEl.style.display = mode==='enter' ? 'block' : 'none';
+    if(createEl) createEl.style.display = mode==='create' ? 'block' : 'none';
+    if(changeEl) changeEl.style.display = mode==='change' ? 'block' : 'none';
+
+    var title = document.getElementById('lock-title');
+    var sub = document.getElementById('lock-sub');
+    if(mode === 'create'){
+      if(title) title.textContent = getAccounts().length ? 'Add an Account' : 'Create a Login';
+      if(sub) sub.textContent = 'This protects the app on this device only. Choose a username and password you\u2019ll remember \u2014 neither can be recovered remotely.';
+    } else if(mode === 'change'){
+      if(title) title.textContent = 'Change Login';
+      if(sub) sub.textContent = 'Enter your current password, then update your username and/or password.';
+      var curUserEl = document.getElementById('lock-change-username');
+      if(curUserEl){
+        var mine = getAccounts().find(function(a){ return a.slug === window.authActiveUser; });
+        curUserEl.value = mine ? mine.username : '';
+      }
+    } else {
+      if(title) title.textContent = 'Sign In';
+      if(sub) sub.textContent = 'Enter your username and password to continue.';
+    }
+    lockClearError();
+    var overlay = document.getElementById('screen-lock');
+    if(overlay){ overlay.style.display = 'flex'; overlay.classList.remove('hidden'); }
+  };
+
+  function lockUnlock(){
+    var overlay = document.getElementById('screen-lock');
+    if(!overlay) return;
+    overlay.classList.add('hidden');
+    setTimeout(function(){ overlay.style.display = 'none'; }, 320);
+  }
+
+  window.lockToggleVisibility = function(inputId){
+    var input = document.getElementById(inputId);
+    if(!input) return;
+    input.type = (input.type === 'password') ? 'text' : 'password';
+  };
+
+  window.lockSubmitCreate = async function(){
+    var uEl = document.getElementById('lock-create-username');
+    var i1 = document.getElementById('lock-create-input1');
+    var i2 = document.getElementById('lock-create-input2');
+    var username = uEl ? uEl.value.trim() : '';
+    var p1 = i1 ? i1.value : '';
+    var p2 = i2 ? i2.value : '';
+    if(!username || username.length < 2){ lockShowErr('Username must be at least 2 characters.'); return; }
+    if(!p1 || p1.length < 4){ lockShowErr('Password must be at least 4 characters.'); return; }
+    if(p1 !== p2){ lockShowErr('Passwords do not match.'); return; }
+
+    var accounts = getAccounts();
+    if(findByUsername(accounts, username)){ lockShowErr('That username is already in use on this device.'); return; }
+
+    var salt = authSalt();
+    var hash = await authHash(p1, salt);
+    var slug = uniqueSlug(slugify(username), accounts);
+    accounts.push({ username: username, slug: slug, salt: salt, hash: hash });
+    saveAccounts(accounts);
+    safeLS.setItem('auth_lock_enabled', '1');
+    setSessionUserSlug(slug);
+    location.reload();
+  };
+
+  window.lockSubmitEnter = async function(){
+    var uEl = document.getElementById('lock-enter-username');
+    var input = document.getElementById('lock-enter-input');
+    var username = uEl ? uEl.value.trim() : '';
+    var pw = input ? input.value : '';
+    if(!username || !pw){ lockShowErr('Enter your username and password.'); return; }
+    var accounts = getAccounts();
+    var account = findByUsername(accounts, username);
+    if(!account){ lockShowErr('Incorrect username or password. Try again.'); return; }
+    var hash = await authHash(pw, account.salt);
+    if(hash === account.hash){
+      setSessionUserSlug(account.slug);
+      location.reload();
+    } else {
+      lockShowErr('Incorrect username or password. Try again.');
+    }
+  };
+
+  window.lockForgotReset = function(){
+    var accounts = getAccounts();
+    var candidateIds = ['lock-enter-username','lock-create-username','lock-change-username'];
+    var typed = '';
+    for(var i=0;i<candidateIds.length;i++){
+      var el = document.getElementById(candidateIds[i]);
+      if(el && el.offsetParent !== null && el.value.trim()){ typed = el.value.trim(); break; }
+    }
+    var match = typed ? findByUsername(accounts, typed) : null;
+
+    if(match){
+      if(confirm('Remove the account "' + match.username + '" and all of its progress from this device? Other accounts on this device will not be affected. This cannot be undone.')){
+        saveAccounts(accounts.filter(function(a){ return a.slug !== match.slug; }));
+        safeLS.clearUserData(match.slug);
+        clearSessionUserSlug();
+        location.reload();
+      }
+      return;
+    }
+
+    if(confirm('No matching account was found for that username. Reset this entire device instead? This erases every account and all progress on this device, since none of it can be recovered remotely. Continue?')){
+      safeLS.clearEverything();
+      clearSessionUserSlug();
+      location.reload();
+    }
+  };
+
+  window.lockOpenChange = function(){
+    if(typeof closeMenu === 'function') closeMenu();
+    if(getAccounts().length === 0){
+      window.lockShowMode('create');
+    } else {
+      window.lockShowMode('change');
+    }
+  };
+  window.menuChangePassword = window.lockOpenChange;
+
+  window.lockOpenAddAccount = function(){
+    if(typeof closeMenu === 'function') closeMenu();
+    window.lockShowMode('create');
+  };
+
+  window.lockLogout = function(){
+    if(typeof closeMenu === 'function') closeMenu();
+    if(confirm('Sign out of this account?')){
+      clearSessionUserSlug();
+      location.reload();
+    }
+  };
+
+  window.lockCancelChange = function(){
+    ['lock-change-username','lock-change-current','lock-change-new1','lock-change-new2'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+    lockUnlock();
+  };
+
+  window.lockSubmitChange = async function(){
+    var uEl = document.getElementById('lock-change-username');
+    var curEl = document.getElementById('lock-change-current');
+    var n1El = document.getElementById('lock-change-new1');
+    var n2El = document.getElementById('lock-change-new2');
+    var newUsername = uEl ? uEl.value.trim() : '';
+    var current = curEl ? curEl.value : '';
+    var n1 = n1El ? n1El.value : '';
+    var n2 = n2El ? n2El.value : '';
+
+    var accounts = getAccounts();
+    var idx = accounts.findIndex(function(a){ return a.slug === window.authActiveUser; });
+    if(idx === -1){ lockShowErr('No active account found.'); return; }
+    var account = accounts[idx];
+
+    var currentHash = await authHash(current, account.salt);
+    if(currentHash !== account.hash){ lockShowErr('Current password is incorrect.'); return; }
+    if(!newUsername || newUsername.length < 2){ lockShowErr('Username must be at least 2 characters.'); return; }
+    var dupOther = accounts.some(function(a, i){ return i !== idx && a.username.trim().toLowerCase() === newUsername.toLowerCase(); });
+    if(dupOther){ lockShowErr('That username is already in use on this device.'); return; }
+
+    var changingPassword = !!(n1 || n2);
+    if(changingPassword){
+      if(!n1 || n1.length < 4){ lockShowErr('New password must be at least 4 characters.'); return; }
+      if(n1 !== n2){ lockShowErr('New passwords do not match.'); return; }
+    }
+
+    account.username = newUsername;
+    if(changingPassword){
+      var newSalt = authSalt();
+      account.hash = await authHash(n1, newSalt);
+      account.salt = newSalt;
+    }
+    accounts[idx] = account;
+    saveAccounts(accounts);
+    [uEl, curEl, n1El, n2El].forEach(function(el){ if(el) el.value = ''; });
+    if(typeof lockMenuSyncState === 'function') lockMenuSyncState();
+    lockUnlock();
+  };
+
+  window.menuToggleLock = function(){
+    var accounts = getAccounts();
+    if(accounts.length === 0){
+      if(typeof closeMenu === 'function') closeMenu();
+      window.lockShowMode('create');
+      return;
+    }
+    if(accounts.length > 1){
+      alert('App Lock can\u2019t be turned off while more than one account exists on this device \u2014 it\u2019s what lets each person sign in to their own progress.');
+      return;
+    }
+    safeLS.setItem('auth_lock_enabled', authIsEnabled() ? '0' : '1');
+    if(typeof lockMenuSyncState === 'function') lockMenuSyncState();
+  };
+
+  window.lockMenuSyncState = function(){
+    var accounts = getAccounts();
+    var enabled = accounts.length > 0 && (authIsEnabled() || accounts.length > 1);
+    var toggle = document.getElementById('menu-lock-toggle');
+    var knob = document.getElementById('menu-lock-knob');
+    var sub = document.getElementById('menu-lock-sub');
+    var label = document.getElementById('menu-changepw-label');
+    var whoEl = document.getElementById('menu-signed-in-as');
+    if(toggle) toggle.style.background = enabled ? 'var(--c-gen)' : 'var(--border2)';
+    if(knob) knob.style.left = enabled ? '21px' : '3px';
+    if(sub) sub.textContent = accounts.length > 1 ? 'Required (multiple accounts)' : (enabled ? 'On' : 'Off');
+    if(label) label.textContent = accounts.length > 0 ? 'Change Login' : 'Set Login';
+    if(whoEl){
+      var mine = accounts.find(function(a){ return a.slug === window.authActiveUser; });
+      whoEl.textContent = mine ? ('Signed in as ' + mine.username) : '';
+      whoEl.style.display = mine ? 'block' : 'none';
+    }
+  };
+
+  // Boot: decide which mode (if any) to show before the app is usable.
+  // Master switch — the login feature is disabled. The code below is kept
+  // intact (rather than deleted) so it can be turned back on later without
+  // rebuilding it. While disabled, the lock screen never appears; the app
+  // quietly keeps using whichever account's data was already active (or the
+  // pre-existing single-account data, if any) so nothing appears lost.
+  var APP_LOCK_FEATURE_ENABLED = false;
+
+  function pickContinuitySlug(accounts){
+    var sess = getSessionUserSlug();
+    if(sess && accounts.some(function(a){ return a.slug === sess; })) return sess;
+    if(accounts.some(function(a){ return a.slug === '__legacy__'; })) return '__legacy__';
+    if(accounts.length) return accounts[0].slug;
+    return '';
+  }
+
+  function bootLock(){
+    runMigration();
+    var overlay = document.getElementById('screen-lock');
+    if(!overlay) return;
+    var accounts = getAccounts();
+
+    if(!APP_LOCK_FEATURE_ENABLED){
+      var slug = pickContinuitySlug(accounts);
+      var effectiveCurrent = (window.authActiveUser === '__legacy__') ? '' : window.authActiveUser;
+      var effectiveTarget = (slug === '__legacy__') ? '' : slug;
+      if(effectiveTarget !== effectiveCurrent){
+        // This pageload's early data reads used a different namespace than
+        // the account we're settling on — reload once so everything loads
+        // consistently from here on.
+        setSessionUserSlug(slug);
+        location.reload();
+        return;
+      }
+      overlay.style.display = 'none';
+      return;
+    }
+
+    if(accounts.length === 0){
+      window.lockShowMode('create');
+      return;
+    }
+    var sessionSlug = getSessionUserSlug();
+    var matched = sessionSlug && accounts.some(function(a){ return a.slug === sessionSlug; });
+    if(matched){
+      overlay.style.display = 'none';
+      return;
+    }
+    if(!authIsEnabled() && accounts.length === 1){
+      setSessionUserSlug(accounts[0].slug);
+      location.reload();
+      return;
+    }
+    window.lockShowMode('enter');
+  }
+  if(document.readyState === 'complete' || document.readyState === 'interactive') bootLock();
+  else document.addEventListener('DOMContentLoaded', bootLock);
+})();
+
 // ── Splash Screen ──
 (function(){
   var splash = document.getElementById('splash-screen');
@@ -8647,7 +10470,7 @@ function confirmReset(){
 
 <!-- PASS/FAIL MODAL -->
 <div id="quiz-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;padding:24px;">
-  <div id="quiz-modal-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);" onclick="closeQuizModal()"></div>
+  <div id="quiz-modal-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.7);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);" onclick="closeQuizModal()"></div>
   <div id="quiz-modal-card" style="position:relative;z-index:1;width:100%;max-width:320px;border-radius:24px;padding:32px 24px;text-align:center;border:1px solid;animation:modalPop .3s cubic-bezier(.34,1.56,.64,1);">
     <div id="quiz-modal-icon" style="font-size:52px;margin-bottom:12px;"></div>
     <div id="quiz-modal-pct" style="font-family:var(--head);font-size:48px;font-weight:800;letter-spacing:-2px;margin-bottom:4px;"></div>
@@ -9666,6 +11489,7 @@ window.BossCombatFX = (function(){
 })();
 </script>
 
-</body>
 <canvas id="confetti-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:9999;display:none;"></canvas>
+</div><!-- /#app -->
+</body>
 </html>
