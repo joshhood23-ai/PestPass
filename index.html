@@ -1202,6 +1202,57 @@ z-index:5;
 .sr-done-title{font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:5px;}
 .sr-done-sub{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:18px;}
 
+/* ── Study Guide (Cliffnotes) ── */
+.sg-hero{padding:12px 0 18px;}
+.sg-book-card{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:15px;margin-bottom:11px;cursor:pointer;transition:all .15s;
+}
+.sg-book-card:active{transform:scale(0.98);}
+.sg-book-icon{
+  width:42px;height:42px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.sg-book-body{flex:1;min-width:0;}
+.sg-book-title{font-family:var(--head);font-size:14.5px;font-weight:800;color:var(--text);letter-spacing:-.2px;margin-bottom:3px;}
+.sg-book-sub{font-size:11.5px;color:var(--text2);line-height:1.5;margin-bottom:7px;}
+.sg-book-meta{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;}
+.sg-book-chev{flex-shrink:0;color:var(--text3);margin-top:12px;}
+
+.sg-book-header{padding:6px 0 16px;}
+.sg-book-header .sg-book-title{font-size:19px;font-family:var(--head);margin-bottom:5px;}
+.sg-book-header .sg-book-sub{font-size:12.5px;line-height:1.6;}
+
+.sg-topic-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;margin-bottom:10px;
+}
+.sg-topic-head{
+  display:flex;align-items:center;gap:10px;padding:14px 15px;cursor:pointer;
+}
+.sg-topic-num{
+  font-family:var(--mono);font-size:10px;font-weight:700;color:var(--text3);
+  width:22px;flex-shrink:0;
+}
+.sg-topic-title{flex:1;font-family:var(--head);font-size:13.5px;font-weight:700;color:var(--text);line-height:1.4;}
+.sg-topic-chev{flex-shrink:0;color:var(--text3);transition:transform .2s;}
+.sg-topic-card.open .sg-topic-chev{transform:rotate(180deg);}
+.sg-topic-quick{
+  padding:0 15px 14px 47px;font-size:12.5px;color:var(--text2);line-height:1.65;
+}
+.sg-topic-deep{
+  display:none;padding:2px 15px 17px 47px;font-size:12.5px;color:var(--text2);line-height:1.8;
+  border-top:1px solid var(--border);margin-top:2px;padding-top:14px;
+}
+.sg-topic-deep p{margin-bottom:10px;}
+.sg-topic-deep p:last-child{margin-bottom:0;}
+.sg-topic-card.open .sg-topic-deep{display:block;}
+.sg-topic-deep-label{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:1.3px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px;
+}
+
 /* ── Per-Question Mastery ── */
 .mastery-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:12px;}
 .mastery-panel-title{font-family:var(--head);font-size:13px;font-weight:700;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;}
@@ -2492,7 +2543,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- SURVIVAL MODE -->
     <div id="screen-survival" class="screen">
-      <div class="entry-splash" id="surv-entry-splash">
+      <div class="entry-splash hide" id="surv-entry-splash">
         <div class="entry-splash-icon" id="surv-entry-splash-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>
         </div>
@@ -2568,7 +2619,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- BOSS BATTLE -->
     <div id="screen-boss" class="screen">
-      <div class="entry-splash" id="boss-entry-splash">
+      <div class="entry-splash hide" id="boss-entry-splash">
         <div class="entry-splash-icon" id="boss-entry-splash-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1 3-6z"/></svg>
         </div>
@@ -3612,7 +3663,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- TERMITE MATH DRILL -->
     <div id="screen-mathdrill" class="screen">
-      <div class="entry-splash" id="md-entry-splash">
+      <div class="entry-splash hide" id="md-entry-splash">
         <div class="entry-splash-icon" style="background:rgba(245,160,64,0.12);color:var(--c-wdo);">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="14" cy="14.5" r="1"/><circle cx="18" cy="14.5" r="1"/><circle cx="14" cy="18" r="1"/><circle cx="18" cy="18" r="1"/></svg>
         </div>
@@ -3727,7 +3778,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- TRUE / FALSE BLITZ -->
     <div id="screen-tfblitz" class="screen">
-      <div class="entry-splash" id="tfb-entry-splash">
+      <div class="entry-splash hide" id="tfb-entry-splash">
         <div class="entry-splash-icon" id="tfb-entry-splash-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
         </div>
@@ -3952,7 +4003,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- QUIZ -->
     <div id="screen-quiz" class="screen">
-      <div class="entry-splash" id="quiz-entry-splash">
+      <div class="entry-splash hide" id="quiz-entry-splash">
         <div class="entry-splash-icon" id="quiz-entry-splash-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="9"/></svg>
         </div>
@@ -4045,7 +4096,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 
     <!-- SPACED REPETITION SCREEN -->
     <div id="screen-sr" class="screen">
-      <div class="entry-splash" id="sr-entry-splash">
+      <div class="entry-splash hide" id="sr-entry-splash">
         <div class="entry-splash-icon" id="sr-entry-splash-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
         </div>
@@ -4135,6 +4186,27 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       </div>
     </div>
 
+    <!-- STUDY GUIDE SCREEN -->
+    <div id="screen-studyguide" class="screen">
+      <div id="sg-book-list-view">
+        <div class="sg-hero">
+          <div class="hero-eye">Cliffnotes</div>
+          <div class="hero-title" style="font-size:20px;">Study <em>Guide</em></div>
+          <div class="hero-desc">The same ground the reference books cover, minus the dry textbook voice. Pick a source, skim the quick-hit, dig into the deep dive when you want the full picture.</div>
+        </div>
+        <div id="sg-book-list"></div>
+      </div>
+
+      <div id="sg-book-detail-view" style="display:none;">
+        <button class="back-btn" onclick="sgBackToList()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          All Sources
+        </button>
+        <div class="sg-book-header" id="sg-book-header"></div>
+        <div id="sg-topic-list"></div>
+      </div>
+    </div>
+
     <!-- BOOKMARKS SCREEN -->
     <div id="screen-bookmarks" class="screen">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -4170,8 +4242,8 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       <span class="ni"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>Quiz
     </button>
 
-    <button class="nav-btn" onclick="showScreen('sr')">
-      <span class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Review
+    <button class="nav-btn" onclick="showScreen('studyguide')">
+      <span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Guide
     </button>
     <button class="nav-btn" onclick="showScreen('bookmarks')">
       <span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>Saved
@@ -4265,6 +4337,13 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </div>
       <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);">Home</div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div onclick="closeMenu();showScreen('studyguide');" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+      <div style="width:34px;height:34px;border-radius:9px;background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);">Study Guide</div>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
     <div onclick="closeMenu();showScreen('sr');" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
@@ -5701,13 +5780,14 @@ function showScreen(name) {
   if(contentEl) contentEl.scrollTop = 0;
   document.getElementById('screen-'+name).classList.add('active');
   // cathub and tfblitz are sub-screens of home — keep home nav active
-  const navName = ['cathub','tfblitz','survival','boss','mathdrill'].includes(name) ? 'home' : (name === 'fc-home' ? 'flashcards' : name);
+  const navName = ['cathub','tfblitz','survival','boss','mathdrill','sr'].includes(name) ? 'home' : (name === 'fc-home' ? 'flashcards' : name);
   if(name === 'fc-home') { if(typeof renderFCHome === 'function') renderFCHome(); }
-  const idx=['home','flashcards','quiz','sr','bookmarks'].indexOf(navName);
+  const idx=['home','flashcards','quiz','studyguide','bookmarks'].indexOf(navName);
   if(idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   if(name==='flashcards') renderCard();
   if(name==='quiz') renderPicker();
   if(name==='sr') srUpdateStats();
+  if(name==='studyguide') { if(typeof renderStudyGuide === 'function') renderStudyGuide(); }
   if(name==='home'){
     if(typeof renderMasteryPanel==='function') renderMasteryPanel();
     if(typeof updateHomeCTA==='function') updateHomeCTA();
@@ -5949,6 +6029,283 @@ function themeEntrySplashIcon(iconElId, catFullName){
 }
 
 function mdShowEntrySplash(){ showEntrySplash('md-entry-splash', 950); }
+
+// ═══════════════════════════════════════════════════════════
+//  STUDY GUIDE (Cliffnotes) — original condensed explainers
+//  organized by reference source, not by exam category.
+// ═══════════════════════════════════════════════════════════
+var STUDY_GUIDE_BOOKS = [
+  {
+    id: 'truman',
+    title: "Truman's Scientific Guide to Pest Control Operations",
+    short: "Truman's Guide",
+    color: 'var(--c-hpc)',
+    bg: 'rgba(169,142,255,0.12)',
+    sub: "The industry's deep-dive reference on pest biology, identification, and control strategy — more textbook than test-prep, but this is where the \u201cwhy\u201d actually lives.",
+    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    topics: [
+      {
+        title: "Insect Anatomy 101: The Three-Body-Region Rule",
+        quick: "Every insect ID question comes back to one skeleton: head, thorax, abdomen, six legs, and usually wings. Get this frame down and half the \u201cwhat pest is this\u201d questions solve themselves.",
+        deep: [
+          "Insects share one basic blueprint even when they look nothing alike: a head carrying the eyes, antennae, and mouthparts; a thorax that all six legs and both pairs of wings attach to; and an abdomen that houses digestion and reproduction. Spiders, mites, and ticks fail this test immediately — eight legs, two body regions, no antennae — which is exactly why \u201carachnid vs. insect\u201d shows up so often on identification questions.",
+          "Mouthpart type tells you more about a pest's damage pattern than almost anything else. Chewing mouthparts (roaches, beetles) leave ragged holes and frass behind. Piercing-sucking mouthparts (bed bugs, aphids, mosquitoes) leave no visible bite marks on the material itself but show up as small puncture wounds on a host. If a question describes damage without a visible insect, the mouthparts are usually the clue buried in the wording.",
+          "Wings are a shortcut for narrowing an ID fast. Two wings usually means a fly (true flies only have one functional pair). Four wings with the front pair hardened into a shell means a beetle. Scaly wings mean a moth. None of this replaces species-level knowledge, but it's the fastest first filter when a description is vague."
+        ]
+      },
+      {
+        title: "Complete vs. Incomplete Metamorphosis — Why It Matters for Control",
+        quick: "Insects with complete metamorphosis are vulnerable at completely different life stages than the adult you're treating for. Incomplete metamorphosis means the young already look like tiny adults and share the same habits.",
+        deep: [
+          "Complete metamorphosis splits an insect's life into stages that barely resemble each other — a beetle grub looks nothing like the beetle it becomes, and it's often living somewhere completely different (soil, wood, stored product) than the adult ever will. Treating only where you see adults can miss the larval population entirely, which is why a lot of IPM plans target breeding sites instead of just visible adults.",
+          "Incomplete metamorphosis (roaches, termites, true bugs) skips the dramatic transformation. Nymphs hatch looking like miniature, wingless versions of the adult and share the same food source and habitat from day one. That's actually good news for control — treating the adult's environment usually hits the nymphs too, since there's no hidden larval stage living somewhere else in the structure.",
+          "Termites are the wrinkle worth remembering: they undergo incomplete metamorphosis, but caste development (worker, soldier, reproductive) happens afterward, driven by pheromones and feeding rather than a fixed life-stage schedule. That's part of why termite colonies are so hard to eliminate with a single treatment — the colony can keep producing whichever caste it's short on."
+        ]
+      },
+      {
+        title: "Cockroach ID: German vs. American vs. Oriental",
+        quick: "Size, color, and where you find them are the three fastest ways to tell roach species apart, and each one has a different favorite habitat that should shape the treatment plan.",
+        deep: [
+          "German cockroaches are small (about half an inch), light tan to brown, with two dark parallel stripes running down the area just behind the head. They're the roach of kitchens and bathrooms — anywhere warm, humid, and close to food and water — and they reproduce faster than any other structural pest roach, which is why an infestation can explode in weeks if it's misdiagnosed as \u201cjust a few roaches.\u201d",
+          "American cockroaches are the giants of the group — reddish-brown, over an inch and a half long as adults, with a pale band around the edge of the shield behind the head. They favor damp, warm environments like sewers, basements, and steam tunnels, and they're strong fliers as adults, which is a detail that changes how you think about entry points and exclusion.",
+          "Oriental cockroaches are dark, almost black, with a shiny, waxy look, and they're the slowest-moving and least likely to fly of the three. They love cool, damp, dark spaces — crawl spaces, drains, mulch beds — and their presence often points to a moisture problem that needs fixing alongside any chemical treatment."
+        ]
+      },
+      {
+        title: "IPM Isn't a Buzzword, It's a Decision Tree",
+        quick: "Integrated Pest Management means inspection and prevention come before the sprayer — chemical control is one tool in a sequence, not the automatic first move.",
+        deep: [
+          "The IPM sequence generally runs: identify the pest correctly, inspect to find the conducive conditions (moisture, food sources, entry points), then choose the least-disruptive control method that will actually solve the problem — which might be sealing a gap or fixing a leak rather than applying a pesticide at all.",
+          "This isn't about being anti-chemical. It's about not wasting a treatment on a structural problem that will just reintroduce the pest in a month. Spraying baseboards in a kitchen with a chronic moisture leak buys a client two weeks of relief and a callback — fixing the leak and then treating solves the actual problem.",
+          "On an exam, IPM questions are often really asking \u201cwhat's the correct first step,\u201d and the answer is almost always inspection or exclusion before chemical control, even when a chemical option is sitting right there as a tempting first pick."
+        ]
+      },
+      {
+        title: "Rodent Behavior: Why Bait Placement Beats Bait Strength",
+        quick: "Rats and mice are neophobic — suspicious of new objects — which means where and how you place bait often matters more than which product you're using.",
+        deep: [
+          "Rodents travel the same routes repeatedly, staying close to walls and structures (a tendency called thigmotaxis). That's why the most effective placements run along walls, in corners, and inside voids — not out in open floor space where a rodent instinctively feels exposed.",
+          "Neophobia means rodents, especially rats, will avoid new objects in their environment for several days before investigating them. A bait station that sits untouched for a week isn't necessarily a sign of low activity — it might just mean the population hasn't warmed up to the new object yet, which is why patience matters before assuming a placement failed.",
+          "Mice have a much smaller home range and less neophobia than rats, which is part of why mouse populations often respond to control faster once bait or traps are placed correctly, while rat populations can take longer and need more strategic, wall-line placement along their established runways."
+        ]
+      }
+    ]
+  },
+  {
+    id: 'npsec',
+    title: "National Pesticide Applicator Certification Core Manual",
+    short: "NPSEC Core Manual",
+    color: 'var(--c-gen)',
+    bg: 'rgba(78,201,225,0.12)',
+    sub: "The general-knowledge backbone almost every state exam draws from — labels, toxicity, safety, and the regulatory framework around using pesticides at all.",
+    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    topics: [
+      {
+        title: "Reading a Label Like Your License Depends On It",
+        quick: "The label is a legal document, not a suggestion. \u201cThe label is the law\u201d is the single most tested phrase in pesticide certification, and for good reason.",
+        deep: [
+          "Every pesticide label carries the same legal weight as the registration process behind it. Using a product in any way inconsistent with its labeling — different rate, different site, different target pest — is a violation regardless of intent. That includes things that feel harmless, like using a lawn product indoors because \u201cit's basically the same thing.\u201d",
+          "The label sections that get tested hardest are the ones people skip in real life: the signal word, the precautionary statements, the directions for use by site, re-entry intervals, and the storage and disposal section. Each has specific legal and safety implications, and exam questions love to test whether you know which section a given piece of information actually lives in.",
+          "One detail worth locking in: the label can be more restrictive than what a state allows, but never less restrictive. If a state regulation and a federal label conflict on which is stricter, the stricter one always wins — you can't use a label loophole to get around a more conservative state rule."
+        ]
+      },
+      {
+        title: "Signal Words and Toxicity Categories",
+        quick: "DANGER, WARNING, and CAUTION map directly to toxicity category and roughly to LD50 ranges — knowing the order and what triggers each one is a guaranteed exam topic.",
+        deep: [
+          "Signal words rank from most to least toxic: DANGER (Category I, often paired with \u201cPoison\u201d and a skull-and-crossbones for the most acutely toxic products), WARNING (Category II), and CAUTION (Category III and IV). A product's category is based on the most severe of its acute toxicity measures — oral, dermal, inhalation, or eye/skin irritation — so a product can land in Category I purely because it's a severe eye irritant, even if it's relatively mild to swallow.",
+          "LD50 (lethal dose, 50%) is the dose that kills half of a test population, usually expressed in milligrams of pesticide per kilogram of body weight. Counterintuitively, a lower LD50 number means a more toxic product — it takes less of it to be lethal. This trips people up constantly because the instinct is to think a bigger number equals bigger danger.",
+          "LC50 (lethal concentration, 50%) is the inhalation equivalent, measuring concentration in air rather than a dose amount. Both LD50 and LC50 feed into the toxicity category, and by extension, the signal word that ends up on the label."
+        ]
+      },
+      {
+        title: "Routes of Exposure and Matching PPE",
+        quick: "Dermal exposure is the most common route for applicators by far, which is exactly why the label's PPE requirements exist — and why skipping them isn't a minor shortcut.",
+        deep: [
+          "There are four routes pesticides can enter the body: dermal (skin), oral (mouth), inhalation (lungs), and ocular (eyes). For working applicators, dermal exposure — especially through the hands, forearms, and scalp — accounts for the large majority of real-world exposure incidents, which is why gloves and proper coverage matter more than people expect.",
+          "PPE requirements aren't generic; they're listed on the specific product label and can vary a lot between products with similar active ingredients. A label might require chemical-resistant gloves, long sleeves, and eye protection for mixing but only some of that for application — reading the actual PPE section rather than assuming \u201cgloves are always enough\u201d is the tested behavior.",
+          "Absorption rate isn't uniform across the body either. The scalp, forehead, and ear canal absorb pesticides significantly faster than skin on the forearm or the palm of the hand, which is part of why head protection matters more during mixing and loading than people intuitively assume."
+        ]
+      },
+      {
+        title: "Formulations: Why the Same Active Ingredient Comes in Different Forms",
+        quick: "EC, WP, granular, bait, aerosol — the formulation changes how a product behaves in the environment, not just how it's packaged.",
+        deep: [
+          "Emulsifiable concentrates (EC) mix with water and tend to penetrate surfaces well, but they can also be more readily absorbed through skin, which affects PPE decisions. Wettable powders (WP) suspend in water rather than dissolving, leave a visible residue, and require constant agitation in the tank to stay mixed evenly.",
+          "Granular formulations are applied dry and often rely on watering-in to activate, which makes them useful around sensitive sites where drift is a bigger concern than direct contact exposure. Baits work through ingestion rather than contact — which is exactly why baiting programs depend on not disturbing foraging behavior with a contact spray in the same area, since mixing methods can undo the bait's effectiveness.",
+          "Choosing a formulation is a real technical decision, not just a preference: site sensitivity, application equipment, weather conditions, and the target pest's behavior all push toward one formulation over another, and exam scenarios often test whether you'd pick the right one for a described situation."
+        ]
+      },
+      {
+        title: "Where Pesticides Go After the Application: Environmental Fate",
+        quick: "Half-life, leaching potential, and soil binding determine whether a product breaks down harmlessly or ends up somewhere it was never supposed to be — like groundwater.",
+        deep: [
+          "Half-life measures how long it takes half of an applied pesticide to break down. A short half-life often means fewer long-term exposure concerns but can also mean more frequent reapplication. A long half-life raises persistence concerns, especially for products used near sensitive sites.",
+          "Leaching describes a pesticide's tendency to move downward through soil with water, which is the primary pathway pesticides take to reach groundwater. Products with high water solubility and low soil-binding tendency leach more readily, which is why label restrictions near wells and in permeable soils exist in the first place.",
+          "Runoff is the surface-water equivalent of leaching — pesticide moving off-site with rainwater or irrigation rather than down into soil. Slope, rainfall timing relative to application, and whether a buffer zone exists near surface water all factor into runoff risk, and label language about not applying before rain or near water bodies exists specifically to manage this."
+        ]
+      }
+    ]
+  },
+  {
+    id: 'gaspcc',
+    title: "Georgia SPCC & UGA Extension Category Guides",
+    short: "GA SPCC / UGA Guides",
+    color: 'var(--c-wdo)',
+    bg: 'rgba(245,160,64,0.12)',
+    sub: "The state-specific layer — Georgia's licensing structure, categories, and the recordkeeping and inspection rules that show up on the Georgia-specific portion of the exam.",
+    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    topics: [
+      {
+        title: "Who Actually Regulates Pest Control in Georgia",
+        quick: "The Georgia Department of Agriculture's Structural Pest Control Division licenses and regulates PCOs — not the EPA directly, though EPA registration still governs which products are legal to use.",
+        deep: [
+          "Georgia's Structural Pest Control Act sets up a licensing structure that runs through the Georgia Department of Agriculture, which issues category-specific certifications, handles complaints, and conducts its own inspections separate from federal oversight. EPA's role sits upstream of this — it registers pesticide products for use — while Georgia's SPCC layer governs who is legally allowed to apply those products commercially and how.",
+          "This two-layer system is why a product being EPA-registered doesn't automatically mean an individual can apply it commercially in Georgia — the applicator also needs the correct state category certification for the type of work being done, and companies need a separate business license apart from any individual's personal certification.",
+          "Complaints against a licensed operator in Georgia go through the Department of Agriculture's own investigation and enforcement process, which can result in fines, license suspension, or revocation — separate from any civil liability the operator might also face from a customer."
+        ]
+      },
+      {
+        title: "Georgia's License Categories, and Why They're Split the Way They Are",
+        quick: "General Pest, Wood Destroying Organisms, Fumigation, and a handful of others are split because the hazard profile and required expertise are genuinely different, not just for bureaucratic reasons.",
+        deep: [
+          "General household pest control covers the common structural pests — ants, roaches, spiders, and similar — where the primary hazards are around label compliance and basic application safety. Wood Destroying Organism (WDO) certification exists as its own category because termite and wood-decay inspections carry real liability: a WDO report is a legal document buyers and lenders rely on in real estate transactions, and a missed or inaccurate inspection can create liability far beyond a typical pest job.",
+          "Fumigation is split out because the hazard level is categorically different — fumigants are acutely toxic gases applied in ways that can affect an entire structure, or even a wider area, if containment fails. That's why fumigation has its own certification, its own notification requirements, and often its own posting and re-entry rules distinct from other categories.",
+          "Because these categories reflect real differences in risk and required knowledge, a certification in one category doesn't automatically qualify someone to perform work in another — someone certified in general pest control can't legally perform WDO inspections or fumigation work without also holding that specific certification."
+        ]
+      },
+      {
+        title: "WDO Reports: Why the Paperwork Is the Product",
+        quick: "In a WDO inspection, the report itself carries as much legal weight as the inspection — real estate transactions and loans get built on top of what that document says.",
+        deep: [
+          "A Georgia WDO inspection report documents visible evidence of termites, wood-decay fungi, and other wood-destroying organisms found during an inspection of accessible areas. Because mortgage lenders and real estate closings frequently require this report before a sale finalizes, its accuracy has consequences that go well beyond the pest control relationship — it can affect whether a home sale closes on time or at all.",
+          "\u201cAccessible areas\u201d is a phrase that matters more than it sounds like it should. Inspectors generally aren't required to move furniture, cut into walls, or access areas that aren't reasonably reachable, and a good report documents what areas were inaccessible rather than implying a full structure was cleared when it wasn't. Failing to note limitations is a common source of liability disputes.",
+          "Because of the legal weight these reports carry, Georgia's rules around who can sign a WDO report, what has to be disclosed, and how long records must be retained are more specific than for a routine pest treatment — this is one of the areas where knowing the state-specific rule, not just general pest knowledge, is what's actually being tested."
+        ]
+      },
+      {
+        title: "Recordkeeping: The Rule Everyone Underestimates",
+        quick: "Georgia requires application records to be kept for a specific minimum period, and the details — what has to be recorded, not just that something was recorded — are frequently tested and frequently ignored in the field.",
+        deep: [
+          "A compliant application record generally needs to show what was applied, where, when, at what rate, and by whom — not just a vague note that \u201ctreatment was performed.\u201d The level of detail required exists so that if a health complaint or property dispute arises later, there's a clear paper trail showing exactly what happened.",
+          "Records typically need to be retained for a set number of years and made available for inspection by the Department of Agriculture on request. This isn't just a formality — an operator who can't produce records during an audit or complaint investigation is in a much weaker position, even if the actual application was done correctly.",
+          "This is one of the most commonly underestimated parts of the job in real practice, and it shows up on exams specifically because new operators tend to treat recordkeeping as optional paperwork rather than a core legal obligation baked into the license itself."
+        ]
+      }
+    ]
+  },
+  {
+    id: 'epa',
+    title: "EPA — Applying Pesticides Correctly",
+    short: "EPA Applying Pesticides Correctly",
+    color: 'var(--green)',
+    bg: 'rgba(77,214,140,0.12)',
+    sub: "The application-mechanics manual — calibration, drift, storage, and spill response. Less biology, more \u201chow do you not create a problem while solving one.\u201d",
+    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    topics: [
+      {
+        title: "Calibration: If Your Math Is Off, Everything After It Is Too",
+        quick: "Calibration means confirming your actual application rate matches the label rate — skip it and every safety and efficacy assumption downstream is built on a guess.",
+        deep: [
+          "Calibration is the process of measuring how much product your equipment actually delivers per unit of area or time, then comparing that to what the label requires, and adjusting nozzle size, pressure, speed, or concentration until they match. Equipment wear, nozzle clogging, and pressure drift all change output over time even if nothing was intentionally adjusted, which is why calibration is something you check periodically, not something you set once and forget.",
+          "Under-application wastes the treatment — pests survive, the client calls back, and now there's a second exposure event that didn't need to happen. Over-application isn't just wasteful; it's a label violation regardless of whether it caused visible harm, since exceeding labeled rates is illegal on its own.",
+          "The actual math is usually simple once the concept clicks: figure out the area or volume covered in a test run, measure how much product or mixed solution was used to cover it, and scale that rate up or down to match the label's specified rate per unit area. Exam questions here are almost always testing whether you can do that basic proportion correctly under a slightly different setup than you've seen before."
+        ]
+      },
+      {
+        title: "Drift: The Problem That Travels Past the Property Line",
+        quick: "Drift turns a legal, correctly-applied treatment on your client's property into an illegal exposure on the neighbor's — droplet size, wind, and weather are the controllable variables.",
+        deep: [
+          "Drift happens when pesticide droplets or vapor move off the intended target site during or after application, most commonly carried by wind. Smaller droplets are far more prone to drifting than larger ones, which is why nozzle selection and pressure — both of which affect droplet size — are treated as safety decisions, not just efficiency ones.",
+          "Wind speed limits on labels aren't arbitrary; they reflect testing on how far droplets of a given size can realistically travel under different conditions. Applying in wind above the labeled limit is a violation even if nothing visibly drifts, because the rule exists to manage risk, not just to punish visible harm after the fact.",
+          "Temperature inversions are a less obvious drift risk worth remembering: under an inversion, air near the ground is cooler than the air above it, which traps fine droplets and vapor in a layer near the surface instead of letting them disperse upward — and that trapped layer can then move sideways for a surprising distance. Early morning and evening are common inversion times, which is part of why calm conditions aren't automatically the same as safe conditions."
+        ]
+      },
+      {
+        title: "Storage and Security: Treating Chemicals Like the Liability They Are",
+        quick: "Pesticide storage rules exist to prevent three specific failure modes: unauthorized access, cross-contamination, and environmental release — and the requirements map directly to each one.",
+        deep: [
+          "Secure storage generally means a locked, dedicated area, separate from food, feed, and personal protective equipment, with signage identifying the hazard. The goal is straightforward: keep unauthorized people (especially children) out, and keep the contents identifiable to first responders in an emergency without anyone needing to guess what's in an unlabeled container.",
+          "Cross-contamination risk is why compatible storage grouping matters — herbicides, insecticides, and fumigants are typically kept separate from each other, and all pesticides are stored well away from fertilizers and other agricultural chemicals that could react with them or become contaminated by a leak.",
+          "Secondary containment — trays, curbing, or a containment pad under stored containers — exists so that a single leaking container doesn't become a soil or groundwater contamination event. This is one of those requirements that feels like overkill until the one time a container actually fails, which is exactly the reasoning behind requiring it as standard practice rather than a reaction to a specific incident."
+        ]
+      },
+      {
+        title: "Spill Response: The First Five Minutes Matter Most",
+        quick: "Contain before you clean — the biggest spill response mistake is trying to clean up before stopping the spread, which turns a small spill into a bigger one.",
+        deep: [
+          "The generally correct sequence for a spill is: control the source if it's safe to do so (upright a tipped container, close a valve), contain the spread using absorbent material or a barrier, then clean up and properly dispose of both the pesticide and the contaminated absorbent material. Skipping straight to cleanup before containing the spread is a common wrong answer on exam scenarios, because it lets the spill keep spreading while attention is on the part that's already spread.",
+          "PPE during spill response should generally match or exceed what the label requires for normal application, since a concentrated spill is often a higher-hazard situation than a diluted, properly-mixed application. Treating a spill as no big deal and just wiping it up without suiting up appropriately is a common real-world mistake that shows up in exam scenarios too.",
+          "Larger spills — especially ones that reach a storm drain, water body, or leave the property — typically trigger reporting requirements to state or federal authorities within a specific timeframe. Knowing that a reporting obligation exists, even without memorizing every phone number, is usually the actual tested knowledge, since the specific agency can vary by situation."
+        ]
+      }
+    ]
+  }
+];
+
+function renderStudyGuide(){
+  var list = document.getElementById('sg-book-list');
+  if(!list) return;
+  document.getElementById('sg-book-list-view').style.display = 'block';
+  document.getElementById('sg-book-detail-view').style.display = 'none';
+  list.innerHTML = STUDY_GUIDE_BOOKS.map(function(b){
+    return '<div class="sg-book-card" onclick="sgOpenBook(\''+b.id+'\')">'
+      + '<div class="sg-book-icon" style="background:'+b.bg+';color:'+b.color+';">'
+      + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+b.icon+'</svg>'
+      + '</div>'
+      + '<div class="sg-book-body">'
+      + '<div class="sg-book-title">'+b.title+'</div>'
+      + '<div class="sg-book-sub">'+b.sub+'</div>'
+      + '<div class="sg-book-meta">'+b.topics.length+' topics</div>'
+      + '</div>'
+      + '<div class="sg-book-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'
+      + '</div>';
+  }).join('');
+}
+
+var _sgCurrentBook = null;
+
+function sgOpenBook(bookId){
+  var book = STUDY_GUIDE_BOOKS.find(function(b){ return b.id === bookId; });
+  if(!book) return;
+  _sgCurrentBook = bookId;
+  document.getElementById('sg-book-list-view').style.display = 'none';
+  document.getElementById('sg-book-detail-view').style.display = 'block';
+  var contentEl = document.querySelector('.content');
+  if(contentEl) contentEl.scrollTop = 0;
+
+  document.getElementById('sg-book-header').innerHTML =
+    '<div class="sg-book-title" style="color:'+book.color+';">'+book.short+'</div>'
+    + '<div class="sg-book-sub">'+book.sub+'</div>';
+
+  document.getElementById('sg-topic-list').innerHTML = book.topics.map(function(t, i){
+    return '<div class="sg-topic-card" id="sg-topic-'+i+'">'
+      + '<div class="sg-topic-head" onclick="sgToggleTopic('+i+')">'
+      + '<div class="sg-topic-num">'+String(i+1).padStart(2,'0')+'</div>'
+      + '<div class="sg-topic-title">'+t.title+'</div>'
+      + '<div class="sg-topic-chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>'
+      + '</div>'
+      + '<div class="sg-topic-quick">'+t.quick+'</div>'
+      + '<div class="sg-topic-deep">'
+      + '<div class="sg-topic-deep-label">Deep Dive</div>'
+      + t.deep.map(function(p){ return '<p>'+p+'</p>'; }).join('')
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function sgToggleTopic(i){
+  var card = document.getElementById('sg-topic-'+i);
+  if(!card) return;
+  card.classList.toggle('open');
+}
+
+function sgBackToList(){
+  document.getElementById('sg-book-list-view').style.display = 'block';
+  document.getElementById('sg-book-detail-view').style.display = 'none';
+  var contentEl = document.querySelector('.content');
+  if(contentEl) contentEl.scrollTop = 0;
+}
 
 // ═══════════════════════════════════════════════════════════
 //  TERMITE MATH DRILL (WDO)
