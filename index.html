@@ -22,7 +22,7 @@
   --border:rgba(255,255,255,0.09); --border2:rgba(255,255,255,0.16);
   --c-gen:#4ec9e1; --c-hpc:#a98eff; --c-wdo:#f5a040; --c-fum:#f472a8;
   --green:#4dd68c; --red:#f87171; --gold:#ffd166;
-  --text:#e8eaf4; --text2:#bec5d9; --text3:#8890a8;
+  --text:#e8eaf4; --text2:#bec5d9; --text3:#a3aac2;
   --r:12px; --r-sm:8px; --r-lg:16px;
   --font:system-ui,-apple-system,'Segoe UI',sans-serif;
   --head:system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -119,8 +119,8 @@ body::before{display:none;}
 .chip-row::-webkit-scrollbar{display:none;}
 .chip{
   flex-shrink:0;padding:5px 13px;border-radius:20px;
-  border:1px solid var(--border);background:transparent;
-  color:var(--text3);font-size:11px;font-weight:500;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text2);font-size:11px;font-weight:500;
   cursor:pointer;transition:all .14s;white-space:nowrap;font-family:var(--mono);
 }
 .chip.active{
@@ -132,87 +132,111 @@ body::before{display:none;}
    HOME — CONTINUE CTA BANNER
 ═══════════════════════════════════════════════ */
 .home-cta{
-  background:var(--bg2);border:1px solid var(--border2);
-  border-radius:var(--r-lg);padding:18px 18px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border2);
+  border-radius:16px;padding:18px 18px;
   margin-bottom:16px;
   display:flex;align-items:center;gap:14px;
-  cursor:pointer;transition:border-color .18s, background .18s;
+  cursor:pointer;transition:border-color .18s, background .18s, transform .15s;
   -webkit-tap-highlight-color:transparent;
+  box-shadow:0 6px 18px -8px rgba(0,0,0,0.35);
+  animation:sgRise .4s ease both;
 }
-.home-cta:active{background:var(--bg3);}
+.home-cta:active{background:var(--bg3);transform:scale(0.98);}
 .home-cta-icon{
-  width:44px;height:44px;border-radius:11px;
+  width:44px;height:44px;border-radius:12px;
   background:rgba(78,201,225,0.12);
   display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
+  flex-shrink:0;position:relative;
+  box-shadow:0 3px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -3px 5px rgba(0,0,0,0.16);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
 }
-.home-cta-icon svg{width:22px;height:22px;stroke:var(--c-gen);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.home-cta:active .home-cta-icon{transform:scale(0.93) rotate(-3deg);}
+.home-cta-icon::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(155deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 45%);
+}
+.home-cta-icon svg{position:relative;z-index:1;width:22px;height:22px;stroke:var(--c-gen);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.15));}
 .home-cta-body{flex:1;min-width:0;}
 .home-cta-label{font-family:var(--mono);font-size:9px;color:var(--c-gen);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
 .home-cta-title{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.3px;}
-.home-cta-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.home-cta-sub{font-size:11px;color:var(--text2);margin-top:2px;}
 .home-cta-arrow{
   width:32px;height:32px;border-radius:9px;
   background:var(--surface2);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:transform .15s ease;
 }
-.home-cta-arrow svg{width:14px;height:14px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.home-cta:active .home-cta-arrow{transform:translateX(2px);}
+.home-cta-arrow svg{width:14px;height:14px;stroke:var(--text2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
 /* ═══════════════════════════════════════════════
    CATEGORY TILES — dashboard card style
 ═══════════════════════════════════════════════ */
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .cat-tile{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r-lg);padding:15px 13px 13px;
-  cursor:pointer;transition:border-color .18s, transform .15s;
+  background:linear-gradient(165deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;padding:15px 13px 13px;
+  cursor:pointer;transition:border-color .18s, transform .15s, box-shadow .15s;
   position:relative;overflow:hidden;
   -webkit-tap-highlight-color:transparent;
+  box-shadow:0 4px 14px -8px rgba(0,0,0,0.3);
 }
-.cat-tile:active{transform:scale(0.97);}
+.cat-tile:active{transform:scale(0.96);box-shadow:0 2px 6px -4px rgba(0,0,0,0.3);}
 /* Accent left edge */
 .cat-tile::before{
   content:'';position:absolute;top:0;left:0;
-  width:2px;height:100%;
+  width:3px;height:100%;
   background:var(--tc,var(--c-gen));
-  opacity:0.7;
+  opacity:0.9;
 }
 .cat-tile::after{display:none;}
 .ct-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
 .ct-icon{
-  width:28px;height:28px;border-radius:8px;
+  width:30px;height:30px;border-radius:9px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  background:rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.05);position:relative;
+  box-shadow:0 3px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -3px 5px rgba(0,0,0,0.16);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.cat-tile:active .ct-icon{transform:scale(0.9) rotate(-3deg);}
+.ct-icon::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(155deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 45%);
 }
 .ct-icon svg{
+  position:relative;z-index:1;
   width:15px;height:15px;
   stroke:currentColor;fill:none;stroke-width:1.75;
   stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,0.15));
 }
 .ct-badge{
   font-family:var(--mono);font-size:8px;font-weight:700;
   letter-spacing:0.5px;border-radius:5px;padding:2px 7px;
-  background:var(--surface2);color:var(--text3);border:none;
+  background:var(--surface2);color:var(--text2);border:none;
 }
 .ct-abbr{
   font-family:var(--mono);font-size:8px;letter-spacing:2px;
-  color:var(--text3);text-transform:uppercase;margin-bottom:2px;
+  color:var(--text2);text-transform:uppercase;margin-bottom:2px;
 }
 .ct-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:1px;}
-.ct-meta{font-size:10px;color:var(--text3);line-height:1.4;margin-bottom:10px;}
+.ct-meta{font-size:10px;color:var(--text2);line-height:1.4;margin-bottom:10px;}
 .ct-score{
   font-family:var(--head);font-size:28px;font-weight:800;
   letter-spacing:-1.2px;line-height:1;margin-bottom:9px;
 }
 .ct-score-empty{
-  font-family:var(--mono);font-size:11px;color:var(--text3);
+  font-family:var(--mono);font-size:11px;color:var(--text2);
   margin-bottom:9px;letter-spacing:0.5px;
 }
-.ct-bar-wrap{height:2px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.ct-bar-wrap{height:3px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,0.25);}
 .ct-bar-fill{
-  height:100%;border-radius:2px;
+  height:100%;border-radius:3px;
   transform:scaleX(0);transform-origin:left;
   transition:transform .8s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 6px currentColor;
 }
 @keyframes masteryIn{
   from{opacity:0;transform:translateY(8px);}
@@ -279,8 +303,8 @@ body::before{display:none;}
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .pwa-dismiss{
-  background:none;border:none;color:var(--text3);font-size:18px;line-height:1;
-  cursor:pointer;padding:2px 0 0 0;flex-shrink:0;opacity:0.7;
+  background:none;border:none;color:var(--text2);font-size:18px;line-height:1;
+  cursor:pointer;padding:2px 0 0 0;flex-shrink:0;opacity:0.85;
 }
 @media (hover:hover) and (pointer:fine){.pwa-dismiss:hover{opacity:1;}}
 /* Arrow pointer toward the share button at the bottom of the Safari toolbar */
@@ -318,34 +342,56 @@ body::before{display:none;}
 .card-3d{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.35,0,.25,1);}
 .card-3d.flipped{transform:rotateY(180deg);}
 .card-face{
-  position:absolute;inset:0;border-radius:var(--r-lg);
+  position:absolute;inset:0;border-radius:16px;
   backface-visibility:hidden;display:flex;flex-direction:column;
   justify-content:center;align-items:center;text-align:center;padding:26px 22px;
+  box-shadow:0 8px 22px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
 }
-.card-front{background:var(--bg2);border:1px solid var(--border);}
+.card-front{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border);border-top:3px solid var(--cc,var(--c-hpc));
+}
 .card-front::before{display:none;}
-.card-back{background:var(--bg3);border:1px solid rgba(78,201,225,0.2);transform:rotateY(180deg);}
+.card-back{
+  background:linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 100%);
+  border:1px solid rgba(78,201,225,0.2);border-top:3px solid var(--cc,var(--c-gen));
+  transform:rotateY(180deg);
+}
 .card-back::before{display:none;}
 .card-pill{
   font-family:var(--mono);font-size:9px;letter-spacing:1.5px;
   text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
 }
-.card-front .card-pill{color:var(--c-hpc);border:1px solid rgba(169,142,255,0.25);background:rgba(169,142,255,0.08);}
-.card-back .card-pill{color:var(--c-gen);border:1px solid rgba(78,201,225,0.25);background:rgba(78,201,225,0.08);}
+.card-front .card-pill{color:var(--cc,var(--c-hpc));border:1px solid var(--cc,rgba(169,142,255,0.25));background:color-mix(in srgb, var(--cc,var(--c-hpc)) 12%, transparent);}
+.card-back .card-pill{color:var(--cc,var(--c-gen));border:1px solid var(--cc,rgba(78,201,225,0.25));background:color-mix(in srgb, var(--cc,var(--c-gen)) 12%, transparent);}
 .card-q{font-size:16px;font-weight:600;color:var(--text);line-height:1.55;}
-.card-a{font-size:14px;color:var(--c-gen);line-height:1.6;}
-.card-hint{font-size:10px;color:var(--text3);margin-top:14px;letter-spacing:0.5px;font-family:var(--mono);}
+.card-a{font-size:14px;color:var(--cc,var(--c-gen));line-height:1.6;}
+.card-hint{font-size:10px;color:var(--text2);margin-top:14px;letter-spacing:0.5px;font-family:var(--mono);}
 .fc-btns{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;}
 .fc-btn{
-  padding:12px;border-radius:var(--r-sm);border:1px solid var(--border);
-  background:var(--surface);color:var(--text2);
+  padding:12px;border-radius:11px;border:1px solid var(--border);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface2) 100%);color:var(--text2);
   font-family:var(--font);font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .15s;
+  cursor:pointer;transition:transform .08s ease, box-shadow .08s ease;
   display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 3px 0 rgba(0,0,0,0.22), 0 4px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
 }
-.fc-btn:active{transform:scale(0.96);}
-.fc-btn.next{background:rgba(78,201,225,0.1);border-color:rgba(78,201,225,0.25);color:var(--c-gen);}
-.fc-btn.shuf{padding:12px 16px;color:var(--c-fum);border-color:rgba(244,114,168,0.25);background:rgba(244,114,168,0.07);}
+.fc-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 rgba(0,0,0,0.22), 0 1px 2px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.fc-btn.next{
+  background:linear-gradient(180deg, var(--c-gen) 0%, #2a9fb8 100%);color:#0e1117;border-color:rgba(0,0,0,0.15);
+  box-shadow:0 3px 0 rgba(20,90,105,0.5), 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.fc-btn.next:active{box-shadow:0 1px 0 rgba(20,90,105,0.5), 0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);}
+.fc-btn.shuf{
+  padding:12px 16px;color:#fff;border-color:rgba(0,0,0,0.15);
+  background:linear-gradient(180deg, var(--c-fum) 0%, #c94d84 100%);
+  box-shadow:0 3px 0 rgba(120,30,65,0.5), 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.fc-btn.shuf:active{box-shadow:0 1px 0 rgba(120,30,65,0.5), 0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);}
 
 /* Swipe hints */
 .swipe-hint{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 2px;}
@@ -377,12 +423,23 @@ body::before{display:none;}
 .size-opt{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r);padding:14px 16px;cursor:pointer;
-  transition:border-color .16s;
+  transition:border-color .16s, transform .15s;
   display:flex;align-items:center;justify-content:space-between;
+  animation:sgRise .35s ease both;
 }
-.size-opt:active{background:var(--surface2);}
+.size-opt:active{background:var(--surface2);transform:scale(0.98);}
 .size-left{display:flex;align-items:center;gap:12px;}
-.size-icon{font-size:20px;}
+.size-icon{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  background:var(--surface2);color:var(--text2);
+}
+.size-opt:active .size-icon{transform:scale(0.9) rotate(-3deg);}
+.size-opt.sz25 .size-icon{background:rgba(78,201,225,0.14);color:var(--c-gen);}
+.size-opt.sz50 .size-icon{background:rgba(169,142,255,0.14);color:var(--c-hpc);}
+.size-opt.sz100 .size-icon{background:rgba(245,160,64,0.14);color:var(--c-wdo);}
+.size-opt.sz-all .size-icon{background:rgba(244,114,168,0.14);color:var(--c-fum);}
 .size-name{font-family:var(--head);font-size:15px;font-weight:700;color:var(--text);}
 .size-desc{font-size:11px;color:var(--text3);margin-top:1px;font-family:var(--mono);}
 .size-badge{
@@ -402,20 +459,29 @@ body::before{display:none;}
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r-sm);padding:12px 14px;cursor:pointer;
   display:flex;align-items:center;justify-content:space-between;
-  transition:border-color .15s;
+  transition:border-color .15s, transform .15s;
+  animation:sgRise .35s ease both;
 }
-.cql-item:active{background:var(--surface2);}
-.cql-left{display:flex;align-items:center;gap:10px;}
-.cql-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cql-item:active{background:var(--surface2);transform:scale(0.98);}
+.cql-left{display:flex;align-items:center;gap:11px;}
+.cql-icon{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.cql-item:active .cql-icon{transform:scale(0.9);}
 .cql-name{font-size:13px;font-weight:600;color:var(--text);}
 .cql-count{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.cql-arrow{color:var(--text2);opacity:0.85;font-size:16px;flex-shrink:0;}
 .back-btn{
-  background:none;border:none;color:var(--text3);font-family:var(--mono);
-  font-size:10px;letter-spacing:1.5px;cursor:pointer;
-  display:inline-flex;align-items:center;gap:5px;padding:4px 0;
-  margin-bottom:14px;transition:color .15s;
+  background:var(--surface);border:1px solid var(--border);color:var(--text2);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:1.3px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;padding:7px 13px;
+  margin-bottom:14px;transition:all .15s;border-radius:20px;
 }
-.back-btn:active{color:var(--text);}
+.back-btn:active{color:var(--text);background:var(--surface2);transform:scale(0.96);}
+.back-btn svg{transition:transform .15s;}
+.back-btn:active svg{transform:translateX(-2px);}
 
 /* ── Quiz active ── */
 .q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -426,46 +492,80 @@ body::before{display:none;}
 .q-mastery-bar{height:2px;border-radius:1px;margin-bottom:10px;background:var(--border);overflow:hidden;}
 .q-mastery-fill{height:100%;border-radius:1px;transition:width .4s ease;}
 .q-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r-lg);padding:20px 18px 18px;margin-bottom:12px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border);border-left:3px solid var(--cc,var(--c-gen));
+  border-radius:14px;padding:20px 18px 18px;margin-bottom:12px;
+  box-shadow:0 6px 18px -8px rgba(0,0,0,0.35);
 }
 .q-cat-badge{
   font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;
   display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+.q-badge{
+  font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;
+  display:inline-block;padding:3px 9px;border-radius:5px;
+  background:color-mix(in srgb, var(--cc,var(--c-gen)) 14%, transparent);
+  color:var(--cc,var(--c-gen));
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
 }
 .q-text{font-size:16px;font-weight:600;color:var(--text);line-height:1.6;letter-spacing:-.2px;}
 .opt-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
 .opt{
-  padding:14px 15px;border-radius:var(--r);border:1px solid var(--border);
-  background:var(--surface);color:var(--text);
+  padding:14px 15px;border-radius:12px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);position:relative;
   font-size:14px;font-weight:500;line-height:1.45;
-  cursor:pointer;text-align:left;transition:border-color .14s, background .14s;
+  cursor:pointer;text-align:left;transition:transform .1s ease, box-shadow .1s ease, border-color .12s, background .12s;
   display:flex;align-items:flex-start;gap:10px;
+  box-shadow:0 2px 6px -2px rgba(0,0,0,0.22);
 }
-.opt:active{background:var(--surface2);}
+.opt:active{transform:scale(0.98);}
 .opt-letter{
-  font-family:var(--mono);font-size:10px;color:var(--text3);
-  flex-shrink:0;margin-top:1px;width:14px;font-weight:700;
+  font-family:var(--mono);font-size:10px;color:var(--text2);
+  flex-shrink:0;margin-top:0;width:20px;height:20px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:6px;background:var(--bg2);box-shadow:0 1px 3px rgba(0,0,0,0.2);
 }
-.opt.correct{background:rgba(77,214,140,0.1);border-color:rgba(77,214,140,0.4);color:var(--green);}
-.opt.wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.4);color:var(--red);}
+.opt.correct{
+  background:rgba(77,214,140,0.1);border-color:rgba(77,214,140,0.4);color:var(--green);
+  box-shadow:0 3px 10px -3px rgba(77,214,140,0.4);padding-right:38px;
+}
+.opt.correct::after{
+  content:'\2713';position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--green);font-weight:800;font-size:16px;
+}
+.opt.wrong{
+  background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.4);color:var(--red);
+  box-shadow:0 3px 10px -3px rgba(248,113,113,0.4);padding-right:38px;
+}
+.opt.wrong::after{
+  content:'\2715';position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--red);font-weight:800;font-size:14px;
+}
 .exp-box{
-  background:rgba(78,201,225,0.07);border-left:2px solid var(--c-gen);
-  border-radius:0 var(--r-sm) var(--r-sm) 0;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--cc,var(--c-gen)) 8%, transparent) 0%, color-mix(in srgb, var(--cc,var(--c-gen)) 3%, transparent) 100%);
+  border-left:3px solid var(--cc,var(--c-gen));
+  border-radius:0 12px 12px 0;
   padding:12px 14px;font-size:12px;color:var(--text2);
   line-height:1.7;margin-bottom:12px;
+  box-shadow:0 4px 14px -8px rgba(0,0,0,0.3);
   animation:slideDown .2s ease;
 }
 @keyframes slideDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.exp-box strong{color:var(--c-gen);font-weight:600;}
+.exp-box strong{color:var(--cc,var(--c-gen));font-weight:600;}
 .next-btn{
-  width:100%;padding:14px;
-  background:rgba(78,201,225,0.1);border:1px solid rgba(78,201,225,0.25);
-  border-radius:var(--r-sm);color:var(--c-gen);
-  font-family:var(--head);font-size:15px;font-weight:700;
-  cursor:pointer;transition:all .16s;
+  width:100%;padding:14px;border-radius:12px;border:none;
+  color:#0e1117;font-weight:800;
+  background:linear-gradient(180deg, var(--cc,var(--c-gen)) 0%, color-mix(in srgb, var(--cc,var(--c-gen)) 78%, black) 100%);
+  font-family:var(--head);font-size:15px;
+  cursor:pointer;
+  box-shadow:0 4px 0 color-mix(in srgb, var(--cc,var(--c-gen)) 55%, black), 0 6px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition:transform .08s ease, box-shadow .08s ease;
 }
-.next-btn:active{transform:scale(0.98);}
+.next-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 color-mix(in srgb, var(--cc,var(--c-gen)) 55%, black), 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+}
 
 /* ── Results ── */
 .results-wrap{padding:8px 0;}
@@ -542,8 +642,7 @@ body::before{display:none;}
 .hidden{display:none!important;}
 
 /* Sound toggle */
-.sound-btn{font-family:var(--mono);font-size:10px;color:var(--text3);background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;cursor:pointer;transition:all .15s;}
-.sound-btn.on{color:var(--c-gen);border-color:rgba(78,201,225,0.25);}
+
 
 /* Session history */
 .history-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px;}
@@ -574,12 +673,14 @@ body::before{display:none;}
 #screen-cathub.active{display:block;}
 
 .cathub-back{
-  display:inline-flex;align-items:center;gap:6px;background:none;border:none;
-  color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1.5px;
-  cursor:pointer;padding:4px 0;margin-bottom:16px;transition:color .15s;
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:1.3px;
+  cursor:pointer;padding:7px 13px;margin-bottom:16px;transition:all .15s;
 }
-.cathub-back:active{color:var(--text);}
-.cathub-back svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.cathub-back:active{color:var(--text);background:var(--surface2);transform:scale(0.96);}
+.cathub-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s;}
+.cathub-back:active svg{transform:translateX(-2px);}
 
 /* Hub header */
 .cathub-hero{
@@ -611,21 +712,52 @@ body::before{display:none;}
   padding:14px 16px;border-radius:var(--r);border:1px solid var(--border);
   background:var(--surface);cursor:pointer;
   display:flex;align-items:center;gap:12px;
-  transition:border-color .16s, background .16s;
+  transition:border-color .16s, background .16s, transform .15s;
   -webkit-tap-highlight-color:transparent;
+  animation:sgRise .35s ease both;
 }
-.cathub-action:active{background:var(--surface2);}
+.cathub-action:active{background:var(--surface2);transform:scale(0.98);}
+/* ── 3D icon tile treatment: shared across cathub, flashcards, quiz, study guide ── */
+.cathub-action-icon, .sg-book-icon, .sg-topic-icon, .sg-book-banner-icon, .cql-icon, .size-icon, .fc-block-ring-icon {
+  position:relative;
+  box-shadow:0 3px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -3px 5px rgba(0,0,0,0.16);
+}
+.cathub-action-icon::before, .sg-book-icon::before, .sg-topic-icon::before, .sg-book-banner-icon::before, .cql-icon::before, .size-icon::before {
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(155deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 45%);
+}
+.cathub-action-icon svg, .sg-book-icon svg, .sg-topic-icon svg, .sg-book-banner-icon svg, .cql-icon svg, .size-icon svg {
+  position:relative;z-index:1;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,0.15));
+}
+
+/* ── Shared card depth: subtle raised-surface shadow, app-wide ── */
+.cathub-action, .fc-block, .size-opt, .cql-item, .sg-book-card, .sg-topic-card {
+  box-shadow:0 1px 3px rgba(0,0,0,0.12), 0 4px 10px -6px rgba(0,0,0,0.22);
+}
+.cathub-action:active, .fc-block:active, .size-opt:active, .cql-item:active, .sg-book-card:active {
+  box-shadow:0 1px 2px rgba(0,0,0,0.14);
+}
+
 .cathub-action-icon{
   width:38px;height:38px;border-radius:9px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
   background:rgba(255,255,255,0.05);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
 }
+.cathub-action:active .cathub-action-icon{transform:scale(0.9) rotate(-3deg);}
 .cathub-action-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
 .cathub-action-body{flex:1;min-width:0;}
 .cathub-action-title{font-family:var(--head);font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px;}
 .cathub-action-sub{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.4;}
-.cathub-action-arrow{color:var(--text3);font-size:16px;flex-shrink:0;opacity:0.5;}
+.cathub-action-arrow{
+  color:var(--text2);font-size:15px;flex-shrink:0;
+  width:24px;height:24px;border-radius:50%;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s ease;
+}
+.cathub-action:active .cathub-action-arrow{transform:translateX(2px);}
 
 /* Flash action */
 .cathub-action.ch-flash{border-color:rgba(169,142,255,0.2);}
@@ -823,21 +955,49 @@ body::before{display:none;}
    Generic classes so every screen (Math Drill, Boss Battle, Blitz, Survival,
    Quiz, Spaced Repetition) can reuse the same look; each overlay just needs
    its own unique id for the JS to target. */
+@keyframes splashIconPop{
+  0%{opacity:0;transform:scale(0.4) translateY(10px);}
+  60%{opacity:1;transform:scale(1.08) translateY(0);}
+  100%{opacity:1;transform:scale(1) translateY(0);}
+}
+@keyframes splashFadeUp{
+  from{opacity:0;transform:translateY(12px);}
+  to{opacity:1;transform:translateY(0);}
+}
 .entry-splash{
   position:fixed;inset:0;z-index:500;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
   opacity:1;transition:opacity .65s ease;text-align:center;padding:24px;
+  overflow:hidden;
+}
+.entry-splash::before{
+  content:'';position:absolute;top:50%;left:50%;width:340px;height:340px;
+  transform:translate(-50%,-58%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, var(--entry-glow, rgba(78,201,225,0.16)) 0%, rgba(0,0,0,0) 68%);
 }
 .entry-splash.hide{opacity:0;pointer-events:none;}
 .entry-splash-icon{
   width:56px;height:56px;border-radius:16px;margin-bottom:14px;
   background:rgba(78,201,225,0.12);color:var(--c-gen);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 20px -6px rgba(0,0,0,0.35);
+  box-shadow:0 10px 24px -6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -3px 6px rgba(0,0,0,0.18);
+  position:relative;z-index:1;
+  animation:splashIconPop .55s cubic-bezier(.22,1.2,.36,1) both;
 }
-.entry-splash-title{font-family:var(--head);font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.4px;}
-.entry-splash-sub{font-size:12px;color:var(--text3);margin-top:5px;max-width:260px;}
+.entry-splash-icon::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(155deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%);
+}
+.entry-splash-icon svg{position:relative;z-index:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.2));}
+.entry-splash-title{
+  font-family:var(--head);font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.4px;
+  position:relative;z-index:1;animation:splashFadeUp .45s ease .12s both;
+}
+.entry-splash-sub{
+  font-size:12px;color:var(--text2);margin-top:5px;max-width:260px;
+  position:relative;z-index:1;animation:splashFadeUp .45s ease .2s both;
+}
 
 /* Accuracy stat gets slightly more visual weight than the others */
 #screen-mathdrill .md-tstat-hero .md-tstat-n{color:var(--c-wdo);font-size:18px;}
@@ -938,7 +1098,7 @@ body::before{display:none;}
 .tfb-false{color:var(--red);border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.08);}
 .tfb-btn.pressed-correct{background:rgba(77,214,140,0.18)!important;border-color:rgba(77,214,140,0.6)!important;transform:scale(0.96);}
 .tfb-btn.pressed-wrong{background:rgba(248,113,113,0.18)!important;border-color:rgba(248,113,113,0.6)!important;transform:scale(0.96);}
-.tfb-skip{width:100%;padding:9px;background:none;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;}
+.tfb-skip{width:100%;padding:9px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text2);font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;}
 .tfb-skip:active{color:var(--text);border-color:var(--border2);}
 
 /* Blitz results */
@@ -992,7 +1152,7 @@ body::before{display:none;}
 .lock-input:focus{outline:none;border-color:var(--text3);}
 .lock-eye-btn{
   position:absolute;right:6px;top:50%;transform:translateY(-50%);
-  background:none;border:none;font-size:15px;line-height:1;cursor:pointer;color:var(--text3);padding:8px;
+  background:none;border:none;font-size:15px;line-height:1;cursor:pointer;color:var(--text2);padding:8px;
 }
 .lock-submit-btn{
   width:100%;padding:14px;border-radius:var(--r-sm);border:none;
@@ -1001,7 +1161,7 @@ body::before{display:none;}
 }
 .lock-submit-btn:active{opacity:.85;}
 .lock-forgot-btn{
-  background:none;border:none;color:var(--text3);font-size:12.5px;
+  background:none;border:none;color:var(--text2);font-size:12.5px;
   cursor:pointer;text-decoration:underline;padding:4px;
 }
 .lock-note{font-size:11px;color:var(--text3);line-height:1.55;margin-top:18px;}
@@ -1065,7 +1225,8 @@ body::before{display:none;}
 .reset-title{font-family:var(--font);font-size:17px;font-weight:800;color:var(--text);margin-bottom:7px;}
 .reset-sub{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:18px;}
 .reset-confirm-btn{width:100%;padding:13px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:var(--r);color:var(--red);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:7px;}
-.reset-cancel-btn{width:100%;padding:11px;background:none;border:1px solid var(--border);border-radius:var(--r);color:var(--text3);font-family:var(--font);font-size:12px;cursor:pointer;}
+.reset-cancel-btn{width:100%;padding:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);color:var(--text2);font-family:var(--font);font-size:12px;cursor:pointer;transition:all .15s;}
+.reset-cancel-btn:active{background:var(--surface2);color:var(--text);}
 
 /* Enhanced boss visuals */
 .boss-container,.bossArena,.boss-stage{perspective:1000px;}
@@ -1112,12 +1273,13 @@ z-index:5;
 .top-actions{margin-left:auto;display:flex;gap:6px;}
 .icon-btn{
   width:30px;height:30px;border-radius:7px;
-  border:1px solid var(--border);background:transparent;
-  color:var(--text3);cursor:pointer;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text2);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:color .15s, border-color .15s;
+  transition:color .15s, border-color .15s, transform .15s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
 }
-.icon-btn:active{background:var(--surface2);}
+.icon-btn:active{background:var(--surface2);color:var(--text);transform:scale(0.94);}
 .icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
 /* ── Hamburger menu ── */
@@ -1130,7 +1292,7 @@ z-index:5;
   --bg:#f4f5f9; --bg2:#ffffff; --bg3:#eef0f6;
   --surface:rgba(0,0,0,0.04); --surface2:rgba(0,0,0,0.08);
   --border:rgba(0,0,0,0.10); --border2:rgba(0,0,0,0.18);
-  --text:#1a1d2e; --text2:#4a5068; --text3:#8e96b0;
+  --text:#1a1d2e; --text2:#4a5068; --text3:#5a6280;
 }
 
 /* ── Spaced Repetition ── */
@@ -1150,8 +1312,8 @@ z-index:5;
 .sr-chip-row::-webkit-scrollbar{display:none;}
 .sr-chip{
   flex-shrink:0;padding:4px 12px;border-radius:20px;
-  border:1px solid var(--border);background:transparent;
-  color:var(--text3);font-size:10px;cursor:pointer;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text2);font-size:10px;cursor:pointer;
   transition:all .14s;white-space:nowrap;font-family:var(--mono);
 }
 .sr-chip.active{background:var(--cc,var(--c-gen));border-color:var(--cc,var(--c-gen));color:#000;font-weight:700;}
@@ -1203,51 +1365,87 @@ z-index:5;
 .sr-done-sub{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:18px;}
 
 /* ── Study Guide (Cliffnotes) ── */
-.sg-hero{padding:12px 0 18px;}
+@keyframes sgRise{ from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+@keyframes sgPop{ 0%{opacity:0;transform:scale(0.9);} 100%{opacity:1;transform:scale(1);} }
+
+.sg-hero{padding:12px 0 18px;animation:sgRise .4s ease both;}
 .sg-book-card{
   display:flex;align-items:flex-start;gap:12px;
   background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:15px;margin-bottom:11px;cursor:pointer;transition:all .15s;
+  padding:15px;margin-bottom:11px;cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  animation:sgRise .35s ease both;
 }
-.sg-book-card:active{transform:scale(0.98);}
+.sg-book-card:active{transform:scale(0.97);}
 .sg-book-icon{
   width:42px;height:42px;border-radius:11px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
+  transition:transform .2s ease;
 }
+.sg-book-card:active .sg-book-icon{transform:scale(0.9) rotate(-4deg);}
 .sg-book-body{flex:1;min-width:0;}
 .sg-book-title{font-family:var(--head);font-size:14.5px;font-weight:800;color:var(--text);letter-spacing:-.2px;margin-bottom:3px;}
 .sg-book-sub{font-size:11.5px;color:var(--text2);line-height:1.5;margin-bottom:7px;}
 .sg-book-meta{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;}
-.sg-book-chev{flex-shrink:0;color:var(--text3);margin-top:12px;}
+.sg-book-chev{flex-shrink:0;color:var(--text2);margin-top:12px;transition:transform .15s ease;}
+.sg-book-card:active .sg-book-chev{transform:translateX(2px);}
 
-.sg-book-header{padding:6px 0 16px;}
+.sg-book-header{padding:0 0 16px;}
+.sg-book-banner{
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:20px 18px 22px;margin-bottom:4px;
+  animation:sgRise .4s cubic-bezier(.22,1,.36,1) both;
+}
+.sg-book-banner-icon{
+  width:50px;height:50px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+  animation:sgPop .45s cubic-bezier(.34,1.56,.64,1) .08s both;
+}
 .sg-book-header .sg-book-title{font-size:19px;font-family:var(--head);margin-bottom:5px;}
-.sg-book-header .sg-book-sub{font-size:12.5px;line-height:1.6;}
+.sg-book-header .sg-book-sub{font-size:12.5px;line-height:1.6;margin-bottom:0;}
 
 .sg-topic-card{
   background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
   overflow:hidden;margin-bottom:10px;
+  transition:border-color .2s ease, box-shadow .2s ease;
+  animation:sgRise .35s ease both;
 }
+.sg-topic-card.open{box-shadow:0 4px 18px -8px rgba(0,0,0,0.35);}
 .sg-topic-head{
-  display:flex;align-items:center;gap:10px;padding:14px 15px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;
+  transition:background .15s ease;
 }
-.sg-topic-num{
-  font-family:var(--mono);font-size:10px;font-weight:700;color:var(--text3);
-  width:22px;flex-shrink:0;
+.sg-topic-head:active{background:var(--surface);}
+.sg-topic-icon{
+  width:37px;height:37px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
 }
+.sg-topic-card.open .sg-topic-icon{transform:scale(1.08);}
 .sg-topic-title{flex:1;font-family:var(--head);font-size:13.5px;font-weight:700;color:var(--text);line-height:1.4;}
-.sg-topic-chev{flex-shrink:0;color:var(--text3);transition:transform .2s;}
+.sg-topic-chev{flex-shrink:0;color:var(--text2);transition:transform .3s cubic-bezier(.4,0,.2,1);}
 .sg-topic-card.open .sg-topic-chev{transform:rotate(180deg);}
 .sg-topic-quick{
-  padding:0 15px 14px 47px;font-size:12.5px;color:var(--text2);line-height:1.65;
+  padding:0 15px 14px 62px;font-size:12.5px;color:var(--text2);line-height:1.65;
 }
 .sg-topic-deep{
-  display:none;padding:2px 15px 17px 47px;font-size:12.5px;color:var(--text2);line-height:1.8;
+  display:grid;grid-template-rows:0fr;
+  transition:grid-template-rows .38s cubic-bezier(.4,0,.2,1);
+}
+.sg-topic-card.open .sg-topic-deep{grid-template-rows:1fr;}
+.sg-topic-deep-inner{
+  overflow:hidden;min-height:0;
+  padding:0 15px 17px 62px;font-size:12.5px;color:var(--text2);line-height:1.8;
+}
+.sg-topic-card.open .sg-topic-deep-inner{
   border-top:1px solid var(--border);margin-top:2px;padding-top:14px;
 }
-.sg-topic-deep p{margin-bottom:10px;}
-.sg-topic-deep p:last-child{margin-bottom:0;}
-.sg-topic-card.open .sg-topic-deep{display:block;}
+.sg-topic-deep-inner p{margin-bottom:10px;opacity:0;transform:translateY(4px);transition:opacity .35s ease, transform .35s ease;}
+.sg-topic-deep-inner p:last-child{margin-bottom:0;}
+.sg-topic-card.open .sg-topic-deep-inner p{opacity:1;transform:translateY(0);}
+.sg-topic-card.open .sg-topic-deep-inner p:nth-child(1){transition-delay:.05s;}
+.sg-topic-card.open .sg-topic-deep-inner p:nth-child(2){transition-delay:.12s;}
+.sg-topic-card.open .sg-topic-deep-inner p:nth-child(3){transition-delay:.19s;}
 .sg-topic-deep-label{
   font-family:var(--mono);font-size:8.5px;letter-spacing:1.3px;text-transform:uppercase;
   color:var(--text3);margin-bottom:8px;
@@ -1266,7 +1464,7 @@ z-index:5;
 .mastery-empty{font-size:12px;color:var(--text3);text-align:center;padding:10px 0;}
 
 /* ── Bookmarks ── */
-.bm-btn{background:none;border:none;cursor:pointer;padding:4px 5px;border-radius:7px;transition:all .14s;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:17px;line-height:1;}
+.bm-btn{background:none;border:none;cursor:pointer;padding:4px 5px;border-radius:7px;transition:all .14s;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:17px;line-height:1;}
 .bm-btn:active{transform:scale(0.85);}
 .bm-btn.active{color:var(--gold);}
 .fc-bm-btn{position:absolute;top:11px;right:11px;background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:rgba(255,255,255,0.2);transition:all .14s;z-index:10;}
@@ -1279,7 +1477,7 @@ z-index:5;
 .bm-item-cat{font-family:var(--mono);font-size:8px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;}
 .bm-item-q{font-size:13px;font-weight:600;color:var(--text);line-height:1.5;margin-bottom:4px;}
 .bm-item-ans{font-size:11px;color:var(--green);font-family:var(--mono);}
-.bm-remove{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 4px;border-radius:5px;transition:color .14s;flex-shrink:0;}
+.bm-remove{background:none;border:none;cursor:pointer;color:var(--text2);font-size:13px;padding:2px 4px;border-radius:5px;transition:color .14s;flex-shrink:0;}
 .bm-remove:active{color:var(--red);}
 .bm-filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;margin-bottom:10px;scrollbar-width:none;}
 .bm-filter-row::-webkit-scrollbar{display:none;}
@@ -1322,12 +1520,15 @@ z-index:5;
 /* ── Strongest / Weakest cards ── */
 .sw-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
 .sw-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r);padding:13px 12px;cursor:pointer;
-  transition:border-color .15s, transform .14s;
+  background:linear-gradient(165deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border);
+  border-radius:14px;padding:13px 12px;cursor:pointer;
+  transition:border-color .15s, transform .14s, box-shadow .14s;
   -webkit-tap-highlight-color:transparent;
+  box-shadow:0 4px 14px -8px rgba(0,0,0,0.3);
+  animation:sgRise .35s ease both;
 }
-.sw-card:active{transform:scale(0.97);}
+.sw-card:active{transform:scale(0.96);box-shadow:0 2px 6px -4px rgba(0,0,0,0.3);}
 .sw-card-label{
   font-family:var(--mono);font-size:8px;letter-spacing:1.8px;
   text-transform:uppercase;margin-bottom:6px;
@@ -1338,9 +1539,9 @@ z-index:5;
 .sw-card-score{font-family:var(--head);font-size:22px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:5px;}
 .sw-best .sw-card-score{color:var(--green);}
 .sw-weak .sw-card-score{color:var(--red);}
-.sw-card-hint{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.5px;}
-.sw-best{border-left:2px solid var(--green);}
-.sw-weak{border-left:2px solid var(--red);}
+.sw-card-hint{font-family:var(--mono);font-size:9px;color:var(--text2);letter-spacing:.5px;}
+.sw-best{border-left:3px solid var(--green);}
+.sw-weak{border-left:3px solid var(--red);}
 
 /* ── Hero — hidden after first visit ── */
 .hero-compact{display:none;}
@@ -1360,39 +1561,21 @@ body.has-activity .hero-compact{
 .home-cta-icon.cta-blitz{background:rgba(255,209,102,0.12);}
 
 
-/* ── Recently Effective section ── */
+/* ── Your Stats section (home screen) ── */
 .re-section{margin-bottom:4px;}
 .re-grid{display:flex;flex-direction:column;gap:7px;}
 
-/* Recommended action — primary card */
-.re-next{
-  background:var(--bg2);border:1px solid var(--border2);
-  border-radius:var(--r-lg);padding:15px 16px;
-  cursor:pointer;transition:border-color .15s, transform .14s;
-  display:flex;align-items:center;gap:13px;
-  -webkit-tap-highlight-color:transparent;
-}
-.re-next:active{transform:scale(0.98);}
-.re-next-icon{
-  width:40px;height:40px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.re-next-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.re-next-body{flex:1;min-width:0;}
-.re-next-label{font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
-.re-next-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px;}
-.re-next-why{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.5;}
-.re-next-arrow{color:var(--text3);opacity:.45;font-size:15px;flex-shrink:0;}
-
-/* Stat row — best mode + category chips */
+/* Stat row — best mode + total sessions */
 .re-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
 .re-stat{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-sm);padding:11px 12px;
+  background:linear-gradient(165deg, var(--surface) 0%, var(--bg2) 100%);
+  border:1px solid var(--border);
+  border-radius:12px;padding:11px 12px;
+  box-shadow:0 3px 10px -6px rgba(0,0,0,0.28);
 }
-.re-stat-label{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.re-stat-label{font-family:var(--mono);font-size:8px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
 .re-stat-value{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.2px;margin-bottom:2px;}
-.re-stat-sub{font-size:10px;color:var(--text3);line-height:1.4;}
+.re-stat-sub{font-size:10px;color:var(--text2);line-height:1.4;}
 
 
 /* ── Survival Mode ─────────────────────────────── */
@@ -1898,13 +2081,16 @@ body.has-activity .hero-compact{
   display:flex;align-items:center;gap:12px;
   padding:12px 14px;border-radius:var(--r-sm);
   border:1px solid var(--border);background:var(--surface);
-  cursor:pointer;transition:border-color .15s, background .15s;
+  cursor:pointer;transition:border-color .15s, background .15s, transform .15s;
   -webkit-tap-highlight-color:transparent;
+  animation:sgRise .35s ease both;
 }
-.fc-block:active{background:var(--surface2);}
+.fc-block:active{background:var(--surface2);transform:scale(0.98);}
 .fc-block-ring{
   position:relative;flex-shrink:0;width:36px;height:36px;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
 }
+.fc-block:active .fc-block-ring{transform:scale(0.92);}
 .fc-block-ring svg{display:block;transform:rotate(-90deg);}
 .fc-block-ring-track{fill:none;stroke:rgba(255,255,255,0.07);stroke-width:3;}
 .fc-block-ring-fill{fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:94.2;stroke-dashoffset:94.2;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);}
@@ -1912,19 +2098,23 @@ body.has-activity .hero-compact{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:-.3px;
 }
+.fc-block-ring-icon svg{display:block;transform:none;}
 .fc-block-body{flex:1;min-width:0;}
 .fc-block-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.1px;}
 .fc-block-meta{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
-.fc-block-arrow{color:var(--text3);opacity:0.4;font-size:14px;flex-shrink:0;}
+.fc-block-arrow{color:var(--text2);opacity:0.8;font-size:14px;flex-shrink:0;transition:transform .15s ease;}
+.fc-block:active .fc-block-arrow{transform:translateX(2px);}
 
 /* Back button on card screen (leading back to fc-home) */
 .fc-back-btn{
-  display:inline-flex;align-items:center;gap:5px;background:none;border:none;
-  color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1.5px;
-  cursor:pointer;padding:4px 0;margin-bottom:10px;transition:color .14s;
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:1.3px;
+  cursor:pointer;padding:7px 13px;margin-bottom:10px;transition:all .14s;
 }
-.fc-back-btn:active{color:var(--text);}
-.fc-back-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.fc-back-btn:active{color:var(--text);background:var(--surface2);transform:scale(0.96);}
+.fc-back-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s;}
+.fc-back-btn:active svg{transform:translateX(-2px);}
 
 </style>
 
@@ -1987,7 +2177,6 @@ var safeLS = (function(){
     'auth_salt': true,      // legacy
     'auth_username': true,  // legacy
     'lightMode': true,
-    'soundOn': true,
     'pwaBannerDismissed': true
   };
 
@@ -2325,25 +2514,12 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       </div>
 
 
-      <!-- ── RECENTLY EFFECTIVE ── -->
+      <!-- ── YOUR STATS ── -->
       <div id="re-section" style="display:none;">
-        <div class="sec-label">Recently Effective</div>
+        <div class="sec-label">Your Stats</div>
         <div class="re-grid">
 
-          <!-- Recommended next action -->
-          <div class="re-next" id="re-next" onclick="reNextAction()">
-            <div class="re-next-icon" id="re-next-icon" style="background:rgba(78,201,225,0.1);color:var(--c-gen);">
-              <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-            <div class="re-next-body">
-              <div class="re-next-label" id="re-next-label">Recommended</div>
-              <div class="re-next-title" id="re-next-title">Keep studying</div>
-              <div class="re-next-why" id="re-next-why">Based on your recent activity</div>
-            </div>
-            <div class="re-next-arrow">›</div>
-          </div>
-
-          <!-- Best mode + weak category stats -->
+          <!-- Best mode + total sessions -->
           <div class="re-stat-row">
             <div class="re-stat">
               <div class="re-stat-label">Best Mode</div>
@@ -2351,9 +2527,9 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
               <div class="re-stat-sub" id="re-best-mode-sub">Not enough data</div>
             </div>
             <div class="re-stat">
-              <div class="re-stat-label">Focus Area</div>
-              <div class="re-stat-value" id="re-focus-cat">—</div>
-              <div class="re-stat-sub" id="re-focus-cat-sub">Not enough data</div>
+              <div class="re-stat-label">Total Sessions</div>
+              <div class="re-stat-value" id="re-total-sessions">—</div>
+              <div class="re-stat-sub" id="re-total-sessions-sub">Not enough data</div>
             </div>
           </div>
 
@@ -2469,7 +2645,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
         </div>
       </div>
       <div class="cathub-actions">
-        <div class="cathub-action ch-flash" id="cathub-btn-flash" onclick="cathubGoFlash()">
+        <div class="cathub-action ch-flash" id="cathub-btn-flash" onclick="cathubGoFlash()" style="animation-delay:.02s;">
           <div class="cathub-action-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="18" rx="2"/><path d="M8 2h12a2 2 0 0 1 2 2v14"/></svg></div>
           <div class="cathub-action-body">
             <div class="cathub-action-title">Flashcards</div>
@@ -2477,7 +2653,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           </div>
           <div class="cathub-action-arrow">›</div>
         </div>
-        <div class="cathub-action ch-quiz" id="cathub-btn-quiz" onclick="cathubGoQuiz()">
+        <div class="cathub-action ch-quiz" id="cathub-btn-quiz" onclick="cathubGoQuiz()" style="animation-delay:.07s;">
           <div class="cathub-action-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
           <div class="cathub-action-body">
             <div class="cathub-action-title">Practice Quiz</div>
@@ -2485,7 +2661,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           </div>
           <div class="cathub-action-arrow">›</div>
         </div>
-        <div class="cathub-action ch-sr" onclick="cathubGoSR()">
+        <div class="cathub-action ch-sr" onclick="cathubGoSR()" style="animation-delay:.12s;">
           <div class="cathub-action-icon"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
           <div class="cathub-action-body">
             <div class="cathub-action-title">Spaced Review</div>
@@ -2494,7 +2670,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           <div class="cathub-action-arrow">›</div>
         </div>
         <div class="cathub-action" id="cathub-btn-blitz"
-             style="border-color:rgba(255,209,102,0.3);background:linear-gradient(135deg,rgba(255,209,102,0.1),rgba(255,209,102,0.05));"
+             style="border-color:rgba(255,209,102,0.3);background:linear-gradient(135deg,rgba(255,209,102,0.1),rgba(255,209,102,0.05));animation-delay:.17s;"
              onclick="cathubGoBlitz()">
           <div class="cathub-action-icon" style="background:rgba(255,209,102,0.1);color:#ffd166;"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
           <div class="cathub-action-body">
@@ -2504,7 +2680,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           <div class="cathub-action-arrow">›</div>
         </div>
         <div class="cathub-action" onclick="cathubGoSurvival()"
-             style="border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.04);">
+             style="border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.04);animation-delay:.22s;">
           <div class="cathub-action-icon" style="background:rgba(248,113,113,0.1);color:var(--red);">
             <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </div>
@@ -2515,7 +2691,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           <div class="cathub-action-arrow">›</div>
         </div>
         <div class="cathub-action" onclick="cathubGoBoss()"
-             style="border-color:rgba(169,142,255,0.2);background:rgba(169,142,255,0.04);">
+             style="border-color:rgba(169,142,255,0.2);background:rgba(169,142,255,0.04);animation-delay:.27s;">
           <div class="cathub-action-icon" style="background:rgba(169,142,255,0.1);color:var(--c-hpc);">
             <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </div>
@@ -2526,7 +2702,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           <div class="cathub-action-arrow">›</div>
         </div>
         <div class="cathub-action" id="cathub-btn-mathdrill"
-             style="display:none;border-color:rgba(245,160,64,0.25);background:rgba(245,160,64,0.05);"
+             style="display:none;border-color:rgba(245,160,64,0.25);background:rgba(245,160,64,0.05);animation-delay:.32s;"
              onclick="cathubGoMathDrill()">
           <div class="cathub-action-icon" style="background:rgba(245,160,64,0.12);color:var(--c-wdo);">
             <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="14" cy="14.5" r="1"/><circle cx="18" cy="14.5" r="1"/><circle cx="14" cy="18" r="1"/><circle cx="18" cy="18" r="1"/></svg>
@@ -3963,7 +4139,6 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           <div id="studied-today-badge" style="display:none;font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:20px;letter-spacing:1px;"></div>
         <div id="study-time-display" style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.5px;"></div>
         <div style="flex:1"></div>
-        <button class="sound-btn" id="sound-btn" onclick="toggleSound()">🔇 Sound</button>
       </div>
       <div class="swipe-hint">
         <span class="swipe-label left">← Still Learning</span>
@@ -4018,7 +4193,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           <div class="qp-sub">Choose a category to study</div>
           <div class="sec-label" style="margin-top:14px;">All Categories Mixed</div>
           <div class="cql-item" onclick="selectQCat('all')" style="margin-bottom:9px;">
-            <div class="cql-left"><div class="cql-dot" style="background:linear-gradient(135deg,var(--c-gen),var(--c-hpc));box-shadow:0 0 8px var(--c-gen)"></div><div><div class="cql-name">All Categories</div></div></div><div class="cql-arrow">›</div>
+            <div class="cql-left"><div class="cql-icon" style="background:linear-gradient(135deg,rgba(78,201,225,0.16),rgba(169,142,255,0.16));color:var(--c-gen);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><div><div class="cql-name">All Categories</div></div></div><div class="cql-arrow">›</div>
           </div>
           <div class="sec-label">By Category</div>
           <div class="cql" id="cat-quiz-list"></div>
@@ -4045,7 +4220,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
             <div class="qm-score">Score <strong id="q-score">0</strong></div>
             <div id="exam-timer-wrap" style="display:none;"><span class="exam-timer" id="exam-timer">2:00:00</span></div>
             <div class="qm-num">Q <span id="q-num">1</span> / <span id="q-of">25</span></div>
-            <button onclick="pauseQuiz()" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px 6px;font-size:16px;border-radius:8px;transition:color .15s;" title="Pause quiz">⏸</button>
+            <button onclick="pauseQuiz()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);cursor:pointer;padding:5px 8px;font-size:15px;border-radius:8px;transition:all .15s;" title="Pause quiz">⏸</button>
           </div>
           <div class="q-bar"><div class="q-bar-fill" id="q-bar-fill"></div></div>
         </div>
@@ -4254,8 +4429,8 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 <div id="menu-drawer" style="position:fixed;top:0;right:0;bottom:0;width:min(280px,85vw);background:var(--bg2);border-left:1px solid var(--border2);z-index:10001;transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--border);">
     <div style="font-family:var(--head);font-size:14px;font-weight:700;color:var(--text);">Settings</div>
-    <button onclick="closeMenu()" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <button onclick="closeMenu()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
   <div style="padding:14px 18px 6px;">
@@ -4272,22 +4447,6 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       </div>
       <button onclick="menuToggleTheme()" id="menu-theme-toggle" style="width:44px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:var(--border2);flex-shrink:0;">
         <span id="menu-theme-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left .2s;display:block;"></span>
-      </button>
-    </div>
-  </div>
-  <div style="padding:0 18px 6px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-        </div>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--text);">Sound Effects</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:1px;" id="menu-sound-sub">On</div>
-        </div>
-      </div>
-      <button onclick="menuToggleSound()" id="menu-sound-toggle" style="width:44px;height:26px;border-radius:13px;border:none;cursor:pointer;position:relative;background:var(--c-gen);flex-shrink:0;">
-        <span id="menu-sound-knob" style="position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left .2s;display:block;"></span>
       </button>
     </div>
   </div>
@@ -5373,6 +5532,18 @@ const QS = [
 {cat:'HPC',q:'Which observation most strongly suggests bed bugs rather than fleas?',opts:['Insects jumping from carpet','Fecal spotting around mattress seams','Larvae feeding in pet bedding','Damage to stored wool'],ans:1,exp:'Bed bugs leave characteristic dark fecal spotting along mattress seams, headboards, and other harborage points near where people sleep. Jumping insects, larvae in pet bedding, and wool damage are all associated with fleas or fabric pests, not bed bugs.'},
 {cat:'HPC',q:'What is the primary objective of monitoring devices in an IPM program?',opts:['Eliminate pests immediately.','Determine pest presence, activity, and trends.','Replace inspections.','Increase pesticide use.'],ans:1,exp:'Monitoring devices (glue boards, pheromone traps, etc.) are diagnostic tools used to detect pest presence, gauge activity levels, and track trends over time. They inform treatment decisions but do not replace thorough visual inspection or serve as a control method themselves.'},
 {cat:'HPC',q:'Which sanitation issue most favors German cockroach survival?',opts:['Bright lighting','Chronic food residue and moisture','Clean floors','Dry storage'],ans:1,exp:'German cockroaches thrive where food residue and moisture are chronically available — behind appliances, under sinks, and in cluttered storage areas. Bright lighting, clean floors, and dry conditions all work against cockroach survival, not in favor of it.'},
+{cat:'HPC',q:'Which stored product pest is a serious threat specifically to tobacco products, but also readily infests dried herbs and spices, dried pet food, and museum specimens?',opts:['Cigarette beetle','Indianmeal moth','Sawtoothed grain beetle','Cadelle beetle'],ans:0,exp:"The cigarette beetle is best known for damaging stored tobacco, but its diet is far broader — dried herbs and spices, dried pet food, and museum or herbarium specimens are all common infestation sources, which is why identifying the beetle doesn't automatically tell you which product to inspect."},
+{cat:'HPC',q:'The sawtoothed grain beetle gets its name from:',opts:['A serrated, tooth-like pattern along each side of its thorax','Saw-like mouthparts used to chew through packaging','A tooth-shaped marking on its wing covers','Its habit of gnawing wood into sawdust-like frass'],ans:0,exp:"The sawtoothed grain beetle has a row of tooth-like projections along each side of its thorax, visible under magnification. It's a common pest of cereals, dried fruit, and packaged foods, and it's small enough to enter through poorly sealed packaging."},
+{cat:'HPC',q:'What distinguishes the rice weevil from the granary weevil?',opts:['The rice weevil can fly and has light markings on its wing covers; the granary weevil cannot fly and is uniformly dark','The granary weevil is aquatic and the rice weevil is not','The rice weevil only infests rice and no other grain','The granary weevil lacks the elongated snout the rice weevil has'],ans:0,exp:'Both are true weevils with an elongated, curved snout, but the rice weevil has functional wings and four pale spots on its wing covers, while the granary weevil is flightless and uniformly dark. Neither species is limited to a single grain type despite the common names.'},
+{cat:'HPC',q:'The most reliable way to distinguish the red flour beetle from the confused flour beetle is:',opts:['Antennae shape — an abrupt three-segmented club versus a gradually widening antenna','Body color, since one is always bright red and the other always black','Diet, since the red flour beetle only infests red-colored grains','Wing covers, since only one species has functional wings'],ans:0,exp:"The two species look nearly identical to the naked eye, which is exactly why they're so often confused. Under magnification, the red flour beetle's antennae end abruptly in a three-segmented club, while the confused flour beetle's antennae widen gradually toward the tip."},
+{cat:'HPC',q:'Warehouse beetle larvae are a particular concern in food facilities because:',opts:['Their shed skins and body hairs can contaminate product and trigger skin or respiratory irritation','They only feed on synthetic packaging materials','They cannot survive indoors year-round','They exclusively target liquid products'],ans:0,exp:'Warehouse beetle larvae (a dermestid, related to carpet beetles) carry irritating hastate hairs that can cause dermatitis and respiratory irritation, and their shed larval skins accumulate as contamination in stored product even after the live insects are controlled — which is why cleanup has to include the larval skins, not just the beetles.'},
+{cat:'HPC',q:'The cadelle beetle is unusual among stored product pests because it:',opts:['Can bore into wood and packaging material in addition to feeding on grain','Is the only stored product pest capable of stinging','Feeds exclusively on synthetic fibers','Cannot survive on processed flour, only whole grain'],ans:0,exp:"The cadelle beetle feeds on grain and grain products like other stored product pests, but it's unusual in also boring into wood, packaging, and structural material to create resting chambers, which can cause damage beyond just the food product."},
+{cat:'HPC',q:'In a large bulk grain storage facility with an infestation established throughout the stored commodity, the most appropriate control method is typically:',opts:['Fumigation, since the gas penetrates the entire grain mass','A single perimeter residual spray around the building exterior','Rodenticide bait stations placed near the grain','Increasing lighting throughout the storage area'],ans:0,exp:"Fumigation is uniquely suited to bulk stored commodities because the fumigant gas penetrates throughout the entire grain mass, reaching insects hidden deep within the product that a surface residual spray could never contact. A perimeter spray or lighting change doesn't address an infestation already established inside the stored commodity."},
+{cat:'HPC',q:'The single most effective long-term strategy for preventing stored product pest introductions into a food storage facility is:',opts:['Inspecting and rejecting infested incoming shipments before they enter storage','Fogging the receiving dock on a weekly schedule','Installing UV light traps at every entrance','Applying a residual barrier spray to all incoming pallets'],ans:0,exp:'Most stored product pest infestations begin with already-infested material arriving from a supplier. Inspecting incoming shipments and rejecting infested product before it enters storage prevents the infestation from ever establishing — a far more effective long-term strategy than any treatment applied after the fact.'},
+{cat:'HPC',q:'Pheromone traps used for stored product moths like the Indianmeal moth work by:',opts:['Attracting male moths using a synthetic version of the female sex pheromone','Releasing an insecticidal fog that kills moths on contact','Attracting moths with a food-based bait that they consume and die from','Repelling moths away from the monitored area'],ans:0,exp:'Pheromone traps for stored product moths use a synthetic version of the female sex pheromone to lure and capture male moths. Because they attract only males, and only in limited numbers, they function as a monitoring tool to detect presence and track trends — not as a population-reduction method.'},
+{cat:'HPC',q:'The drugstore beetle earned its name because it is known to infest:',opts:['A very broad range of dried goods, historically including packaged pharmaceuticals and dried herbs','Only prescription medications currently on pharmacy shelves','Exclusively glass containers used to store liquid medicine','Only products containing significant amounts of sugar'],ans:0,exp:"The drugstore beetle has one of the broadest diets of any stored product pest, historically documented feeding on dried pharmaceuticals, dried herbs and spices, and book bindings among other dried goods — which is part of why finding one doesn't narrow down the likely infested product very much on its own."},
+{cat:'HPC',q:'A homeowner finds silken webbing and small caterpillars inside an open box of cereal. The correct first step is:',opts:['Discard the infested product and inspect all other nearby dry goods for the same signs','Apply a residual insecticide directly to the pantry shelves immediately','Set rodent snap traps near the pantry','Increase pantry humidity to kill the larvae'],ans:0,exp:'Source removal comes first, just as with any stored product pest discovery — discard the infested product and check surrounding dry goods, since Indianmeal moth larvae can wander from an infested package into adjacent containers before pupating. Treating shelving with pesticide does not address product that is already infested and is not the correct first step.'},
+{cat:'HPC',q:'Fabric pests (clothes moths, carpet beetles) primarily damage textiles containing:',opts:['Keratin, found in wool, fur, silk, and feathers','Pure synthetic fibers like polyester with no natural blend','Cotton exclusively','Any fabric regardless of fiber content'],ans:0,exp:'Fabric pest larvae feed on keratin, a protein found in wool, fur, silk, and feathers — not on synthetic fibers. A pure polyester or nylon item is not a food source unless it is blended with natural fiber or heavily soiled with food or body oils that attract feeding.'},
 
 // ── WDO — 100 Questions ──
 {cat:'WDO',q:'What type of metamorphosis do termites undergo?',opts:['Incomplete — egg, nymph, adult; no pupal stage','Complete — egg, larva, pupa, adult','Ametaboly — no visible change between instars','Hypermetamorphosis — multiple larval forms'],ans:0,exp:'Termites undergo incomplete (gradual) metamorphosis. Nymphs resemble adults but are smaller and can differentiate into workers, soldiers, or reproductives.'},
@@ -5661,6 +5832,12 @@ const CAT_COLOR_BY_NAME = {               // full name → accent color (conveni
   'HPC':'#a98eff',
   'WDO':'#f5a040',
   'Fumigation':'#f472a8'
+};
+const CAT_ICON_BY_NAME = {                // full name → svg icon (matches Study Guide / Flashcards)
+  'General Knowledge': '<path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3z"/><path d="M8.5 12l2.3 2.3L16 9"/>',
+  'HPC': '<ellipse cx="12" cy="14" rx="5" ry="7"/><circle cx="12" cy="5" r="2.3"/><path d="M8 10H4M8 14H3M8 18H4M16 10h4M16 14h5M16 18h4"/>',
+  'WDO': '<path d="M4 21h16M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>',
+  'Fumigation': '<circle cx="12" cy="7.5" r="2"/><circle cx="6.5" cy="16" r="2"/><circle cx="17.5" cy="16" r="2"/><path d="M12 9.5 7.7 14.3M12 9.5l4.3 4.8M8.6 16h6.8"/>'
 };
 const CAT_FULL_NAME = {                   // short key → display name
   GEN:'General Knowledge',
@@ -6010,6 +6187,15 @@ function showEntrySplash(elId, holdMs){
   el.style.display = 'flex';
   el.classList.remove('hide');
   void el.offsetWidth; // restart the transition if re-triggered quickly
+  // Restart child entrance animations (icon pop, title/sub fade-up) on every trigger,
+  // not just the first time the element was ever painted.
+  ['.entry-splash-icon', '.entry-splash-title', '.entry-splash-sub'].forEach(function(sel){
+    var child = el.querySelector(sel);
+    if(!child) return;
+    child.style.animation = 'none';
+    void child.offsetWidth;
+    child.style.animation = '';
+  });
   setTimeout(function(){
     el.classList.add('hide');
     setTimeout(function(){ el.style.display = 'none'; }, 680);
@@ -6026,6 +6212,8 @@ function themeEntrySplashIcon(iconElId, catFullName){
   var r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
   el.style.color = color;
   el.style.background = 'rgba(' + r + ',' + g + ',' + b + ',0.12)';
+  var splashEl = el.closest('.entry-splash');
+  if(splashEl) splashEl.style.setProperty('--entry-glow', 'rgba(' + r + ',' + g + ',' + b + ',0.18)');
 }
 
 function mdShowEntrySplash(){ showEntrySplash('md-entry-splash', 950); }
@@ -6042,10 +6230,11 @@ var STUDY_GUIDE_BOOKS = [
     color: 'var(--c-hpc)',
     bg: 'rgba(169,142,255,0.12)',
     sub: "The industry's deep-dive reference on pest biology, identification, and control strategy — more textbook than test-prep, but this is where the \u201cwhy\u201d actually lives.",
-    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    icon: '<circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.2" y1="15.2" x2="21" y2="21"/><ellipse cx="10.5" cy="10.5" rx="3" ry="4" opacity="0.55"/>',
     topics: [
       {
         title: "Insect Anatomy 101: The Three-Body-Region Rule",
+        icon: '<ellipse cx="12" cy="14" rx="5" ry="7"/><circle cx="12" cy="5" r="2.3"/><path d="M8 10H4M8 14H3M8 18H4M16 10h4M16 14h5M16 18h4"/><path d="M10 3.3 8.3 1.2M14 3.3 15.7 1.2"/>',
         quick: "Every insect ID question comes back to one skeleton: head, thorax, abdomen, six legs, and usually wings. Get this frame down and half the \u201cwhat pest is this\u201d questions solve themselves.",
         deep: [
           "Insects share one basic blueprint even when they look nothing alike: a head carrying the eyes, antennae, and mouthparts; a thorax that all six legs and both pairs of wings attach to; and an abdomen that houses digestion and reproduction. Spiders, mites, and ticks fail this test immediately — eight legs, two body regions, no antennae — which is exactly why \u201carachnid vs. insect\u201d shows up so often on identification questions.",
@@ -6055,6 +6244,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Complete vs. Incomplete Metamorphosis — Why It Matters for Control",
+        icon: '<path d="M4 12a8 8 0 1 1 2.5 5.8"/><polyline points="3 16 4 12 8 13"/><circle cx="12" cy="5.5" r="1.4"/><circle cx="18.2" cy="9.5" r="1.4"/><circle cx="18.2" cy="16" r="1.4"/><circle cx="9" cy="19.3" r="1.4"/>',
         quick: "Insects with complete metamorphosis are vulnerable at completely different life stages than the adult you're treating for. Incomplete metamorphosis means the young already look like tiny adults and share the same habits.",
         deep: [
           "Complete metamorphosis splits an insect's life into stages that barely resemble each other — a beetle grub looks nothing like the beetle it becomes, and it's often living somewhere completely different (soil, wood, stored product) than the adult ever will. Treating only where you see adults can miss the larval population entirely, which is why a lot of IPM plans target breeding sites instead of just visible adults.",
@@ -6064,6 +6254,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Cockroach ID: German vs. American vs. Oriental",
+        icon: '<ellipse cx="12" cy="13" rx="6.3" ry="8.3"/><path d="M9 5.5 7 2M15 5.5 17 2"/><path d="M6 9H2M6 13H1.5M6 17H2M18 9h4M18 13h4.5M18 17h4"/>',
         quick: "Size, color, and where you find them are the three fastest ways to tell roach species apart, and each one has a different favorite habitat that should shape the treatment plan.",
         deep: [
           "German cockroaches are small (about half an inch), light tan to brown, with two dark parallel stripes running down the area just behind the head. They're the roach of kitchens and bathrooms — anywhere warm, humid, and close to food and water — and they reproduce faster than any other structural pest roach, which is why an infestation can explode in weeks if it's misdiagnosed as \u201cjust a few roaches.\u201d",
@@ -6073,6 +6264,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "IPM Isn't a Buzzword, It's a Decision Tree",
+        icon: '<circle cx="12" cy="4.3" r="1.9"/><circle cx="6" cy="12" r="1.9"/><circle cx="18" cy="12" r="1.9"/><circle cx="6" cy="19.7" r="1.9"/><circle cx="18" cy="19.7" r="1.9"/><path d="M12 6.2 6 10.1M12 6.2l6 3.9M6 13.9v3.9M18 13.9v3.9"/>',
         quick: "Integrated Pest Management means inspection and prevention come before the sprayer — chemical control is one tool in a sequence, not the automatic first move.",
         deep: [
           "The IPM sequence generally runs: identify the pest correctly, inspect to find the conducive conditions (moisture, food sources, entry points), then choose the least-disruptive control method that will actually solve the problem — which might be sealing a gap or fixing a leak rather than applying a pesticide at all.",
@@ -6082,11 +6274,42 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Rodent Behavior: Why Bait Placement Beats Bait Strength",
+        icon: '<circle cx="12" cy="15.5" r="4.1"/><circle cx="6.3" cy="9" r="1.7"/><circle cx="10.7" cy="5.3" r="1.7"/><circle cx="15.3" cy="5.3" r="1.7"/><circle cx="19.4" cy="9" r="1.7"/>',
         quick: "Rats and mice are neophobic — suspicious of new objects — which means where and how you place bait often matters more than which product you're using.",
         deep: [
           "Rodents travel the same routes repeatedly, staying close to walls and structures (a tendency called thigmotaxis). That's why the most effective placements run along walls, in corners, and inside voids — not out in open floor space where a rodent instinctively feels exposed.",
           "Neophobia means rodents, especially rats, will avoid new objects in their environment for several days before investigating them. A bait station that sits untouched for a week isn't necessarily a sign of low activity — it might just mean the population hasn't warmed up to the new object yet, which is why patience matters before assuming a placement failed.",
           "Mice have a much smaller home range and less neophobia than rats, which is part of why mouse populations often respond to control faster once bait or traps are placed correctly, while rat populations can take longer and need more strategic, wall-line placement along their established runways."
+        ]
+      },
+      {
+        title: "Ant ID: Carpenter, Fire, and Odorous House Ants",
+        icon: '<circle cx="12" cy="5.8" r="2.1"/><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="18.3" rx="3.8" ry="4.3"/><path d="M12 7.9v1.6M12 14.5v1.4"/><path d="M9 10.2H4M9 13H3.6M15 10.2h5M15 13h5.6"/><path d="M10 4.1 8 2M14 4.1 16 2"/>',
+        quick: "Three ants dominate structural calls in the Southeast, and telling them apart fast comes down to size, the shape of the waist, and whether they bite, sting, or just smell bad when crushed.",
+        deep: [
+          "Carpenter ants are large (up to half an inch), black or black-and-red, and don't eat wood the way termites do — they excavate smooth galleries inside damp or damaged wood to nest, leaving coarse sawdust-like frass behind rather than mud tubes. Finding carpenter ants is often a signal of an underlying moisture problem, not just an ant problem.",
+          "Fire ants are small, reddish-brown, and build visible dome-shaped mounds in open soil and turf. Unlike most structural ants, they deliver a painful sting rather than a bite, and a disturbed mound produces an aggressive, coordinated defensive response — which is part of why fire ant identification questions often focus on the sting and the mound rather than indoor sightings.",
+          "Odorous house ants are small, dark brown to black, and get their name from the strong, rotten-coconut smell they release when crushed. They nest in shallow, moisture-prone spots — mulch beds, under pavers, inside wall voids near leaks — and they're notorious for \u201cbudding\u201d into multiple satellite colonies when a treatment disturbs the main nest without addressing the moisture source."
+        ]
+      },
+      {
+        title: "Spider Basics: Web-Builders vs. Hunters",
+        icon: '<circle cx="12" cy="11" r="3.3"/><circle cx="12" cy="6.4" r="1.7"/><path d="M9.5 9 4 6M9.5 9l-6 1M9.5 13l-6 2M9.5 13 4 18M14.5 9l5.5-3M14.5 9l6 1M14.5 13l6 2M14.5 13l5.5 5"/>',
+        quick: "Most spiders encountered structurally aren't dangerous, but distinguishing web-builders from ground-hunting spiders changes where you'd actually look for them.",
+        deep: [
+          "Web-building spiders — cellar spiders, house spiders, orb weavers — construct a web and largely stay near it, waiting for prey to blunder in. Their presence tends to concentrate in corners, window wells, and undisturbed areas like garages and crawl spaces, which is why webbing itself is often the first clue during an inspection rather than the spider itself.",
+          "Hunting spiders — wolf spiders, jumping spiders — don't rely on a web at all. They actively roam floors and ground-level areas at night, which means finding one indoors doesn't point to a fixed nest location the way a web does; control focuses more on exclusion and reducing outdoor harborage near entry points.",
+          "The two medically significant spiders most exams reference are the brown recluse (light brown, a violin-shaped mark on the back, found in dry, undisturbed indoor clutter) and the black widow (glossy black with a red hourglass mark, found in dark, sheltered outdoor spots like woodpiles and meter boxes). Both are reclusive rather than aggressive — bites typically happen when the spider is accidentally pressed against skin, not because it attacked."
+        ]
+      },
+      {
+        title: "Termite Castes: Workers, Soldiers, and Reproductives",
+        icon: '<path d="M4 19.5h16"/><path d="M7 19.5v-7a5 5 0 0 1 10 0v7"/><path d="M9.3 8.7 12 5l2.7 3.7"/>',
+        quick: "A termite colony isn't one type of insect — it's a division of labor between three castes, and knowing which caste you're looking at tells you what stage of infestation you're dealing with.",
+        deep: [
+          "Workers are the pale, soft-bodied majority of the colony — the ones actually feeding on wood and cellulose and causing structural damage. They're blind, sterile, and short-lived individually, but their sheer numbers and constant foraging are what make a mature colony destructive over time.",
+          "Soldiers have enlarged, darkened, often mandible-heavy heads built purely for defense, especially against ants, and they can't feed themselves — workers feed them directly. Finding soldiers during an inspection confirms an active colony rather than just old damage, since soldiers are produced and maintained specifically to defend a living nest.",
+          "Reproductives (alates, or swarmers) are the winged, darker-bodied individuals that leave the colony in a swarm to start new colonies elsewhere, usually triggered by warm, humid conditions after rain. A swarm indoors is one of the strongest indicators of an established, mature colony already inside or immediately adjacent to the structure — it's not a stray pest, it's colony reproduction."
         ]
       }
     ]
@@ -6098,10 +6321,11 @@ var STUDY_GUIDE_BOOKS = [
     color: 'var(--c-gen)',
     bg: 'rgba(78,201,225,0.12)',
     sub: "The general-knowledge backbone almost every state exam draws from — labels, toxicity, safety, and the regulatory framework around using pesticides at all.",
-    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    icon: '<path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3z"/><path d="M8.5 12l2.3 2.3L16 9"/>',
     topics: [
       {
         title: "Reading a Label Like Your License Depends On It",
+        icon: '<path d="M9.3 3H4.5a1 1 0 0 0-1 1v4.8L13 18.3l5.8-5.8L9.3 3z"/><circle cx="7" cy="7" r="1.3"/>',
         quick: "The label is a legal document, not a suggestion. \u201cThe label is the law\u201d is the single most tested phrase in pesticide certification, and for good reason.",
         deep: [
           "Every pesticide label carries the same legal weight as the registration process behind it. Using a product in any way inconsistent with its labeling — different rate, different site, different target pest — is a violation regardless of intent. That includes things that feel harmless, like using a lawn product indoors because \u201cit's basically the same thing.\u201d",
@@ -6111,6 +6335,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Signal Words and Toxicity Categories",
+        icon: '<path d="M12 3 2.3 20h19.4L12 3z"/><line x1="12" y1="9.3" x2="12" y2="14.3"/><circle cx="12" cy="17.3" r="0.9" fill="currentColor" stroke="none"/>',
         quick: "DANGER, WARNING, and CAUTION map directly to toxicity category and roughly to LD50 ranges — knowing the order and what triggers each one is a guaranteed exam topic.",
         deep: [
           "Signal words rank from most to least toxic: DANGER (Category I, often paired with \u201cPoison\u201d and a skull-and-crossbones for the most acutely toxic products), WARNING (Category II), and CAUTION (Category III and IV). A product's category is based on the most severe of its acute toxicity measures — oral, dermal, inhalation, or eye/skin irritation — so a product can land in Category I purely because it's a severe eye irritant, even if it's relatively mild to swallow.",
@@ -6120,6 +6345,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Routes of Exposure and Matching PPE",
+        icon: '<path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3z"/><path d="M12 8c1.7 1.9 2.5 3.2 2.5 4.4a2.5 2.5 0 1 1-5 0c0-1.2.8-2.5 2.5-4.4z"/>',
         quick: "Dermal exposure is the most common route for applicators by far, which is exactly why the label's PPE requirements exist — and why skipping them isn't a minor shortcut.",
         deep: [
           "There are four routes pesticides can enter the body: dermal (skin), oral (mouth), inhalation (lungs), and ocular (eyes). For working applicators, dermal exposure — especially through the hands, forearms, and scalp — accounts for the large majority of real-world exposure incidents, which is why gloves and proper coverage matter more than people expect.",
@@ -6129,6 +6355,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Formulations: Why the Same Active Ingredient Comes in Different Forms",
+        icon: '<path d="M9.3 2h5.4M10.2 2v6.3L4.8 18a2 2 0 0 0 1.8 3h10.8a2 2 0 0 0 1.8-3l-5.4-9.7V2"/><path d="M7.3 15h9.4"/>',
         quick: "EC, WP, granular, bait, aerosol — the formulation changes how a product behaves in the environment, not just how it's packaged.",
         deep: [
           "Emulsifiable concentrates (EC) mix with water and tend to penetrate surfaces well, but they can also be more readily absorbed through skin, which affects PPE decisions. Wettable powders (WP) suspend in water rather than dissolving, leave a visible residue, and require constant agitation in the tank to stay mixed evenly.",
@@ -6138,11 +6365,42 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Where Pesticides Go After the Application: Environmental Fate",
+        icon: '<path d="M12 2.3c2.2 3.3 4.4 6.1 4.4 8.8a4.4 4.4 0 1 1-8.8 0c0-2.7 2.2-5.5 4.4-8.8z"/><path d="M3.5 20h17"/>',
         quick: "Half-life, leaching potential, and soil binding determine whether a product breaks down harmlessly or ends up somewhere it was never supposed to be — like groundwater.",
         deep: [
           "Half-life measures how long it takes half of an applied pesticide to break down. A short half-life often means fewer long-term exposure concerns but can also mean more frequent reapplication. A long half-life raises persistence concerns, especially for products used near sensitive sites.",
           "Leaching describes a pesticide's tendency to move downward through soil with water, which is the primary pathway pesticides take to reach groundwater. Products with high water solubility and low soil-binding tendency leach more readily, which is why label restrictions near wells and in permeable soils exist in the first place.",
           "Runoff is the surface-water equivalent of leaching — pesticide moving off-site with rainwater or irrigation rather than down into soil. Slope, rainfall timing relative to application, and whether a buffer zone exists near surface water all factor into runoff risk, and label language about not applying before rain or near water bodies exists specifically to manage this."
+        ]
+      },
+      {
+        title: "Pesticide Resistance: How Pests Evolve Around You",
+        icon: '<path d="M4 5 12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><path d="M9 9.3l2.7 2.7-2.7 2.7M15 9.3l-2.7 2.7 2.7 2.7"/>',
+        quick: "Resistance isn't a product failing — it's evolution in fast-forward, and rotating modes of action is the main defense against it.",
+        deep: [
+          "Every time a population is treated, the individuals that happen to survive are disproportionately the ones with some natural tolerance to that specific mode of action. Because pest generations turn over quickly, that survival advantage compounds fast, and a population can shift from mostly susceptible to significantly resistant within a relatively small number of generations.",
+          "Resistance is specific to a mode of action, not to a brand name. Two products with different names can share the same underlying mechanism, which means simply switching brands without checking the active ingredient class can mean you're still applying the same pressure the population has already adapted to.",
+          "Resistance management generally means rotating between different modes of action over time, using the labeled rate consistently rather than under-dosing (which applies pressure without reliably killing survivors), and combining chemical control with non-chemical methods so chemical exposure isn't the only selection pressure acting on the population."
+        ]
+      },
+      {
+        title: "Certification and Recertification: Staying Legal Over Time",
+        icon: '<circle cx="12" cy="8.3" r="4.7"/><path d="M9 12.5 7.2 21l4.8-2.9 4.8 2.9-1.8-8.5"/>',
+        quick: "Getting certified is the first hurdle; staying certified through continuing education and renewal deadlines is the part that quietly lapses if you're not tracking it.",
+        deep: [
+          "Initial certification typically requires passing category-specific exams demonstrating competency in the applicable areas — general knowledge plus whichever categories (general pest, WDO, fumigation, and so on) an applicator intends to work in. Each category is tested and certified separately, which is why someone can be certified in general pest control but not automatically qualified for WDO or fumigation work.",
+          "Recertification usually runs on a set cycle and requires either retesting or accumulating continuing education credits within that period, depending on the state's specific rules. Missing the recertification window doesn't just mean a late fee in most systems — it can mean the certification lapses entirely, requiring the applicator to requalify from a more restrictive starting point.",
+          "Because certification is tied to specific categories and specific time windows, keeping track of renewal deadlines and required CE hours is treated as part of the applicator's professional responsibility, not something the state is expected to chase down on the applicator's behalf."
+        ]
+      },
+      {
+        title: "Antidotes, First Aid, and the Safety Data Sheet",
+        icon: '<path d="M5.5 2h9l4 4v16h-13V2z"/><path d="M14.5 2v4h4"/><path d="M9.3 12h4.4M11.5 9.8v4.4" stroke-width="2.1"/>',
+        quick: "The label's first aid section and the product's Safety Data Sheet exist for the exact moment someone doesn't have time to look anything else up.",
+        deep: [
+          "Every pesticide label includes a first aid statement describing what to do for each route of exposure — what to do if it's swallowed, gets in the eyes, contacts skin, or is inhaled. These instructions are written to be followed by someone without medical training in the first critical minutes, which is why they tend to be short, direct, and organized by exposure route rather than by chemical name.",
+          "The Safety Data Sheet (SDS) goes further than the label, providing detailed information on composition, physical and chemical hazards, more complete first aid and medical guidance, and handling and storage precautions. SDS documents are meant to be kept accessible wherever the product is stored or used, specifically so medical personnel or emergency responders can reference them quickly if needed.",
+          "A common exam distinction is that the label's first aid section is the immediate, do-this-now guidance, while the SDS is the deeper reference document a poison control center or physician might consult for more complete treatment information — both matter, but they serve different moments in an exposure incident."
         ]
       }
     ]
@@ -6154,10 +6412,11 @@ var STUDY_GUIDE_BOOKS = [
     color: 'var(--c-wdo)',
     bg: 'rgba(245,160,64,0.12)',
     sub: "The state-specific layer — Georgia's licensing structure, categories, and the recordkeeping and inspection rules that show up on the Georgia-specific portion of the exam.",
-    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    icon: '<path d="M4 21h16M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>',
     topics: [
       {
         title: "Who Actually Regulates Pest Control in Georgia",
+        icon: '<path d="M12 4v16M8 4h8"/><path d="M4 9l3 6M10 9l-3 6M14 9l3 6M20 9l-3 6"/><circle cx="7" cy="16.3" r="2.5"/><circle cx="17" cy="16.3" r="2.5"/>',
         quick: "The Georgia Department of Agriculture's Structural Pest Control Division licenses and regulates PCOs — not the EPA directly, though EPA registration still governs which products are legal to use.",
         deep: [
           "Georgia's Structural Pest Control Act sets up a licensing structure that runs through the Georgia Department of Agriculture, which issues category-specific certifications, handles complaints, and conducts its own inspections separate from federal oversight. EPA's role sits upstream of this — it registers pesticide products for use — while Georgia's SPCC layer governs who is legally allowed to apply those products commercially and how.",
@@ -6167,6 +6426,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Georgia's License Categories, and Why They're Split the Way They Are",
+        icon: '<rect x="4" y="4" width="6.6" height="6.6" rx="1.3"/><rect x="13.4" y="4" width="6.6" height="6.6" rx="1.3"/><rect x="4" y="13.4" width="6.6" height="6.6" rx="1.3"/><rect x="13.4" y="13.4" width="6.6" height="6.6" rx="1.3"/>',
         quick: "General Pest, Wood Destroying Organisms, Fumigation, and a handful of others are split because the hazard profile and required expertise are genuinely different, not just for bureaucratic reasons.",
         deep: [
           "General household pest control covers the common structural pests — ants, roaches, spiders, and similar — where the primary hazards are around label compliance and basic application safety. Wood Destroying Organism (WDO) certification exists as its own category because termite and wood-decay inspections carry real liability: a WDO report is a legal document buyers and lenders rely on in real estate transactions, and a missed or inaccurate inspection can create liability far beyond a typical pest job.",
@@ -6176,6 +6436,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "WDO Reports: Why the Paperwork Is the Product",
+        icon: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.3h6V4"/><path d="M8.5 12.5l2.3 2.3L16 9.6"/>',
         quick: "In a WDO inspection, the report itself carries as much legal weight as the inspection — real estate transactions and loans get built on top of what that document says.",
         deep: [
           "A Georgia WDO inspection report documents visible evidence of termites, wood-decay fungi, and other wood-destroying organisms found during an inspection of accessible areas. Because mortgage lenders and real estate closings frequently require this report before a sale finalizes, its accuracy has consequences that go well beyond the pest control relationship — it can affect whether a home sale closes on time or at all.",
@@ -6185,11 +6446,42 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Recordkeeping: The Rule Everyone Underestimates",
+        icon: '<path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z"/>',
         quick: "Georgia requires application records to be kept for a specific minimum period, and the details — what has to be recorded, not just that something was recorded — are frequently tested and frequently ignored in the field.",
         deep: [
           "A compliant application record generally needs to show what was applied, where, when, at what rate, and by whom — not just a vague note that \u201ctreatment was performed.\u201d The level of detail required exists so that if a health complaint or property dispute arises later, there's a clear paper trail showing exactly what happened.",
           "Records typically need to be retained for a set number of years and made available for inspection by the Department of Agriculture on request. This isn't just a formality — an operator who can't produce records during an audit or complaint investigation is in a much weaker position, even if the actual application was done correctly.",
           "This is one of the most commonly underestimated parts of the job in real practice, and it shows up on exams specifically because new operators tend to treat recordkeeping as optional paperwork rather than a core legal obligation baked into the license itself."
+        ]
+      },
+      {
+        title: "Georgia's WDO List: More Than Just Termites",
+        icon: '<circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="21" y2="21"/><path d="M6.5 10h7M6.5 7.7h7M6.5 12.3h4.5" opacity="0.65"/>',
+        quick: "Wood Destroying Organisms cover more ground than just termites — wood-decay fungi and wood-boring beetles fall under the same category, and each leaves a different signature.",
+        deep: [
+          "Subterranean termites are the most economically significant WDO in Georgia by far, but the category also covers powderpost beetles, old house borers, and wood-decay fungi, each of which requires a different inspection approach and produces different physical evidence — frass texture, exit hole size and shape, and the look and feel of affected wood all differ between them.",
+          "Wood-decay fungi (wood rot) aren't insects at all, but they're included in WDO inspections because they compromise structural wood the same way termites do, and they're driven entirely by sustained moisture. A WDO report noting decay without an active insect infestation is still flagging a real structural and moisture problem, not a false alarm.",
+          "Because the WDO category groups organisms with very different biology under one certification, an inspector is expected to correctly identify which organism is present — not just flag \u201cwood damage\u201d generically — since the recommended treatment for termites, beetles, and fungal decay are each different, and a misidentified problem leads to the wrong fix being recommended."
+        ]
+      },
+      {
+        title: "Continuing Education and License Renewal in Georgia",
+        icon: '<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><polyline points="18 3 18 7 14 7"/><polyline points="6 21 6 17 10 17"/>',
+        quick: "A Georgia SPCC license isn't a one-and-done credential — it runs on a renewal cycle with continuing education requirements attached to each category held.",
+        deep: [
+          "Licensed operators in Georgia generally need to complete a set number of continuing education hours within each renewal cycle to keep a certification active, with the specific hour requirements tracked per category rather than as one combined total across every certification held.",
+          "Renewal deadlines are tied to the license itself, not to when an individual happens to remember to check — letting a renewal lapse can mean the certification becomes inactive, which may require additional steps to reinstate rather than a simple late renewal, depending on how long it's been lapsed.",
+          "This is treated as squarely the license holder's responsibility. The state provides the requirements and the renewal window, but tracking CE hours earned, deadlines approaching, and which categories are attached to which requirements falls on the operator, not the department."
+        ]
+      },
+      {
+        title: "Customer Notification and Right-to-Know Rules",
+        icon: '<path d="M4 4h16v11H8l-4 4V4z"/><path d="M8 9h8M8 12h5"/>',
+        quick: "Certain pesticide applications trigger a notification obligation to the customer or occupants before or after treatment — this isn't optional courtesy, it's a compliance requirement.",
+        deep: [
+          "Depending on the application type and site, operators may be required to provide advance notice of treatment, post visible signage at the treated site, or supply the customer with specific written information about what was applied — requirements that exist so occupants can make informed decisions about re-entry, ventilation, or simply knowing what was used in their home.",
+          "Right-to-know obligations are separate from, and in addition to, the label's own re-entry interval requirements. A label might not require posted signage while a state or local rule does, or vice versa — the stricter of the two requirements is the one that has to be followed.",
+          "Failing to properly notify a customer isn't just a customer-service problem; it's a compliance violation the Department of Agriculture can act on independently of whether the treatment itself was performed correctly, which is why notification questions show up as their own category on exams rather than being folded into general safety questions."
         ]
       }
     ]
@@ -6201,10 +6493,11 @@ var STUDY_GUIDE_BOOKS = [
     color: 'var(--green)',
     bg: 'rgba(77,214,140,0.12)',
     sub: "The application-mechanics manual — calibration, drift, storage, and spill response. Less biology, more \u201chow do you not create a problem while solving one.\u201d",
-    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    icon: '<path d="M5 20c8 0 14-6 14-14 0-1 0-2-.3-3-7 0-13.7 3-13.7 12 0 2 0 3.7 0 5z"/><path d="M5 20c3-6 7-10 12-13" opacity="0.55"/>',
     topics: [
       {
         title: "Calibration: If Your Math Is Off, Everything After It Is Too",
+        icon: '<circle cx="12" cy="13" r="8"/><path d="M12 13 16 9"/><path d="M8 13h.01M12 5h.01M16 13h.01" stroke-width="2.6"/>',
         quick: "Calibration means confirming your actual application rate matches the label rate — skip it and every safety and efficacy assumption downstream is built on a guess.",
         deep: [
           "Calibration is the process of measuring how much product your equipment actually delivers per unit of area or time, then comparing that to what the label requires, and adjusting nozzle size, pressure, speed, or concentration until they match. Equipment wear, nozzle clogging, and pressure drift all change output over time even if nothing was intentionally adjusted, which is why calibration is something you check periodically, not something you set once and forget.",
@@ -6214,6 +6507,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Drift: The Problem That Travels Past the Property Line",
+        icon: '<path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.7"/><path d="M3 13h15a2.5 2.5 0 1 1-2.2 3.7"/><path d="M3 18h9"/>',
         quick: "Drift turns a legal, correctly-applied treatment on your client's property into an illegal exposure on the neighbor's — droplet size, wind, and weather are the controllable variables.",
         deep: [
           "Drift happens when pesticide droplets or vapor move off the intended target site during or after application, most commonly carried by wind. Smaller droplets are far more prone to drifting than larger ones, which is why nozzle selection and pressure — both of which affect droplet size — are treated as safety decisions, not just efficiency ones.",
@@ -6223,6 +6517,7 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Storage and Security: Treating Chemicals Like the Liability They Are",
+        icon: '<rect x="5" y="10" width="14" height="11" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.5"/><path d="M12 16.5V18.3"/>',
         quick: "Pesticide storage rules exist to prevent three specific failure modes: unauthorized access, cross-contamination, and environmental release — and the requirements map directly to each one.",
         deep: [
           "Secure storage generally means a locked, dedicated area, separate from food, feed, and personal protective equipment, with signage identifying the hazard. The goal is straightforward: keep unauthorized people (especially children) out, and keep the contents identifiable to first responders in an emergency without anyone needing to guess what's in an unlabeled container.",
@@ -6232,11 +6527,42 @@ var STUDY_GUIDE_BOOKS = [
       },
       {
         title: "Spill Response: The First Five Minutes Matter Most",
+        icon: '<path d="M12 3c2.3 3.4 4.6 6.4 4.6 9.2a4.6 4.6 0 1 1-9.2 0C7.4 9.4 9.7 6.4 12 3z"/><path d="M3.2 20h4M16.8 20h4M9 20h6" opacity="0.6"/>',
         quick: "Contain before you clean — the biggest spill response mistake is trying to clean up before stopping the spread, which turns a small spill into a bigger one.",
         deep: [
           "The generally correct sequence for a spill is: control the source if it's safe to do so (upright a tipped container, close a valve), contain the spread using absorbent material or a barrier, then clean up and properly dispose of both the pesticide and the contaminated absorbent material. Skipping straight to cleanup before containing the spread is a common wrong answer on exam scenarios, because it lets the spill keep spreading while attention is on the part that's already spread.",
           "PPE during spill response should generally match or exceed what the label requires for normal application, since a concentrated spill is often a higher-hazard situation than a diluted, properly-mixed application. Treating a spill as no big deal and just wiping it up without suiting up appropriately is a common real-world mistake that shows up in exam scenarios too.",
           "Larger spills — especially ones that reach a storm drain, water body, or leave the property — typically trigger reporting requirements to state or federal authorities within a specific timeframe. Knowing that a reporting obligation exists, even without memorizing every phone number, is usually the actual tested knowledge, since the specific agency can vary by situation."
+        ]
+      },
+      {
+        title: "Equipment Types: Matching the Tool to the Job",
+        icon: '<rect x="3" y="11" width="10" height="5" rx="1"/><path d="M13 12.6h4l3-2v5l-3-2h-4"/><path d="M7 16v4M11 16v4"/>',
+        quick: "A backpack sprayer, a hose-end sprayer, and a granular spreader aren't interchangeable — each is built for a different droplet size, coverage area, and site sensitivity.",
+        deep: [
+          "Compressed-air and backpack sprayers give the applicator direct control over pressure and droplet size at close range, which makes them well suited to spot treatments and crack-and-crevice work where precision matters more than covering large open areas quickly.",
+          "Power sprayers and larger tank-and-hose setups trade some precision for volume and reach, making them appropriate for perimeter treatments and larger turf or structural areas — but that added reach also raises drift risk, which is why nozzle selection and wind conditions matter even more with this equipment.",
+          "Granular spreaders and bait stations sidestep spray drift entirely by applying a solid formulation, which is often the preferred choice near sensitive sites (playgrounds, gardens, water features) where any airborne drift risk is unacceptable regardless of how careful the application technique is."
+        ]
+      },
+      {
+        title: "Protecting Pollinators During Application",
+        icon: '<circle cx="12" cy="12" r="3" /><path d="M12 5.3v3M12 15.7v3M5.3 12h3M15.7 12h3"/><path d="M7.6 7.6l1.9 1.9M14.5 14.5l1.9 1.9M16.4 7.6l-1.9 1.9M9.5 14.5l-1.9 1.9" opacity="0.65"/>',
+        quick: "Pollinator protection language on a label isn't a suggestion for beekeepers — it's a timing and application restriction that applies to any applicator working near flowering plants.",
+        deep: [
+          "Many insecticide labels now carry specific pollinator protection language restricting application during bloom, requiring application in early morning or evening when bees are less active, or prohibiting application altogether when bees are observed actively foraging on treated plants.",
+          "The concern isn't limited to direct contact spray — some products can move into pollen and nectar (systemic uptake) and affect pollinators that visit the plant well after the visible spray has dried, which is part of why some pollinator restrictions extend beyond just \u201cdon't spray a bee directly.\u201d",
+          "Because pollinator decline has real ecological and agricultural consequences, these label restrictions are treated with the same legal weight as any other labeled use restriction — ignoring pollinator language because a plant isn't in bloom yet, or because it's convenient to spray midday, is still a violation if the label specifically prohibits it."
+        ]
+      },
+      {
+        title: "Groundwater and Wellhead Protection Zones",
+        icon: '<ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v10a7 3 0 0 0 14 0V7"/><path d="M8 13c1 1 2-1 3 0s2 1 3 0 2-1 3 0" opacity="0.7"/>',
+        quick: "A wellhead protection zone isn't just a line on a map — it's an area where normal application rules get tighter specifically because groundwater there is more vulnerable.",
+        deep: [
+          "Wellhead protection areas are zones established around public and sometimes private water supply wells where land use and chemical application are more tightly restricted, because groundwater in these zones can reach the drinking water supply relatively quickly if contaminated.",
+          "Soil type matters enormously here — sandy, highly permeable soils allow much faster downward movement of water (and anything dissolved in it) than dense clay soils, which is why the same product and rate can be a real groundwater risk in one location and a much smaller one a few miles away.",
+          "Applicators are generally expected to know whether they're working near a mapped wellhead protection area and to follow any additional label or local restrictions that apply there — treating every site identically regardless of its proximity to a drinking water source is exactly the mistake this category of rule exists to prevent."
         ]
       }
     ]
@@ -6248,15 +6574,15 @@ function renderStudyGuide(){
   if(!list) return;
   document.getElementById('sg-book-list-view').style.display = 'block';
   document.getElementById('sg-book-detail-view').style.display = 'none';
-  list.innerHTML = STUDY_GUIDE_BOOKS.map(function(b){
-    return '<div class="sg-book-card" onclick="sgOpenBook(\''+b.id+'\')">'
-      + '<div class="sg-book-icon" style="background:'+b.bg+';color:'+b.color+';">'
-      + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+b.icon+'</svg>'
+  list.innerHTML = STUDY_GUIDE_BOOKS.map(function(b, bi){
+    return '<div class="sg-book-card" onclick="sgOpenBook(\''+b.id+'\')" style="border-color:'+b.bg.replace('0.12','0.28')+';animation-delay:'+(bi*0.06)+'s;">'
+      + '<div class="sg-book-icon" style="background:'+b.bg+';color:'+b.color+';box-shadow:0 6px 16px -6px '+b.bg.replace('0.12','0.5')+';">'
+      + '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+b.icon+'</svg>'
       + '</div>'
       + '<div class="sg-book-body">'
       + '<div class="sg-book-title">'+b.title+'</div>'
       + '<div class="sg-book-sub">'+b.sub+'</div>'
-      + '<div class="sg-book-meta">'+b.topics.length+' topics</div>'
+      + '<div class="sg-book-meta" style="color:'+b.color+';">'+b.topics.length+' topics</div>'
       + '</div>'
       + '<div class="sg-book-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'
       + '</div>';
@@ -6275,24 +6601,34 @@ function sgOpenBook(bookId){
   if(contentEl) contentEl.scrollTop = 0;
 
   document.getElementById('sg-book-header').innerHTML =
-    '<div class="sg-book-title" style="color:'+book.color+';">'+book.short+'</div>'
-    + '<div class="sg-book-sub">'+book.sub+'</div>';
+    '<div class="sg-book-banner" style="background:linear-gradient(135deg,'+book.bg+' 0%,rgba(14,17,23,0) 60%);border-color:'+book.bg.replace('0.12','0.25')+';">'
+    + '<div class="sg-book-banner-icon" style="background:'+book.bg+';color:'+book.color+';">'
+    + '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+book.icon+'</svg>'
+    + '</div>'
+    + '<div class="sg-book-title" style="color:'+book.color+';">'+book.short+'</div>'
+    + '<div class="sg-book-sub">'+book.sub+'</div>'
+    + '</div>';
 
   document.getElementById('sg-topic-list').innerHTML = book.topics.map(function(t, i){
-    return '<div class="sg-topic-card" id="sg-topic-'+i+'">'
+    return '<div class="sg-topic-card" id="sg-topic-'+i+'" style="animation-delay:'+(i*0.05)+'s;">'
       + '<div class="sg-topic-head" onclick="sgToggleTopic('+i+')">'
-      + '<div class="sg-topic-num">'+String(i+1).padStart(2,'0')+'</div>'
+      + '<div class="sg-topic-icon" style="background:'+book.bg+';color:'+book.color+';">'
+      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+t.icon+'</svg>'
+      + '</div>'
       + '<div class="sg-topic-title">'+t.title+'</div>'
       + '<div class="sg-topic-chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>'
       + '</div>'
       + '<div class="sg-topic-quick">'+t.quick+'</div>'
       + '<div class="sg-topic-deep">'
-      + '<div class="sg-topic-deep-label">Deep Dive</div>'
+      + '<div class="sg-topic-deep-inner">'
+      + '<div class="sg-topic-deep-label" style="color:'+book.color+';">Deep Dive</div>'
       + t.deep.map(function(p){ return '<p>'+p+'</p>'; }).join('')
+      + '</div>'
       + '</div>'
       + '</div>';
   }).join('');
 }
+
 
 function sgToggleTopic(i){
   var card = document.getElementById('sg-topic-'+i);
@@ -7051,6 +7387,8 @@ function renderCard(){
   if(!cards.length) return;
   const c=cards[cardIdx];
   document.getElementById('fc-cat').textContent=c.cat;
+  const cardScene = document.getElementById('card-scene');
+  if(cardScene) cardScene.style.setProperty('--cc', CAT_COLOR_BY_NAME[c.cat] || '#a98eff');
   document.getElementById('fc-q').textContent=c.q;
   document.getElementById('fc-a').textContent=c.exp;
   // Populate answer options on card back
@@ -7155,11 +7493,13 @@ function renderPicker(){
   const cats=[...new Set(QS.map(q=>q.cat))];
   const cl=document.getElementById('cat-quiz-list');
   cl.innerHTML='';
-  cats.forEach(cat=>{
+  cats.forEach((cat,ci)=>{
     const col=CAT_COLOR_BY_NAME[cat]||'#4ec9e1';
+    const ic=CAT_ICON_BY_NAME[cat]||'';
     const d=document.createElement('div');
     d.className='cql-item';
-    d.innerHTML=`<div class="cql-left"><div class="cql-dot" style="background:${col};box-shadow:0 0 8px ${col}"></div><div><div class="cql-name">${cat}</div></div></div><div class="cql-arrow">›</div>`;
+    d.style.animationDelay=(ci*0.05)+'s';
+    d.innerHTML=`<div class="cql-left"><div class="cql-icon" style="background:${col}1f;color:${col};"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ic}</svg></div><div><div class="cql-name">${cat}</div></div></div><div class="cql-arrow">›</div>`;
     d.onclick=()=>selectQCat(cat);
     cl.appendChild(d);
   });
@@ -7180,21 +7520,22 @@ function selectQCat(cat){
   const sg=document.getElementById('size-grid');
   sg.innerHTML='';
   const opts=[
-    {n:25,cls:'sz25',icon:'📋',name:'Quick Quiz',desc:'25 questions · ~15 min', timed:false},
-    {n:50,cls:'sz50',icon:'🏆',name:'Practice Exam',desc:'50 questions · ~30 min', timed:false},
-    {n:100,cls:'sz100',icon:'💪',name:'Full Drill',desc:'100 questions · ~60 min', timed:false},
-    {n:total,cls:'sz-all',icon:'🔥',name:'All Questions',desc:`All ${total} questions`, timed:false},
-    {n:100,cls:'sz100',icon:'⏱️',name:'Timed Exam',desc:'100 Q · 120 min countdown', timed:true, minutes:120},
+    {n:25,cls:'sz25',icon:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>',name:'Quick Quiz',desc:'25 questions · ~15 min', timed:false},
+    {n:50,cls:'sz50',icon:'<path d="M8 3h8v4a4 4 0 0 1-8 0V3z"/><path d="M8 4H4v2a4 4 0 0 0 4 4M16 4h4v2a4 4 0 0 1-4 4"/><path d="M12 11v4M9 20h6M9 20l1-3h4l1 3"/>',name:'Practice Exam',desc:'50 questions · ~30 min', timed:false},
+    {n:100,cls:'sz100',icon:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.8" fill="currentColor" stroke="none"/>',name:'Full Drill',desc:'100 questions · ~60 min', timed:false},
+    {n:total,cls:'sz-all',icon:'<path d="M12 22c4 0 7-3 7-7 0-4-3-6-4-9-1 2-1 4-3 4-1-3 0-5-2-7-3 3-5 6-5 10 0 5 3 9 7 9z"/>',name:'All Questions',desc:`All ${total} questions`, timed:false},
+    {n:100,cls:'sz100',icon:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6M12 2v3"/>',name:'Timed Exam',desc:'100 Q · 120 min countdown', timed:true, minutes:120},
   ];
-  opts.forEach(o=>{
+  opts.forEach((o,oi)=>{
     if(o.n>total && o.cls!=='sz-all') return;
     if(o.cls==='sz-all' && total<=100) return;
     const div=document.createElement('div');
     div.className=`size-opt ${o.cls}`;
+    div.style.animationDelay=(oi*0.06)+'s';
     const badge = o.timed
       ? `<div class="size-badge" style="background:rgba(255,209,102,0.14);color:#ffd166;border:1px solid rgba(255,209,102,0.4);">TIMED</div>`
       : `<div class="size-badge">${Math.min(o.n,total)} Q's</div>`;
-    div.innerHTML=`<div class="size-left"><div class="size-icon">${o.icon}</div><div><div class="size-name">${o.name}</div><div class="size-desc">${o.desc}</div></div></div>${badge}`;
+    div.innerHTML=`<div class="size-left"><div class="size-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${o.icon}</svg></div><div><div class="size-name">${o.name}</div><div class="size-desc">${o.desc}</div></div></div>${badge}`;
     div.onclick = o.timed
       ? ()=>startTimedExam(selectedQCat, o.n, o.minutes)
       : ()=>startQuiz(selectedQCat, o.n);
@@ -7225,6 +7566,8 @@ function renderQ(){
   if(qIdx>=qPool.length){ showResults(); return; }
   const q=qPool[qIdx]; qAnswered=false;
   document.getElementById('q-badge').textContent=q.cat;
+  const qaEl = document.getElementById('quiz-active');
+  if(qaEl) qaEl.style.setProperty('--cc', CAT_COLOR_BY_NAME[q.cat] || '#4ec9e1');
   document.getElementById('q-text').textContent=q.q;
   document.getElementById('q-num').textContent=qIdx+1;
   document.getElementById('q-of').textContent=qTotal;
@@ -8019,53 +8362,67 @@ function tfbEndGame(){
 // ═══════════════════════════════════════════════════════════
 //  FLASHCARD BLOCK BROWSER
 // ═══════════════════════════════════════════════════════════
+// Classifies an HPC flashcard by actual pest topic (content-based, not position-based)
+// so deck groupings can't drift out of sync when new cards get inserted anywhere in the array.
+function classifyHPCCard(card){
+  var t = ((card.q||'') + ' ' + (card.exp||'')).toLowerCase();
+  function has(arr){ return arr.some(function(k){ return t.indexOf(k) !== -1; }); }
+  function wb(arr){ return arr.some(function(k){ return new RegExp('\\b'+k+'\\b').test(t); }); }
+  if(has(['cockroach','roach','ootheca','blattella','blatta','periplaneta'])) return 'roach';
+  if(has(['flea','bed bug','bedbug','encasement'])) return 'flea_bedbug';
+  if(wb(['ant','ants']) || has(['carpenter ant','fire ant','pharaoh','argentine','odorous house ant','widow','recluse','spider'])) return 'ant_spider';
+  if(has(['stored product','indianmeal','indian meal','flour beetle','weevil','cigarette beetle','fabric pest','drain fly','fruit fly','phorid','humpback','silverfish','house fly','house flies']) || wb(['moth'])) return 'stored_fly';
+  if(has(['rodent','norway rat','roof rat','anticoagulant','snap trap','neophobia']) || wb(['rat','rats','mice','mouse'])) return 'rodent';
+  return 'reg_other';
+}
+
 var FC_BLOCKS = {
   'GEN': {
     cat: 'General Knowledge',
     color: '#4ec9e1',
     blocks: [
-      { title: 'Georgia Licensing & Law',   sub: 'SPCA · GSPCC · Licensing',        range: [0,  19] },
-      { title: 'Labels & Formulations',     sub: 'Signal words · Label law · Formulations', range: [20, 39] },
-      { title: 'Safety & First Aid',        sub: 'PPE · Exposure · SDS',            range: [40, 49] },
-      { title: 'IPM & Pest Biology',        sub: 'IPM · Metamorphosis · ID',        range: [50, 66] },
-      { title: 'Equipment & Calibration',   sub: 'Sprayers · Calibration · Math',   range: [67, 76] },
-      { title: 'Pesticide Science',         sub: 'Resistance · MOA · Environment',  range: [77, 9999] }
+      { title: 'Georgia Licensing & Law',   sub: 'SPCA · GSPCC · Licensing',        range: [0,  19], icon:'<path d="M4 21h16M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>' },
+      { title: 'Labels & Formulations',     sub: 'Signal words · Label law · Formulations', range: [20, 39], icon:'<path d="M9.3 3H4.5a1 1 0 0 0-1 1v4.8L13 18.3l5.8-5.8L9.3 3z"/><circle cx="7" cy="7" r="1.3"/>' },
+      { title: 'Safety & First Aid',        sub: 'PPE · Exposure · SDS',            range: [40, 49], icon:'<path d="M5.5 2h9l4 4v16h-13V2z"/><path d="M14.5 2v4h4"/><path d="M9.3 12h4.4M11.5 9.8v4.4" stroke-width="2.1"/>' },
+      { title: 'IPM & Pest Biology',        sub: 'IPM · Metamorphosis · ID',        range: [50, 66], icon:'<circle cx="12" cy="4.3" r="1.8"/><circle cx="6" cy="12" r="1.8"/><circle cx="18" cy="12" r="1.8"/><circle cx="6" cy="19.5" r="1.8"/><circle cx="18" cy="19.5" r="1.8"/><path d="M12 6.1 6 9.9M12 6.1l6 3.8M6 13.8v3.9M18 13.8v3.9"/>' },
+      { title: 'Equipment & Calibration',   sub: 'Sprayers · Calibration · Math',   range: [67, 76], icon:'<circle cx="12" cy="13" r="8"/><path d="M12 13 16 9"/><path d="M8 13h.01M12 5h.01M16 13h.01" stroke-width="2.6"/>' },
+      { title: 'Pesticide Science',         sub: 'Resistance · MOA · Environment',  range: [77, 9999], icon:'<path d="M9.3 2h5.4M10.2 2v6.3L4.8 18a2 2 0 0 0 1.8 3h10.8a2 2 0 0 0 1.8-3l-5.4-9.7V2"/><path d="M7.3 15h9.4"/>' }
     ]
   },
   'HPC': {
     cat: 'HPC',
     color: '#a98eff',
     blocks: [
-      { title: 'Cockroaches',              sub: 'Species · Biology · Baiting',      range: [0,  19] },
-      { title: 'Fleas & Bed Bugs',         sub: 'Life cycle · Treatment · IGRs',    range: [20, 39] },
-      { title: 'Ants & Spiders',           sub: 'Species · Pharaoh · Widows',       range: [40, 54] },
-      { title: 'Stored Product & Flies',   sub: 'Moths · Drain flies · House flies',range: [55, 64] },
-      { title: 'Rodents',                  sub: 'Rats · Mice · Trapping',           range: [65, 74] },
-      { title: 'Regulations & Application',sub: 'Law · PPE · Records',              range: [75, 9999] }
+      { title: 'Cockroaches',              sub: 'Species · Biology · Baiting',      key: 'roach', icon:'<ellipse cx="12" cy="13" rx="6.3" ry="8.3"/><path d="M9 5.5 7 2M15 5.5 17 2"/><path d="M6 9H2M6 13H1.5M6 17H2M18 9h4M18 13h4.5M18 17h4"/>' },
+      { title: 'Fleas & Bed Bugs',         sub: 'Life cycle · Treatment · IGRs',    key: 'flea_bedbug', icon:'<ellipse cx="12" cy="13" rx="4.2" ry="6.3"/><path d="M8.3 8.6 5 4.5M15.7 8.6 19 4.5M8.3 17.4 5 21.5M15.7 17.4 19 21.5"/>' },
+      { title: 'Ants & Spiders',           sub: 'Species · Pharaoh · Widows',       key: 'ant_spider', icon:'<circle cx="12" cy="11" r="3.3"/><circle cx="12" cy="6.4" r="1.7"/><path d="M9.5 9 4 6M9.5 9l-6 1M9.5 13l-6 2M9.5 13 4 18M14.5 9l5.5-3M14.5 9l6 1M14.5 13l6 2M14.5 13l5.5 5"/>' },
+      { title: 'Stored Product & Flies',   sub: 'Moths · Drain flies · House flies',key: 'stored_fly', icon:'<path d="M12 6c-3.2-4-8.2-2.8-8.2 1.8 0 3 3 5.2 8.2 8.2 5.2-3 8.2-5.2 8.2-8.2C20.2 3.2 15.2 2 12 6z"/><line x1="12" y1="6" x2="12" y2="17"/>' },
+      { title: 'Rodents',                  sub: 'Rats · Mice · Trapping',           key: 'rodent', icon:'<circle cx="12" cy="15.5" r="4.1"/><circle cx="6.3" cy="9" r="1.7"/><circle cx="10.7" cy="5.3" r="1.7"/><circle cx="15.3" cy="5.3" r="1.7"/><circle cx="19.4" cy="9" r="1.7"/>' },
+      { title: 'Regulations & Application',sub: 'Law · PPE · Records',              key: 'reg_other', icon:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.3h6V4"/><path d="M8.5 12.5l2.3 2.3L16 9.6"/>' }
     ]
   },
   'WDO': {
     cat: 'WDO',
     color: '#f5a040',
     blocks: [
-      { title: 'Subterranean Termites',    sub: 'Biology · Mud tubes · Treatment',  range: [0,  14] },
-      { title: 'Termite Treatment Methods',sub: 'Soil treatment · Baiting · Pre-con',range: [15, 24] },
-      { title: 'Drywood & Dampwood',       sub: 'Frass · Fumigation · Spot tx',     range: [25, 33] },
-      { title: 'Wood-Destroying Beetles',  sub: 'Lyctid · Anobiid · Old house borer',range: [34, 42] },
-      { title: 'Wood Decay & Moisture',    sub: 'Brown rot · White rot · Fungi',    range: [43, 55] },
-      { title: 'Inspections, Reports & Law',sub: 'NPMA-33 · Georgia SPCA · Warranties',range: [56, 9999] }
+      { title: 'Subterranean Termites',    sub: 'Biology · Mud tubes · Treatment',  range: [0,  14], icon:'<path d="M4 19.5h16"/><path d="M7 19.5v-7a5 5 0 0 1 10 0v7"/><path d="M9.3 8.7 12 5l2.7 3.7"/>' },
+      { title: 'Termite Treatment Methods',sub: 'Soil treatment · Baiting · Pre-con',range: [15, 24], icon:'<path d="M7 17 17 7l3 3-10 10z"/><path d="M13 6l2 2M16 3l2 2M18 18l3-3"/>' },
+      { title: 'Drywood & Dampwood',       sub: 'Frass · Fumigation · Spot tx',     range: [25, 33], icon:'<circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="21" y2="21"/><path d="M6.5 10h7M6.5 7.7h7M6.5 12.3h4.5" opacity="0.65"/>' },
+      { title: 'Wood-Destroying Beetles',  sub: 'Lyctid · Anobiid · Old house borer',range: [34, 42], icon:'<ellipse cx="12" cy="13" rx="5.2" ry="7"/><circle cx="9" cy="9.3" r="0.7" fill="currentColor" stroke="none"/><circle cx="14.3" cy="10.8" r="0.7" fill="currentColor" stroke="none"/><circle cx="10.5" cy="16" r="0.7" fill="currentColor" stroke="none"/>' },
+      { title: 'Wood Decay & Moisture',    sub: 'Brown rot · White rot · Fungi',    range: [43, 55], icon:'<path d="M12 2.3c2.2 3.3 4.4 6.1 4.4 8.8a4.4 4.4 0 1 1-8.8 0c0-2.7 2.2-5.5 4.4-8.8z"/><path d="M3.5 20h17"/>' },
+      { title: 'Inspections, Reports & Law',sub: 'NPMA-33 · Georgia SPCA · Warranties',range: [56, 9999], icon:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.3h6V4"/><path d="M8.5 12.5l2.3 2.3L16 9.6"/>' }
     ]
   },
   'FUM': {
     cat: 'Fumigation',
     color: '#f472a8',
     blocks: [
-      { title: 'Sulfuryl Fluoride Basics', sub: 'Vikane · Properties · Chloropicrin',range: [0,  14] },
-      { title: 'Safety & Clearance',       sub: 'PPE · IDLH · Re-entry · 1 ppm',   range: [15, 29] },
-      { title: 'Dosage & Calculations',    sub: 'CT · Volume · Temperature',        range: [30, 44] },
-      { title: 'Procedures & Equipment',   sub: 'Tarping · Signs · Aeration · Fans',range: [45, 59] },
-      { title: 'Georgia Law & Licensing',  sub: 'Certification · Records · Contracts',range: [60, 74] },
-      { title: 'Scenarios & Edge Cases',   sub: 'Failures · Phosphine · Neighbors', range: [75, 9999] }
+      { title: 'Sulfuryl Fluoride Basics', sub: 'Vikane · Properties · Chloropicrin',range: [0,  14], icon:'<circle cx="12" cy="7.5" r="2"/><circle cx="6.5" cy="16" r="2"/><circle cx="17.5" cy="16" r="2"/><path d="M12 9.5 7.7 14.3M12 9.5l4.3 4.8M8.6 16h6.8"/>' },
+      { title: 'Safety & Clearance',       sub: 'PPE · IDLH · Re-entry · 1 ppm',   range: [15, 29], icon:'<path d="M4 12a8 6 0 0 1 16 0v3a3 3 0 0 1-3 3h-.8a2 2 0 0 1-2-2v-1.3a2.2 2.2 0 0 0-4.4 0V16a2 2 0 0 1-2 2H7a3 3 0 0 1-3-3v-3z"/>' },
+      { title: 'Dosage & Calculations',    sub: 'CT · Volume · Temperature',        range: [30, 44], icon:'<circle cx="12" cy="13" r="8"/><path d="M12 13 16 9"/><path d="M8 13h.01M12 5h.01M16 13h.01" stroke-width="2.6"/>' },
+      { title: 'Procedures & Equipment',   sub: 'Tarping · Signs · Aeration · Fans',range: [45, 59], icon:'<path d="M2.5 18.5 12 4l9.5 14.5z"/><path d="M2.5 18.5h19"/>' },
+      { title: 'Georgia Law & Licensing',  sub: 'Certification · Records · Contracts',range: [60, 74], icon:'<path d="M4 21h16M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>' },
+      { title: 'Scenarios & Edge Cases',   sub: 'Failures · Phosphine · Neighbors', range: [75, 9999], icon:'<path d="M12 3 2.3 20h19.4L12 3z"/><line x1="12" y1="9.3" x2="12" y2="14.3"/><circle cx="12" cy="17.3" r="0.9" fill="currentColor" stroke="none"/>' }
     ]
   }
 };
@@ -8083,9 +8440,14 @@ function resumeFlashcardPosition(act){
       for(var bi=0; bi<catData.blocks.length; bi++){
         var block = catData.blocks[bi];
         if(block.title === act.block){
-          var start = block.range[0];
-          var end   = Math.min(block.range[1], catCards.length - 1);
-          var blockCards = catCards.slice(start, end + 1);
+          var blockCards;
+          if(block.key){
+            blockCards = catCards.filter(function(c){ return classifyHPCCard(c) === block.key; });
+          } else {
+            var start = block.range[0];
+            var end   = Math.min(block.range[1], catCards.length - 1);
+            blockCards = catCards.slice(start, end + 1);
+          }
           window._fcCurrentCat = catData.cat;
           window._fcCurrentBlock = block.title;
           cards = blockCards.slice();
@@ -8124,9 +8486,14 @@ function renderFCHome() {
     container.innerHTML = '';
 
     catData.blocks.forEach(function(block, bi) {
-      var start = block.range[0];
-      var end   = Math.min(block.range[1], catCards.length - 1);
-      var blockCards = catCards.slice(start, end + 1);
+      var blockCards;
+      if(block.key){
+        blockCards = catCards.filter(function(c){ return classifyHPCCard(c) === block.key; });
+      } else {
+        var start = block.range[0];
+        var end   = Math.min(block.range[1], catCards.length - 1);
+        blockCards = catCards.slice(start, end + 1);
+      }
       var total = blockCards.length;
 
       // Calculate mastery from SR data
@@ -8147,10 +8514,13 @@ function renderFCHome() {
       var circ = 94.2;
       var offset = circ - (pct / 100) * circ;
       var ringColor = pct >= 80 ? '#4dd68c' : pct >= 50 ? '#ffd166' : catData.color;
-      var labelText = pct > 0 ? pct + '%' : '—';
+      var centerContent = pct > 0
+        ? '<div class="fc-block-ring-label" style="color:' + ringColor + '">' + pct + '%</div>'
+        : '<div class="fc-block-ring-label fc-block-ring-icon" style="color:' + catData.color + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + (block.icon||'') + '</svg></div>';
 
       var el = document.createElement('div');
       el.className = 'fc-block';
+      el.style.animationDelay = (bi * 0.05) + 's';
       el.innerHTML =
         '<div class="fc-block-ring">' +
           '<svg width="36" height="36" viewBox="0 0 36 36">' +
@@ -8159,7 +8529,7 @@ function renderFCHome() {
               ' stroke="' + ringColor + '"' +
               ' style="stroke-dashoffset:' + circ + '"/>' +
           '</svg>' +
-          '<div class="fc-block-ring-label" style="color:' + (pct > 0 ? ringColor : 'var(--text3)') + '">' + labelText + '</div>' +
+          centerContent +
         '</div>' +
         '<div class="fc-block-body">' +
           '<div class="fc-block-title">' + block.title + '</div>' +
@@ -8286,6 +8656,8 @@ function renderFCHome() {
     badge.textContent = key;
     badge.style.background = col+'18';
     badge.style.color = col;
+    var survGame = document.getElementById('surv-game');
+    if(survGame) survGame.style.setProperty('--cc', col);
 
     document.getElementById('surv-q-text').textContent = q.q;
     document.getElementById('surv-exp-box').style.display='none';
@@ -8686,6 +9058,8 @@ function renderFCHome() {
     var col=CAT_COLOR[key]||'var(--c-gen)';
     var badge=document.getElementById('boss-cat-badge');
     badge.textContent=key; badge.style.background=col+'18'; badge.style.color=col;
+    var bossGame=document.getElementById('boss-game');
+    if(bossGame) bossGame.style.setProperty('--cc', col);
 
     document.getElementById('boss-q-text').textContent=q.q;
     document.getElementById('boss-exp-box').style.display='none';
@@ -9098,81 +9472,13 @@ function deriveInsights(){
   var weakestCat  = catScores.length > 0 ? catScores[0] : null;
   var strongestCat = catScores.length > 0 ? catScores[catScores.length-1] : null;
 
-  // ── Recommended next action ───────────────────────────────
-  var due = getSRDueCount();
-  var rec = deriveRecommendation(weakestCat, bestMode, modePerf, due, qh, totalUses);
-
   return {
     usage: usage,
     totalUses: totalUses,
     modePerf: modePerf,
     bestMode: bestMode,
     weakestCat: weakestCat,
-    strongestCat: strongestCat,
-    rec: rec
-  };
-}
-
-function deriveRecommendation(weakestCat, bestMode, modePerf, due, qh, totalUses){
-  var catFullName = {GEN:'General Knowledge',HPC:'HPC',WDO:'WDO',FUM:'Fumigation'};
-  var catAbbr = {GEN:'GEN',HPC:'HPC',WDO:'WDO',FUM:'FUM'};
-
-  // Rule 1: SR cards due → always highest priority
-  if(due >= 5){
-    return {
-      type:'sr', cat:null,
-      label:'Due for Review',
-      title: due + ' cards ready to review',
-      why: 'Spaced repetition works best when done on schedule',
-      color:'var(--green)', iconBg:'rgba(77,214,140,0.12)',
-      icon:'<svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>'
-    };
-  }
-
-  // Rule 2: Weakest category with best-performing mode
-  if(weakestCat && bestMode && totalUses >= 3){
-    var catName = catFullName[weakestCat.k] || weakestCat.k;
-    var modeLabel = modePerf[bestMode] ? modePerf[bestMode].label : bestMode;
-    var modeIcons = {
-      quiz:'<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
-      flashcard:'<svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="18" rx="2"/><path d="M8 2h12a2 2 0 0 1 2 2v14"/></svg>',
-      sr:'<svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
-      blitz:'<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>'
-    };
-    var modeColors = {quiz:'var(--c-gen)',flashcard:'var(--c-hpc)',sr:'var(--green)',blitz:'var(--gold)'};
-    var modeBgs = {quiz:'rgba(78,201,225,0.1)',flashcard:'rgba(169,142,255,0.1)',sr:'rgba(77,214,140,0.1)',blitz:'rgba(255,209,102,0.1)'};
-    var perf = modePerf[bestMode];
-    return {
-      type: bestMode, cat: catName,
-      label: 'Recommended',
-      title: modeLabel + ' · ' + catAbbr[weakestCat.k],
-      why: weakestCat.v + '% on ' + catAbbr[weakestCat.k] + ' · ' + modeLabel + ' avg ' + (perf?perf.avg+'%':'—'),
-      color: modeColors[bestMode]||'var(--c-gen)',
-      iconBg: modeBgs[bestMode]||'rgba(78,201,225,0.1)',
-      icon: modeIcons[bestMode] || modeIcons.quiz
-    };
-  }
-
-  // Rule 3: New user — suggest starting with flashcards
-  if(totalUses < 3){
-    return {
-      type:'flashcard', cat:null,
-      label:'Get Started',
-      title:'Browse Flashcards',
-      why:'Build familiarity before taking quizzes',
-      color:'var(--c-hpc)', iconBg:'rgba(169,142,255,0.1)',
-      icon:'<svg viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="18" rx="2"/><path d="M8 2h12a2 2 0 0 1 2 2v14"/></svg>'
-    };
-  }
-
-  // Rule 4: No weak cat yet — push toward first quiz
-  return {
-    type:'quiz', cat:null,
-    label:'Build Your Baseline',
-    title:'Take a Practice Quiz',
-    why:'Quiz scores unlock personalized recommendations',
-    color:'var(--c-gen)', iconBg:'rgba(78,201,225,0.1)',
-    icon:'<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
+    strongestCat: strongestCat
   };
 }
 
@@ -9188,21 +9494,6 @@ function renderRecentlyEffective(){
   if(!hasData){ section.style.display='none'; return; }
   section.style.display='block';
 
-  // ── Recommended next action ───────────────────────────────
-  var rec = ins.rec;
-  var nextEl    = document.getElementById('re-next');
-  var nextIcon  = document.getElementById('re-next-icon');
-  var nextLabel = document.getElementById('re-next-label');
-  var nextTitle = document.getElementById('re-next-title');
-  var nextWhy   = document.getElementById('re-next-why');
-  if(nextIcon){  nextIcon.style.background = rec.iconBg; nextIcon.style.color = rec.color; nextIcon.innerHTML = rec.icon; }
-  if(nextLabel){ nextLabel.textContent = rec.label; nextLabel.style.color = rec.color; }
-  if(nextTitle){ nextTitle.textContent = rec.title; }
-  if(nextWhy){   nextWhy.textContent = rec.why; }
-  if(nextEl){    nextEl.setAttribute('data-re-type', rec.type); nextEl.setAttribute('data-re-cat', rec.cat||''); nextEl.style.borderColor = rec.color.replace(')', ',0.25)').replace('var(','rgba(').replace(/[a-z-]+,/,''); }
-  // Simpler border color approach
-  if(nextEl) nextEl.setAttribute('data-re-color', rec.color);
-
   // ── Best mode stat ─────────────────────────────────────────
   var bestModeEl  = document.getElementById('re-best-mode');
   var bestModeSubEl = document.getElementById('re-best-mode-sub');
@@ -9216,41 +9507,18 @@ function renderRecentlyEffective(){
     if(bestModeSubEl) bestModeSubEl.textContent = 'Keep studying to find out';
   }
 
-  // ── Focus category (weakest) ───────────────────────────────
-  var focusCatEl  = document.getElementById('re-focus-cat');
-  var focusCatSub = document.getElementById('re-focus-cat-sub');
-  var catAbbr = {GEN:'GEN',HPC:'HPC',WDO:'WDO',FUM:'FUM'};
-  if(ins.weakestCat){
-    if(focusCatEl) focusCatEl.textContent = catAbbr[ins.weakestCat.k] || ins.weakestCat.k;
-    if(focusCatSub){
-      var gap = ins.strongestCat && ins.strongestCat.k !== ins.weakestCat.k
-        ? (ins.strongestCat.v - ins.weakestCat.v) + '% below ' + catAbbr[ins.strongestCat.k]
-        : ins.weakestCat.v + '% best score';
-      focusCatSub.textContent = gap;
-    }
-    if(focusCatEl) focusCatEl.style.color = 'var(--red)';
+  // ── Total sessions across all modes ─────────────────────────
+  var totalEl = document.getElementById('re-total-sessions');
+  var totalSubEl = document.getElementById('re-total-sessions-sub');
+  if(ins.totalUses > 0){
+    if(totalEl) totalEl.textContent = ins.totalUses;
+    var modeCount = Object.keys(ins.usage).filter(function(k){ return ins.usage[k] > 0; }).length;
+    if(totalSubEl) totalSubEl.textContent = 'across ' + modeCount + ' mode' + (modeCount===1?'':'s');
   } else {
-    if(focusCatEl){ focusCatEl.textContent = '—'; focusCatEl.style.color = 'var(--text)'; }
-    if(focusCatSub) focusCatSub.textContent = 'Take quizzes to track';
+    if(totalEl) totalEl.textContent = '—';
+    if(totalSubEl) totalSubEl.textContent = 'Not enough data';
   }
-
-  // ── Mode bars removed (was non-interactive, confusing on home screen) ──
 }
-
-// ── Handle tap on recommended action ──────────────────────────
-window.reNextAction = function(){
-  var el = document.getElementById('re-next');
-  if(!el) return;
-  var type = el.getAttribute('data-re-type');
-  var cat  = el.getAttribute('data-re-cat');
-  if(type==='sr'){ showScreen('sr'); }
-  else if(type==='quiz' && cat){ openCatHub(cat); }
-  else if(type==='quiz'){ showScreen('quiz'); }
-  else if(type==='flashcard' && cat){ openCatHub(cat); }
-  else if(type==='flashcard'){ showScreen('fc-home'); }
-  else if(type==='blitz' && cat){ openCatHub(cat); }
-  else { showScreen('fc-home'); }
-};
 
 function updateDashboard(){
   // ── Answered ──
@@ -9404,8 +9672,6 @@ window.showQuizModal = function(pct, score, total, catKey){
 window.toggleTheme = function(){
   const isLight = document.body.classList.toggle('light-mode');
   safeLS.setItem('lightMode', isLight ? '1' : '0');
-  const sb = document.getElementById('sound-btn');
-  if(sb) sb.textContent = soundOn ? '🔊 Sound' : '🔇 Sound';
   menuSyncState();
 }
 
@@ -9439,7 +9705,6 @@ window.closeMenu = function(){
 function menuSyncState(){
   if(typeof lockMenuSyncState === 'function'){ try{ lockMenuSyncState(); }catch(e){} }
   var isLight = document.body.classList.contains('light-mode');
-  var sOn = safeLS.getItem('soundOn') !== '0'; // read directly, avoids TDZ
   var themeToggle = document.getElementById('menu-theme-toggle');
   var themeKnob   = document.getElementById('menu-theme-knob');
   var themeLabel  = document.getElementById('menu-theme-label');
@@ -9454,60 +9719,15 @@ function menuSyncState(){
       ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
       : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
   }
-  var soundToggle = document.getElementById('menu-sound-toggle');
-  var soundKnob   = document.getElementById('menu-sound-knob');
-  var soundSub    = document.getElementById('menu-sound-sub');
-  if(soundToggle){
-    soundToggle.style.background = sOn ? 'var(--c-gen)' : 'var(--border2)';
-    soundKnob.style.left = sOn ? '21px' : '3px';
-  }
-  if(soundSub) soundSub.textContent = sOn ? 'On' : 'Off';
 }
 
 window.menuToggleTheme = function(){
   toggleTheme();
 };
 
-window.menuToggleSound = function(){
-  toggleSound();
-  menuSyncState();
-};
-
-// ── Sound ──
-let soundOn = safeLS.getItem('soundOn') !== '0';
-window.toggleSound = function(){
-  soundOn = !soundOn;
-  safeLS.setItem('soundOn', soundOn ? '1' : '0');
-  const btn = document.getElementById('sound-btn');
-  if(btn){ btn.textContent = soundOn ? '🔊 Sound' : '🔇 Sound'; btn.className = 'sound-btn' + (soundOn ? ' on' : ''); }
-}
+// ── Sound (removed) ──
 function playSound(type){
-  if(!soundOn) return;
-  try{
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    if(type==='correct'){
-      o.frequency.setValueAtTime(520,ctx.currentTime);
-      o.frequency.setValueAtTime(660,ctx.currentTime+0.08);
-      g.gain.setValueAtTime(0.18,ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.25);
-      o.start(); o.stop(ctx.currentTime+0.25);
-    } else if(type==='wrong'){
-      o.type='sawtooth';
-      o.frequency.setValueAtTime(200,ctx.currentTime);
-      o.frequency.setValueAtTime(140,ctx.currentTime+0.1);
-      g.gain.setValueAtTime(0.12,ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.22);
-      o.start(); o.stop(ctx.currentTime+0.22);
-    } else if(type==='flip'){
-      o.type='sine'; o.frequency.value=440;
-      g.gain.setValueAtTime(0.06,ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1);
-      o.start(); o.stop(ctx.currentTime+0.1);
-    }
-  } catch(e){}
+  return; // sound removed from the app — intentionally a no-op
 }
 
 // ── Haptic ──
@@ -9662,8 +9882,6 @@ document.addEventListener('click', function(e){
 // ── Init ──
 window.addEventListener('load', function(){
   if(safeLS.getItem('lightMode')==='1') document.body.classList.add('light-mode');
-  const sb = document.getElementById('sound-btn');
-  if(sb){ sb.textContent = soundOn ? '🔊 Sound' : '🔇 Sound'; sb.className='sound-btn'+(soundOn?' on':''); }
   // Mark body if any activity exists
   if(loadActivity() || Object.keys(bestScores).length > 0) document.body.classList.add('has-activity');
   updateDashboard();
@@ -10814,7 +11032,7 @@ function closeResetConfirm(){
   document.getElementById('reset-confirm-overlay').classList.remove('active');
 }
 function confirmReset(){
-  var keys = ['correct','answered','quizHistory','bestScores','soundOn','lightMode',
+  var keys = ['correct','answered','quizHistory','bestScores','lightMode',
               'sr_cards','qMastery','bookmarks','dailyStreak','studyTime','pwaDismissed'];
   keys.forEach(function(k){ safeLS.removeItem(k); });
   closeResetConfirm();
