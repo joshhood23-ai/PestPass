@@ -2596,6 +2596,82 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 0%{transform:translateX(0)}25%{transform:translateX(-5px) rotate(-1deg)}
 50%{transform:translateX(5px) rotate(1deg)}100%{transform:translateX(0)}
 }
+
+@keyframes modalPop{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
+
+/* ── Confetti ── */
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:10050;overflow:hidden;}
+.confetti-piece{
+  position:absolute;top:-24px;border-radius:2px;opacity:0.95;
+  animation-name:confettiFall;animation-timing-function:cubic-bezier(.25,.46,.45,.94);animation-fill-mode:forwards;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:1;}
+  85%{opacity:1;}
+  100%{transform:translateY(112vh) translateX(var(--drift)) rotate(var(--rot));opacity:0;}
+}
+.qm-card{box-shadow:0 20px 50px -12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);}
+.qm-glow{
+  position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+  width:220px;height:220px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, var(--qm-glow, rgba(77,214,140,0.22)) 0%, rgba(0,0,0,0) 70%);
+}
+.qm-icon-badge{
+  width:76px;height:76px;border-radius:22px;margin:0 auto 16px;position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--qm-icon-bg, rgba(77,214,140,0.12));
+  box-shadow:0 10px 24px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -3px 6px rgba(0,0,0,0.18);
+  animation:splashIconPop .5s cubic-bezier(.22,1.2,.36,1) both;
+}
+.qm-icon-badge::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(155deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%);
+}
+.qm-pct{
+  font-family:var(--head);font-size:48px;font-weight:800;letter-spacing:-2px;margin-bottom:4px;
+  position:relative;z-index:1;animation:splashFadeUp .4s ease .1s both;
+}
+.qm-verdict{
+  font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;
+  position:relative;z-index:1;animation:splashFadeUp .4s ease .16s both;
+}
+.qm-score{
+  font-size:13px;color:var(--text2);margin-bottom:24px;
+  position:relative;z-index:1;animation:splashFadeUp .4s ease .22s both;
+}
+.qm-btn{
+  width:100%;padding:15px;border-radius:14px;font-family:var(--head);font-size:15px;font-weight:800;
+  cursor:pointer;border:none;position:relative;z-index:1;
+  background:linear-gradient(180deg, var(--qm-btn-c, var(--green)) 0%, color-mix(in srgb, var(--qm-btn-c, var(--green)) 78%, black) 100%);
+  color:#0e1117;
+  box-shadow:0 4px 0 color-mix(in srgb, var(--qm-btn-c, var(--green)) 55%, black), 0 6px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+.qm-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 color-mix(in srgb, var(--qm-btn-c, var(--green)) 55%, black), 0 2px 5px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+/* ── Readability: bump tiny mono labels to legible minimums ── */
+.boss-stat-l,.boss-q-num,.sr-home-lbl,.sr-diff-badge,.sr-cat-badge,
+.history-badge,.tfb-score-l,.tfb-streak-l,.tfb-res-pct-l,.tfb-res-stat-l,
+.cathub-stat-l,.boss-hp-pct,.player-label,.boss-vs,
+.ring-label,.stat-l,.wa-label,.swipe-label,.splash-sub{
+  font-size:10px!important;
+}
+.card-hint,.fc-count,.boss-cat-badge,.home-cta-label,
+.cathub-action-sub,.tfb-skip,.q-count,.cql-count{
+  font-size:11px!important;
+}
+/* Question and option text bump for active study readability */
+.q-text{font-size:15px;line-height:1.65;}
+.opt span:last-child{font-size:14px;}
+/* Explanation box: more readable in dark */
+.exp-box{color:var(--text2);font-size:13px;line-height:1.6;}
+/* Secondary category/meta labels */
+.cathub-action-sub{font-size:11px!important;}
+/* Section header mono labels */
+[class*="sec-label"]{font-size:11px!important;}
 </style>
 </head>
 <body>
@@ -2617,10 +2693,10 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       <!-- Enter mode -->
       <div id="lock-enter-fields">
         <div class="lock-input-wrap">
-          <input type="text" id="lock-enter-username" class="lock-input" placeholder="Username" autocomplete="username" autocapitalize="none" autocorrect="off" style="padding-right:14px;">
+          <input type="text" id="lock-enter-username" class="lock-input" placeholder="Username" aria-label="Username" autocomplete="username" autocapitalize="none" style="padding-right:14px;">
         </div>
         <div class="lock-input-wrap">
-          <input type="password" id="lock-enter-input" class="lock-input" placeholder="Password" autocomplete="current-password">
+          <input type="password" id="lock-enter-input" class="lock-input" placeholder="Password" aria-label="Password" autocomplete="current-password">
           <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-enter-input')">👁</button>
         </div>
         <button class="lock-submit-btn" onclick="lockSubmitEnter()">Unlock</button>
@@ -2630,14 +2706,14 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       <!-- Create mode -->
       <div id="lock-create-fields" style="display:none;">
         <div class="lock-input-wrap">
-          <input type="text" id="lock-create-username" class="lock-input" placeholder="Choose a username" autocomplete="username" autocapitalize="none" autocorrect="off" style="padding-right:14px;">
+          <input type="text" id="lock-create-username" class="lock-input" placeholder="Choose a username" aria-label="Choose a username" autocomplete="username" autocapitalize="none" style="padding-right:14px;">
         </div>
         <div class="lock-input-wrap">
-          <input type="password" id="lock-create-input1" class="lock-input" placeholder="Create a password" autocomplete="new-password">
+          <input type="password" id="lock-create-input1" class="lock-input" placeholder="Create a password" aria-label="Create a password" autocomplete="new-password">
           <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-create-input1')">👁</button>
         </div>
         <div class="lock-input-wrap">
-          <input type="password" id="lock-create-input2" class="lock-input" placeholder="Confirm password" autocomplete="new-password">
+          <input type="password" id="lock-create-input2" class="lock-input" placeholder="Confirm password" aria-label="Confirm password" autocomplete="new-password">
           <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-create-input2')">👁</button>
         </div>
         <button class="lock-submit-btn" onclick="lockSubmitCreate()">Set Login &amp; Continue</button>
@@ -2646,18 +2722,18 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       <!-- Change-password mode -->
       <div id="lock-change-fields" style="display:none;">
         <div class="lock-input-wrap">
-          <input type="text" id="lock-change-username" class="lock-input" placeholder="Username" autocomplete="username" autocapitalize="none" autocorrect="off" style="padding-right:14px;">
+          <input type="text" id="lock-change-username" class="lock-input" placeholder="Username" aria-label="Username" autocomplete="username" autocapitalize="none" style="padding-right:14px;">
         </div>
         <div class="lock-input-wrap">
-          <input type="password" id="lock-change-current" class="lock-input" placeholder="Current password" autocomplete="current-password">
+          <input type="password" id="lock-change-current" class="lock-input" placeholder="Current password" aria-label="Current password" autocomplete="current-password">
           <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-change-current')">👁</button>
         </div>
         <div class="lock-input-wrap">
-          <input type="password" id="lock-change-new1" class="lock-input" placeholder="New password" autocomplete="new-password">
+          <input type="password" id="lock-change-new1" class="lock-input" placeholder="New password" aria-label="New password" autocomplete="new-password">
           <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-change-new1')">👁</button>
         </div>
         <div class="lock-input-wrap">
-          <input type="password" id="lock-change-new2" class="lock-input" placeholder="Confirm new password" autocomplete="new-password">
+          <input type="password" id="lock-change-new2" class="lock-input" placeholder="Confirm new password" aria-label="Confirm new password" autocomplete="new-password">
           <button type="button" class="lock-eye-btn" onclick="lockToggleVisibility('lock-change-new2')">👁</button>
         </div>
         <button class="lock-submit-btn" onclick="lockSubmitChange()">Update Login</button>
@@ -3040,7 +3116,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
         <div class="tfb-intro">
           <div class="tfb-intro-icon" style="background:rgba(248,113,113,0.12);color:var(--red);"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
           <div class="tfb-intro-title">Survival Mode</div>
-          <div class="tfb-intro-sub">Answer correctly to keep going.<br>One wrong answer ends the run.<br><strong style="color:var(--gold);">Every question is a trick question. Read carefully.</strong></div>
+          <div class="tfb-intro-sub">Answer correctly to keep going.<br>One wrong answer ends the run.</div>
           <div class="tfb-rules">
             <div class="tfb-rule"><span class="tfb-rule-icon" style="background:rgba(248,113,113,0.1);color:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-3 7-7 0-4-3-6-4-9-1 2-1 4-3 4-1-3 0-5-2-7-3 3-5 6-5 10 0 5 3 9 7 9z"/></svg></span><span>Every correct answer extends your streak</span></div>
             <div class="tfb-rule"><span class="tfb-rule-icon" style="background:rgba(248,113,113,0.1);color:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v4a4 4 0 0 1-8 0V3z"/><path d="M8 4H4v2a4 4 0 0 0 4 4M16 4h4v2a4 4 0 0 1-4 4"/><path d="M12 11v4M9 20h6M9 20l1-3h4l1 3"/></svg></span><span>Milestones at 5, 10, 20, 50 correct answers</span></div>
@@ -9635,10 +9711,7 @@ function renderFCHome() {
   function saveBest(o){ safeLS.setItem(SURV_KEY, JSON.stringify(o)); }
 
   function buildPool(cat){
-    var trickPool = QS.filter(function(q){ return q.trick && (!cat || q.cat===cat); });
-    // Trick-question bank is the survival pool — fall back to the full bank only if
-    // a category doesn't have enough trick questions yet to sustain a run.
-    var pool = trickPool.length >= 3 ? trickPool.slice() : (cat ? QS.filter(function(q){ return q.cat===cat; }) : QS.slice());
+    var pool = cat ? QS.filter(function(q){ return q.cat===cat; }) : QS.slice();
     // Shuffle
     for(var i=pool.length-1;i>0;i--){
       var j=Math.floor(Math.random()*(i+1));
@@ -12137,85 +12210,6 @@ function confirmReset(){
     <button onclick="closeQuizModal()" class="qm-btn" id="quiz-modal-btn">See Full Results</button>
   </div>
 </div>
-<style>
-@keyframes modalPop{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
-
-/* ── Confetti ── */
-.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:10050;overflow:hidden;}
-.confetti-piece{
-  position:absolute;top:-24px;border-radius:2px;opacity:0.95;
-  animation-name:confettiFall;animation-timing-function:cubic-bezier(.25,.46,.45,.94);animation-fill-mode:forwards;
-}
-@keyframes confettiFall{
-  0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:1;}
-  85%{opacity:1;}
-  100%{transform:translateY(112vh) translateX(var(--drift)) rotate(var(--rot));opacity:0;}
-}
-.qm-card{box-shadow:0 20px 50px -12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);}
-.qm-glow{
-  position:absolute;top:-30%;left:50%;transform:translateX(-50%);
-  width:220px;height:220px;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle, var(--qm-glow, rgba(77,214,140,0.22)) 0%, rgba(0,0,0,0) 70%);
-}
-.qm-icon-badge{
-  width:76px;height:76px;border-radius:22px;margin:0 auto 16px;position:relative;z-index:1;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--qm-icon-bg, rgba(77,214,140,0.12));
-  box-shadow:0 10px 24px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -3px 6px rgba(0,0,0,0.18);
-  animation:splashIconPop .5s cubic-bezier(.22,1.2,.36,1) both;
-}
-.qm-icon-badge::before{
-  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(155deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%);
-}
-.qm-pct{
-  font-family:var(--head);font-size:48px;font-weight:800;letter-spacing:-2px;margin-bottom:4px;
-  position:relative;z-index:1;animation:splashFadeUp .4s ease .1s both;
-}
-.qm-verdict{
-  font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;
-  position:relative;z-index:1;animation:splashFadeUp .4s ease .16s both;
-}
-.qm-score{
-  font-size:13px;color:var(--text2);margin-bottom:24px;
-  position:relative;z-index:1;animation:splashFadeUp .4s ease .22s both;
-}
-.qm-btn{
-  width:100%;padding:15px;border-radius:14px;font-family:var(--head);font-size:15px;font-weight:800;
-  cursor:pointer;border:none;position:relative;z-index:1;
-  background:linear-gradient(180deg, var(--qm-btn-c, var(--green)) 0%, color-mix(in srgb, var(--qm-btn-c, var(--green)) 78%, black) 100%);
-  color:#0e1117;
-  box-shadow:0 4px 0 color-mix(in srgb, var(--qm-btn-c, var(--green)) 55%, black), 0 6px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
-  transition:transform .08s ease, box-shadow .08s ease;
-}
-.qm-btn:active{
-  transform:translateY(2px);
-  box-shadow:0 1px 0 color-mix(in srgb, var(--qm-btn-c, var(--green)) 55%, black), 0 2px 5px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
-}
-</style>
-
-<style>
-/* ── Readability: bump tiny mono labels to legible minimums ── */
-.boss-stat-l,.boss-q-num,.sr-home-lbl,.sr-diff-badge,.sr-cat-badge,
-.history-badge,.tfb-score-l,.tfb-streak-l,.tfb-res-pct-l,.tfb-res-stat-l,
-.cathub-stat-l,.boss-hp-pct,.player-label,.boss-vs,
-.ring-label,.stat-l,.wa-label,.swipe-label,.splash-sub{
-  font-size:10px!important;
-}
-.card-hint,.fc-count,.boss-cat-badge,.home-cta-label,
-.cathub-action-sub,.tfb-skip,.q-count,.cql-count{
-  font-size:11px!important;
-}
-/* Question and option text bump for active study readability */
-.q-text{font-size:15px;line-height:1.65;}
-.opt span:last-child{font-size:14px;}
-/* Explanation box: more readable in dark */
-.exp-box{color:var(--text2);font-size:13px;line-height:1.6;}
-/* Secondary category/meta labels */
-.cathub-action-sub{font-size:11px!important;}
-/* Section header mono labels */
-[class*="sec-label"]{font-size:11px!important;}
-</style>
 
 
 
