@@ -1830,13 +1830,17 @@ z-index:5;
 .daily-fc-menu-btn:active{background:var(--surface2);}
 .daily-fc-menu{
   display:none;position:absolute;top:52px;right:14px;z-index:20;
-  background:var(--bg2);border:1px solid var(--border2);border-radius:12px;
-  box-shadow:0 10px 30px -8px rgba(0,0,0,0.5);
+  background:var(--bg3);border:1px solid rgba(255,255,255,0.22);border-radius:12px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.35), 0 14px 34px -8px rgba(0,0,0,0.55);
   min-width:180px;padding:6px;
+}
+[data-theme="light"] .daily-fc-menu, .light-mode .daily-fc-menu{
+  border-color:rgba(0,0,0,0.14);
+  box-shadow:0 4px 16px rgba(0,0,0,0.1), 0 14px 34px -8px rgba(0,0,0,0.18);
 }
 .daily-fc-menu.open{display:block;}
 .daily-fc-menu-item{
-  padding:10px 12px;border-radius:8px;font-size:13px;color:var(--text2);
+  padding:10px 12px;border-radius:8px;font-size:13px;color:var(--text);
   cursor:pointer;-webkit-tap-highlight-color:transparent;
 }
 .daily-fc-menu-item:active{background:var(--surface2);}
@@ -6962,7 +6966,8 @@ window.homeCtaAction = function(){
   else if(type==='survival' && act && act.cat){ openCatHub(act.cat); }
   else if(type==='boss' && act && act.cat){ openCatHub(act.cat); }
   else if(type==='flashcard' && act){
-    if(!resumeFlashcardPosition(act)) showScreen('fc-home');
+    if(resumeFlashcardPosition(act)){ if(typeof trackUsage==='function') trackUsage('flashcard'); }
+    else showScreen('fc-home');
   }
   else { showScreen('fc-home'); }
 };
@@ -9513,6 +9518,7 @@ document.addEventListener('keydown', function(e){
 // ═══════════════════════════════════════════════════════════
 function filterFC(cat) {
   saveActivity('flashcard', cat==='All'?null:cat, 'flashcards');
+  if(typeof trackUsage==='function') trackUsage('flashcard'); // once per session start, matching every other mode — not per-card (see gradeCard)
   // Show category chips when filtering directly
   const cr = document.getElementById('chip-row');
   if(cr) cr.style.display = 'flex';
@@ -9586,7 +9592,6 @@ function flipCard(){
   if(flipped){ if(typeof playSound==='function') playSound('flip'); if(typeof haptic==='function') haptic('flip'); }
 }
 function gradeCard(knew){
-  if(typeof trackUsage==='function') trackUsage('flashcard');
   updateStreak(knew);
   // Save grade for current card BEFORE advancing
   var cur = cards[cardIdx];
@@ -11893,6 +11898,13 @@ window.showQuizModal = function(pct, score, total, catKey){
   modal.style.display = 'flex';
   if(pass && typeof fireConfetti==='function') setTimeout(fireConfetti, 150);
 
+  // Log every attempt to the home screen's recent-history panel (not just new bests —
+  // see the best-score block below for that separate, best-only save).
+  if(typeof saveQuizHistory==='function'){
+    var histLabel = catKey ? (CAT_FULL_NAME[CAT_KEY[catKey]||catKey] || catKey) : 'Mixed';
+    saveQuizHistory(pct, score, total, histLabel);
+  }
+
   // Save best score
   if(catKey){
     const key = CAT_KEY[catKey] || catKey;
@@ -12462,7 +12474,7 @@ window.addEventListener('load', function(){
   function loadBM(){ var v = safeJSON(BM_KEY, []); return Array.isArray(v) ? v : []; }
   function saveBM(arr){ safeLS.setItem(BM_KEY, JSON.stringify(arr)); }
 
-  function getBMKey(qText){ return qText.trim().slice(0,80); }
+  function getBMKey(qText){ return qText.trim(); }
 
   window.isBookmarked = function(qText){
     var bms = loadBM();
@@ -12573,7 +12585,7 @@ window.addEventListener('load', function(){
     filtered.forEach(function(b, i){
       var clr = catClr[b.cat] || 'var(--text3)';
       var catAbbr = {'General Knowledge':'GEN','HPC':'HPC','WDO':'WDO','Fumigation':'FUM'};
-      var bmKey = b.q.trim().slice(0,40).replace(/"/g,"&quot;");
+      var bmKey = b.q.trim().replace(/"/g,"&quot;");
       html2 += '<div class="bm-item">'
         +'<div class="bm-item-top">'
         +'<span class="bm-item-cat" style="color:'+clr+'">'+( catAbbr[b.cat]||b.cat)+'</span>'
@@ -12922,18 +12934,21 @@ function fcDismissQuiz(){
 }
 
 
-// Bookmark key-based remove and note save
+// Bookmark key-based remove and note save.
+// Note: btn.dataset.key comes back from the DOM already HTML-entity-decoded
+// (e.g. &quot; -> "), so compare against the raw trimmed question text —
+// re-escaping here would never match a bookmarked question containing a quote.
 window.bmRemoveByKey = function(btn){
   var key = btn.dataset.key;
   var bms; try{ bms=JSON.parse(safeLS.getItem('bookmarks')||'[]'); }catch(e){ bms=[]; }
-  bms = bms.filter(function(b){ return b.q.trim().slice(0,40).replace(/"/g,'&quot;') !== key; });
+  bms = bms.filter(function(b){ return b.q.trim() !== key; });
   safeLS.setItem('bookmarks', JSON.stringify(bms));
   if(typeof renderBookmarksScreen==='function') renderBookmarksScreen();
 };
 window.bmSaveNote = function(textarea){
   var key = textarea.dataset.key;
   var bms; try{ bms=JSON.parse(safeLS.getItem('bookmarks')||'[]'); }catch(e){ bms=[]; }
-  var found = bms.find(function(b){ return b.q.trim().slice(0,40).replace(/"/g,'&quot;')===key; });
+  var found = bms.find(function(b){ return b.q.trim()===key; });
   if(found){
     found.note = textarea.value;
     safeLS.setItem('bookmarks', JSON.stringify(bms));
