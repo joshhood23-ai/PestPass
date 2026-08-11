@@ -1,7 +1,7 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE = 'ga-pest-v17';
+const CACHE = 'ga-pest-v30';
 const ASSETS = ['./', './index.html'];
 
 self.addEventListener('install', e => {
