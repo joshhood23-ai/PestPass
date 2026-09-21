@@ -1512,7 +1512,7 @@ z-index:5;
   background:var(--bg2);color:var(--text);
   box-shadow:0 2px 8px -3px rgba(0,0,0,0.3);
 }
-/* Fumigation is out of scope for the Registered Employee track — hide
+/* Fumigation is out of scope for the Registered Technician track — hide
    every entry point into it (home tile, quiz/flashcard/SR filter chips,
    daily-flashcard category menu) rather than just the home screen tile,
    so switching tracks actually changes what's reachable, not just what's
@@ -1525,7 +1525,7 @@ body.track-rt .track-fum-only, body.track-dnr .track-fum-only{ display:none !imp
 body.track-dnr .track-spcc-only{ display:none !important; }
 .track-dnr-only{ display:none; }
 body.track-dnr .track-dnr-only{ display:block; }
-/* General Knowledge isn't part of the Registered Employee scope (RT is
+/* General Knowledge isn't part of the Registered Technician scope (RT is
    HPC + WDO only) — hidden for both RT and DNR, unlike HPC/WDO which stay
    visible for RT (tagged track-spcc-only, hidden only for DNR). */
 body.track-rt .track-co-only, body.track-dnr .track-co-only{ display:none !important; }
@@ -2602,7 +2602,7 @@ body.has-activity .hero-compact{
 <link rel="manifest" href="data:application/json,{
   %22name%22:%22PestPass — GA SPCC Exam Prep%22,
   %22short_name%22:%22PestPass%22,
-  %22description%22:%22Georgia SPCC Exam Prep — Registered Employee and Certified Operator tracks, boss battles, flashcards, spaced repetition%22,
+  %22description%22:%22Georgia SPCC Exam Prep — Registered Technician and Certified Operator tracks, boss battles, flashcards, spaced repetition%22,
   %22start_url%22:%22.%22,
   %22display%22:%22standalone%22,
   %22background_color%22:%22%230e1014%22,
@@ -5245,6 +5245,19 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       <div style="flex:1;font-size:13px;font-weight:600;color:var(--red);">Reset Progress</div>
     </button>
   </div>
+  <div style="padding:0 18px 6px;">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:12px 0 10px;">About & Legal</div>
+    <a href="./privacy-policy.html" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;">
+      <div style="width:34px;height:34px;border-radius:9px;background:rgba(78,201,225,0.08);border:1px solid rgba(78,201,225,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--c-gen);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);">Privacy Policy</div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+    <div style="font-size:11px;line-height:1.6;color:var(--text3);padding:12px 0;">
+      PestPass is an independent, unofficial study tool and is not affiliated with, endorsed by, or sponsored by the Georgia Department of Agriculture, the Georgia Structural Pest Control Commission, or the Georgia Department of Natural Resources. Content is prepared for exam-preparation purposes and may not reflect the most current rules — always verify current requirements with the official issuing agency before relying on this app for licensure or compliance decisions.
+    </div>
+  </div>
   <div style="padding:20px 18px;text-align:center;">
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;">PestPass · v2.1 · Georgia SPCC</div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">400 questions · 576 flashcards · offline</div>
@@ -6046,10 +6059,10 @@ const FC = [
 {cat:'Regulations & Permits',q:'Which agency issues the Nuisance Wildlife Control Permit?',opts:['Georgia DNR Law Enforcement (Special Permits Unit)','Georgia Department of Agriculture','USDA','The local county sheriff'],ans:0,exp:'DNR Law Enforcement’s Special Permits Unit — not the Department of Agriculture, which handles SPCC/structural pest licensing instead.'},
 {cat:'Regulations & Permits',q:'Passing score on the Nuisance Wildlife Control Permit exam:',opts:['80%','70%','60%','75%'],ans:0,exp:'Higher than the typical 70% used for SPCC categories.'},
 {cat:'Regulations & Permits',q:'Retake waiting period after a failed exam attempt:',opts:['15 days','1 day','30 days','60 days'],ans:0,exp:'A failed attempt requires waiting 15 days before retesting.'},
-{cat:'Regulations & Permits',q:'The Nuisance Wildlife Control Permit expires and must be renewed:',opts:['Annually, March 31','Every 2 years, June 30','Every 5 years','It never expires'],ans:0,exp:'The Nuisance Wildlife Control permit period runs through March 31 and is renewed annually.'},
+{cat:'Regulations & Permits',q:'The Nuisance Wildlife Control Permit expires and must be renewed:',opts:['Annually, March 31','Every 2 years, June 30','Every 5 years','It never expires'],ans:0,exp:'Annual renewal, expiring March 31 — shorter than the SPCC 2-year cycle.'},
 {cat:'Regulations & Permits',q:'Maximum time a captured nuisance animal may generally be possessed before release/disposition:',opts:['72 hours','24 hours','7 days','30 days'],ans:0,exp:'Standard permit conditions cap possession at 72 hours.'},
 {cat:'Regulations & Permits',q:'Which credential must an operator hold ALONGSIDE the Nuisance Wildlife Control Permit?',opts:['A valid Georgia Trapping License','An SPCC Certified Operator license','A real estate license','A federal firearms license'],ans:0,exp:'The permit doesn’t stand alone — a valid trapping license is also required.'},
-{cat:'Regulations & Permits',q:'Which species are excluded from standard Nuisance Wildlife Control Permit authority?',opts:['Deer, turkey, and alligators over 4 feet','Squirrel, raccoon, opossum','Beaver, coyote, armadillo','Rats and mice'],ans:0,exp:'These require separate, species-specific state authorization.'},
+{cat:'Regulations & Permits',q:'Which species are excluded from standard Nuisance Wildlife Control Permit authority?',opts:['Deer, bear, turkey, and alligators over 4 feet long','Squirrel, raccoon, opossum','Beaver, coyote, armadillo','Rats and mice'],ans:0,exp:'Per current Georgia DNR consumer guidance, NWCOs are not authorized to handle deer, turkeys, or alligators over 4 feet long, and are not authorized to trap or remove bears involved in human-bear conflicts (handled by WRD staff as a last resort). An alligator under 4 feet, by contrast, does fall within standard NWCO authority.'},
 {cat:'Regulations & Permits',q:'To handle a migratory bird or raptor legally, an operator needs authorization from:',opts:['U.S. Fish & Wildlife Service (federal)','The county extension office','No one — the state permit covers all birds','The state agriculture department'],ans:0,exp:'Migratory birds are federally protected — the state nuisance permit alone doesn’t authorize handling them.'},
 {cat:'Regulations & Permits',q:'May a captured nuisance animal be released on state-owned property?',opts:['No — release on state land is not permitted under standard conditions','Yes, anywhere in the state','Only on Wildlife Management Areas','Only with a note from the client'],ans:0,exp:'Standard permit conditions prohibit release on state-owned land, regardless of species.'},
 {cat:'Regulations & Permits',q:'What must permit holders submit to DNR on a recurring basis?',opts:['An annual activity report','A weekly client list','Nothing — no reporting required','A monthly tax filing'],ans:0,exp:'Annual activity reporting gives DNR statewide visibility into nuisance wildlife control activity.'},
@@ -7127,7 +7140,7 @@ const QS = [
 {id:'qs-0983',cat:'Regulations & Permits',q:'What score is required to pass the Nuisance Wildlife Control Permit exam?',opts:['80%','70%','60%','90%'],ans:0,exp:'The nuisance wildlife exam requires an 80% passing score — a higher bar than the 70% typically used for SPCC structural pest categories.'},
 {id:'qs-0984',cat:'Regulations & Permits',q:'If an applicant fails the Nuisance Wildlife Control Permit exam, how long must they wait before retesting?',opts:['15 days','24 hours','30 days','90 days'],ans:0,exp:'A failed attempt requires a 15-day wait before the exam can be retaken.'},
 {id:'qs-0985',cat:'Regulations & Permits',q:'A Nuisance Wildlife Control Permit in Georgia must be renewed:',opts:['Annually, expiring March 31','Every 2 years, expiring June 30','Every 5 years','It never expires once issued'],ans:0,exp:'Unlike the SPCC credentials’ 2-year cycle, the DNR nuisance wildlife permit is renewed annually and expires March 31.'},
-{id:'qs-0986',cat:'Regulations & Permits',q:'A general Nuisance Wildlife Control Permit does NOT authorize trapping of which of these?',opts:['Deer, turkey, and alligators over 4 feet','Squirrels and raccoons','Beaver and armadillo','Groundhogs and moles'],ans:0,exp:'Deer, bear, turkey, waterfowl, and alligators are excluded from standard nuisance wildlife permit authority — they require separate, species-specific authorization.'},
+{id:'qs-0986',cat:'Regulations & Permits',q:'A general Nuisance Wildlife Control Permit does NOT authorize trapping of which of these?',opts:['Deer, turkeys, alligators over 4 feet long, and bears involved in human-bear conflicts','Squirrels and raccoons','Beaver and armadillo','Groundhogs and moles'],ans:0,exp:'Per current Georgia DNR consumer guidance, NWCOs are not authorized to handle deer, turkeys, or alligators over 4 feet long, and are not authorized to trap or remove bears involved in human-bear conflicts — that\'s handled exclusively by WRD staff as a last resort. Alligators under 4 feet, by contrast, do fall within standard NWCO authority.'},
 {id:'qs-0987',cat:'Regulations & Permits',q:'To legally trap or handle a migratory bird or raptor causing damage, an operator needs:',opts:['Separate federal authorization from the U.S. Fish & Wildlife Service','Nothing extra — the state Nuisance Wildlife Control Permit covers all birds','Only a note from the property owner','A special SPCC endorsement'],ans:0,exp:'Migratory birds and raptors are federally protected; the state nuisance wildlife permit alone doesn’t authorize handling them — that requires separate USFWS authorization.'},
 {id:'qs-0988',cat:'Regulations & Permits',q:'Under a Nuisance Wildlife Control Permit, a captured target animal may generally be held for how long before it must be released, transferred, or euthanized?',opts:['72 hours','7 days','24 hours','30 days'],ans:0,exp:'Standard permit conditions place a 72-hour possession limit on captured nuisance wildlife.'},
 {id:'qs-0989',cat:'Regulations & Permits',q:'A nuisance wildlife control operator captures a raccoon on a client’s property. Which of these is a lawful way to handle it under standard permit conditions?',opts:['Euthanize it or release it on private property with landowner permission — not on state-owned land','Release it anywhere, including any state wildlife management area','Keep it indefinitely as a pet','Transport it across state lines without a permit'],ans:0,exp:'Standard permit conditions prohibit releasing captured animals on state-owned property; disposition is generally limited to euthanasia or release on private land with the landowner’s consent.'},
@@ -7161,7 +7174,7 @@ const QS = [
 {id:'qs-1015',cat:'Regulations & Permits',q:'A company wants multiple employees performing nuisance wildlife control work. What does Georgia\'s system generally require?',opts:['Each individual performing the work must hold their own valid permit/license, not just the company','Only the company itself needs any credential','One employee\'s permit automatically covers the whole crew','No individual credentialing is required if insured'],ans:0,exp:'Nuisance wildlife credentialing is tied to the individual, similar to how SPCC Registered Employee credentials work — a company can\'t rely on just one licensed person to cover unlicensed staff doing the same work.'},
 {id:'qs-1016',cat:'Regulations & Permits',q:'Why does Georgia require a separate permit specifically for nuisance WILDLIFE control, distinct from general recreational/fur trapping?',opts:['Nuisance control work involves handling animals in populated areas, around structures and people, which carries different risk and regulatory concerns than recreational trapping','There is no real difference — the separate permit is purely a revenue measure','Recreational trapping is more strictly regulated than nuisance control','Nuisance control doesn\'t actually require any additional permit beyond the trapping license'],ans:0,exp:'Nuisance wildlife control happens in a different context than recreational fur trapping — around homes, businesses, and people — which is why it has its own permit, its own exam, and its own conditions layered on top of the base trapping license.'},
 {id:'qs-1017',cat:'Regulations & Permits',q:'A nuisance wildlife operator wants to transport a live-captured animal across county lines to release it on private land they own. Which condition still applies regardless of distance traveled?',opts:['The release still can\'t be on state-owned property, and the 72-hour possession window still applies','Crossing county lines removes all standard permit conditions','Distance traveled has no bearing on any permit rule','Only in-county transport is regulated at all'],ans:0,exp:'The core permit conditions — no release on state land, and the possession time limit — aren\'t tied to how far the animal is moved; they apply to any captured nuisance animal regardless of transport distance.'},
-{id:'qs-1018',cat:'Regulations & Permits',q:'Which of these accurately reflects how deer, bear, turkey, waterfowl, and alligator are treated under the standard Nuisance Wildlife Control Permit?',opts:['They fall outside the permit\'s authority entirely and require separate, species-specific state processes','They\'re treated exactly like raccoons and squirrels under the same permit','They can be handled freely with no restriction of any kind','They can only be handled during trapping season'],ans:0,exp:'These species are carved out of the standard nuisance wildlife permit\'s scope altogether — handling them requires separate authorization, not just extra caution under the same permit.'},
+{id:'qs-1018',cat:'Regulations & Permits',q:'An operator responds to a nuisance alligator complaint and measures the animal at approximately 3 feet long. Under standard Nuisance Wildlife Control Permit authority, what applies?',opts:['This alligator falls within standard NWCO authority, since the exclusion only applies to alligators over 4 feet long','No alligator of any size may be handled under a standard NWCO permit','This alligator must be reported to WRD staff regardless of size, the same as a nuisance bear','Alligators under 4 feet require a separate federal authorization, unlike alligators over 4 feet'],ans:0,exp:'The alligator exclusion is size-specific: NWCOs are not authorized to handle alligators over 4 feet long, but an alligator under that threshold does fall within standard permit authority. Mixing this up with the flat exclusion that applies to deer, turkeys, and human-bear conflicts is an easy mistake.'},
 {id:'qs-1019',cat:'Procedures & Damage ID',q:'An operator is setting traps to address a nuisance raccoon near a residence with an outdoor pet cat. What is the most responsible approach to set placement?',opts:['Choose set locations and trap types that minimize the chance of catching the pet as a non-target animal','Set placement doesn\'t need to account for pets at all','Ask the client to keep the cat inside permanently instead of adjusting sets','Use the largest, least selective trap available for efficiency'],ans:0,exp:'Thoughtful set placement to reduce non-target catches is a basic professional and permit-consistent practice, especially in residential settings where pets are commonly present.'},
 {id:'qs-1020',cat:'Procedures & Damage ID',q:'Why is exclusion (rather than lethal removal) specifically required for bat colonies in structures?',opts:['Bats provide significant ecological benefit (insect control) and several species have conservation concerns, so removal-without-killing is the required approach','Bats are impossible to trap with standard equipment','Exclusion is simply faster than any lethal method','There is no meaningful reason — it\'s an arbitrary rule'],ans:0,exp:'Bats\' ecological role and conservation status are the reason behind the exclusion-only requirement — it\'s a deliberate protective measure, not an arbitrary procedural preference.'},
 {id:'qs-1021',cat:'Procedures & Damage ID',q:'An operator installs bat exclusion devices on a structure in early June. What is the concern with this timing?',opts:['June commonly falls within bat maternity season, when flightless pups could be trapped inside and die','There is no seasonal concern — any month is acceptable for exclusion','June is outside of business hours for most operators','Bats are dormant in June and exclusion would be pointless'],ans:0,exp:'Maternity season timing is exactly why exclusion work has a seasonal restriction — installing one-way devices while flightless young are present inside risks trapping and killing them.'},
@@ -7202,7 +7215,7 @@ let qPool=[], qIdx=0, qScore=0, qTotal=0, qAnswered=false;
 let wrongAnswers=[];
 let isDrillMode=false;
 
-// ── Exam track (Registered Employee vs Certified Operator) ──────────
+// ── Exam track (Registered Technician vs Certified Operator) ──────────
 // Fumigation is a separate, higher-hazard credential in Georgia (a
 // dedicated crew, notification, and posting requirements — see the
 // WDO/HPC content elsewhere) and isn't part of the entry-level Registered
@@ -7225,12 +7238,13 @@ function trackKey(base){
   return t==='co' ? base : base+'_'+t;
 }
 // Which QS/FC `cat` values belong to each track. SPCC tracks (RT/CO) share
-// the pest-control category set (RT uses Fumigation, HPC, and WDO for Registered Employee preparation); DNR Trapping is a completely separate credential
+// the pest-control category set (RT further excludes Fumigation via
+// isTrackFiltered below); DNR Trapping is a completely separate credential
 // (Georgia DNR Law Enforcement, not the Dept of Agriculture) with its own
 // category taxonomy matching the real exam's subject breakdown.
 var TRACK_CATEGORIES = {
   co:  ['General Knowledge','HPC','WDO','Fumigation'],
-  rt:  ['HPC','WDO','Fumigation'],
+  rt:  ['HPC','WDO'],
   dnr: ['Regulations & Permits','Procedures & Damage ID']
 };
 function trackAllowsCategory(cat){
@@ -7287,8 +7301,8 @@ function applyExamTrack(){
   var heroEye = document.getElementById('hero-eye');
   if(heroEye) heroEye.textContent = track==='dnr' ? 'Georgia DNR Nuisance Wildlife Control' : 'Georgia SPCC Exam Prep';
   var heroName = document.getElementById('hero-track-name');
-  if(heroName) heroName.textContent = track==='rt' ? 'Registered Employee' : track==='dnr' ? 'Nuisance Wildlife Control' : 'Certified Operator';
-  document.title = track==='rt' ? 'PestPass \u2014 SPCC Registered Employee Prep' : track==='dnr' ? 'PestPass \u2014 GA DNR Trapping Prep' : 'PestPass \u2014 SPCC Certified Operator Prep';
+  if(heroName) heroName.textContent = track==='rt' ? 'Registered Technician' : track==='dnr' ? 'Nuisance Wildlife Control' : 'Certified Operator';
+  document.title = track==='rt' ? 'PestPass \u2014 SPCC Registered Technician Prep' : track==='dnr' ? 'PestPass \u2014 GA DNR Trapping Prep' : 'PestPass \u2014 SPCC Certified Operator Prep';
   // bestScores is a shared module-level variable read by many functions
   // without re-fetching it themselves — reload it here, right on switch,
   // so every consumer sees the new track's data immediately rather than
@@ -9223,11 +9237,12 @@ var STUDY_GUIDE_BOOKS = [
       {
         title: "Species the Standard Permit Doesn't Cover",
         icon: '<path d="M11 2 4 12h6l-1 10 9-13h-6z"/>',
-        quick: "Deer, bear, turkey, waterfowl, and alligator all fall outside the standard permit's authority \u2014 and migratory birds/raptors need separate federal authorization on top of that.",
+        quick: "Per current Georgia DNR consumer guidance, NWCOs aren't authorized to handle deer, turkeys, or alligators over 4 feet long \u2014 and bears get their own separate rule. Migratory birds/raptors need separate federal authorization on top of all of that.",
         deep: [
-          "Deer, bear, turkey, waterfowl, and alligator are carved out of the standard Nuisance Wildlife Control Permit entirely. Handling any of them requires separate, species-specific state authorization \u2014 the general permit doesn't cover them just because an operator holds it.",
-          "Migratory birds and raptors (including ordinary-seeming calls like a Canada goose on a client's pond or a great blue heron picking off pond fish) are federally protected. Handling them legally requires separate authorization from the U.S. Fish & Wildlife Service \u2014 the state permit alone never covers them, regardless of how routine the removal seems.",
-          "Species most people think of as classic nuisance calls \u2014 raccoon, squirrel, opossum, beaver, armadillo, coyote \u2014 are exactly the ones the standard permit is built for. The exclusions exist because of protection status or a separate regulatory scheme, not because those species are somehow harder to handle."
+          "Deer and turkeys are carved out of the standard Nuisance Wildlife Control Permit entirely, with no size or context exception \u2014 handling either requires separate, species-specific state authorization. Alligators are carved out too, but only above a specific size: an alligator over 4 feet long falls outside standard NWCO authority, while an alligator under 4 feet does fall within it. Getting that threshold backwards is an easy mistake to make under exam pressure.",
+          "Bears follow a different rule than the blanket deer/turkey exclusion: NWCOs simply aren't authorized to trap or remove bears involved in human-bear conflicts at all. When that kind of removal genuinely becomes necessary, it's handled exclusively by WRD staff, case-by-case, and only as a last resort after other mitigation has failed \u2014 not something an NWCO permit ever extends to, regardless of the animal's size or the situation's urgency.",
+          "Migratory birds and raptors (including ordinary-seeming calls like a Canada goose on a client's pond or a great blue heron picking off pond fish) are federally protected on top of any state-level rule. Handling them legally requires separate authorization from the U.S. Fish & Wildlife Service \u2014 the state permit alone never covers them, regardless of how routine the removal seems.",
+          "Species most people think of as classic nuisance calls \u2014 raccoon, squirrel, opossum, beaver, armadillo, coyote \u2014 are exactly the ones the standard permit is built for. The exclusions exist because of protection status, public safety escalation, or a separate regulatory scheme, not because those species are somehow harder to handle."
         ]
       },
       {
@@ -10712,7 +10727,7 @@ function selectQCat(cat){
     {n:50,cls:'sz50',icon:'<path d="M8 3h8v4a4 4 0 0 1-8 0V3z"/><path d="M8 4H4v2a4 4 0 0 0 4 4M16 4h4v2a4 4 0 0 1-4 4"/><path d="M12 11v4M9 20h6M9 20l1-3h4l1 3"/>',name:'Practice Exam',desc:'50 questions · ~30 min', timed:false},
     {n:100,cls:'sz100',icon:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.8" fill="currentColor" stroke="none"/>',name:'Full Drill',desc:'100 questions · ~60 min', timed:false},
     {n:total,cls:'sz-all',icon:'<path d="M12 22c4 0 7-3 7-7 0-4-3-6-4-9-1 2-1 4-3 4-1-3 0-5-2-7-3 3-5 6-5 10 0 5 3 9 7 9z"/>',name:'All Questions',desc:`All ${total} questions`, timed:false},
-    {n:100,cls:'sz100',icon:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6M12 2v3"/>',name:'Timed Exam',desc:'100 Q practice · 150 min countdown', timed:true, minutes:150},
+    {n:100,cls:'sz100',icon:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6M12 2v3"/>',name:'Timed Exam',desc:'100 Q · 120 min countdown', timed:true, minutes:120},
   ];
   opts.forEach((o,oi)=>{
     if(o.n>total && o.cls!=='sz-all') return;
@@ -11116,7 +11131,7 @@ var TFB_BANK = {
   {s:'A customer can legally authorize a technician to apply a pesticide in a manner not listed on the label.',t:false},
   {s:'An SDS is required to be provided to customers before every routine pesticide application.',t:false},
   {s:'Applying a pesticide below the labeled rate is always legal as long as it is effective.',t:false},
-  {s:'A registered employee in Georgia can sign an official WDO inspection report.',t:false},
+  {s:'A registered technician in Georgia can sign an official WDO inspection report.',t:false},
   {s:'Under FIFRA, it is legal to use a pesticide for a purpose not listed on its label if the applicator has professional experience.',t:false},
   {s:'Tank mixing two pesticides is always legal as long as both products are labeled for the target pest.',t:false},
   {s:'The SDS is the same document as the pesticide label.',t:false},
@@ -11332,7 +11347,7 @@ var TFB_BANK = {
   {s:'Sulfuryl fluoride is heavier than air and settles at floor level, requiring special application techniques.',t:false},
   {s:'Fumigant dosage is the same for all structures regardless of temperature or volume.',t:false},
   {s:'Tenting is not required for phosphine fumigation of grain storage facilities.',t:false},
-  {s:'A licensed fumigator can delegate on-site supervision to a registered employee during exposure.',t:false},
+  {s:'A licensed fumigator can delegate on-site supervision to a registered technician during exposure.',t:false},
   {s:'Chloropicrin serves as the primary active ingredient in fumigation, with sulfuryl fluoride as the warning agent.',t:false}
 ]
 
