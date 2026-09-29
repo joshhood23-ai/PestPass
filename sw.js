@@ -1,7 +1,7 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE='ga-pest-835ccb96dd';
+const CACHE='ga-pest-4773232097';
 const ASSETS = ['./', './index.html', './privacy-policy.html'];
 
 self.addEventListener('install', e => {
@@ -31,6 +31,14 @@ self.addEventListener('activate', e => {
       // skipWaiting() above so an update applies on next reload, not next launch.
       .then(() => self.clients.claim())
   );
+});
+
+self.addEventListener('message', e => {
+  // Lets a waiting worker activate immediately when the user taps
+  // "Refresh" in the in-app update toast (pairs with the updatefound
+  // handling in index.html). The install handler already calls
+  // skipWaiting() unconditionally, so this is a belt-and-braces path.
+  if(e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('fetch', e => {
