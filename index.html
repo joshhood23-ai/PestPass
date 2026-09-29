@@ -2753,12 +2753,67 @@ window.esc = function(s){
 </script>
 
 <script>
-// ── PWA Service Worker ──
+// ── PWA Service Worker + in-app update prompt ──
 // Must register a real, network-fetchable file (./sw.js) — a blob: URL is
 // rejected by the Service Worker spec in every browser, not just Safari,
 // so an inline blob-based registration silently never activates.
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{ /* offline caching unavailable; app still works online */ });
+  // In-app update toast: when a new app version is detected, offer a
+  // one-tap refresh. Without this, the old cached copy keeps running and
+  // the user has no way to know (or get) the new version — the browser
+  // only auto-checks for updates about once a day.
+  var ppUpdateToastShown = false;
+  function ppShowUpdateToast(worker){
+    if(ppUpdateToastShown) return;
+    ppUpdateToastShown = true;
+    var css = '#pp-update-toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom, 0px));'
+      + 'transform:translateX(-50%) translateY(16px);opacity:0;z-index:99999;display:flex;align-items:center;gap:12px;'
+      + 'background:rgba(18,24,34,.97);border:1px solid rgba(78,201,225,.4);border-radius:12px;'
+      + 'padding:10px 8px 10px 14px;font-size:13px;color:#e8eef4;box-shadow:0 8px 28px rgba(0,0,0,.5);'
+      + 'transition:transform .3s ease,opacity .3s ease;max-width:calc(100vw - 32px);}'
+      + '#pp-update-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}'
+      + '#pp-update-btn{background:#4ec9e1;border:0;border-radius:8px;color:#0b0e13;font-weight:700;font-size:13px;'
+      + 'padding:8px 14px;cursor:pointer;white-space:nowrap;}'
+      + '#pp-update-btn:disabled{opacity:.6;cursor:default;}';
+    var st = document.createElement('style');
+    st.textContent = css;
+    document.head.appendChild(st);
+    var t = document.createElement('div');
+    t.id = 'pp-update-toast';
+    t.setAttribute('role', 'status');
+    // Static strings only — no user data, nothing to escape.
+    t.innerHTML = '<span>New version available</span><button type="button" id="pp-update-btn">Refresh</button>';
+    document.body.appendChild(t);
+    document.getElementById('pp-update-btn').addEventListener('click', function(){
+      var btn = document.getElementById('pp-update-btn');
+      btn.disabled = true;
+      btn.textContent = 'Refreshing…';
+      try{ if(worker) worker.postMessage({type:'SKIP_WAITING'}); }catch(e){}
+      // Small delay so the waiting worker can activate before the reload.
+      setTimeout(function(){ window.location.reload(); }, 350);
+    });
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ t.classList.add('show'); }); });
+  }
+  function ppWatchWorker(worker){
+    if(!worker) return;
+    worker.addEventListener('statechange', function(){
+      // 'installed' + an existing controller = this is an update, not first install.
+      if(worker.state === 'installed' && navigator.serviceWorker.controller){
+        ppShowUpdateToast(worker);
+      }
+    });
+  }
+  navigator.serviceWorker.register('./sw.js').then(function(reg){
+    // Check for updates on every launch — reg.update() bypasses the
+    // browser's ~24h automatic-check throttle — and hourly while open.
+    function ppCheckUpdate(){ try{ reg.update().catch(function(){}); }catch(e){} }
+    ppCheckUpdate();
+    setInterval(ppCheckUpdate, 60*60*1000);
+    reg.addEventListener('updatefound', function(){ ppWatchWorker(reg.installing); });
+    // A new worker may have finished installing on a previous visit and be
+    // waiting already; offer the refresh right away in that case.
+    if(reg.waiting && navigator.serviceWorker.controller) ppShowUpdateToast(reg.waiting);
+  }).catch(function(){ /* offline caching unavailable; app still works online */ });
 }
 
 // ── Install prompt banner ──
@@ -2941,7 +2996,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
     <div class="splash-name">Pest<span>Pass</span></div>
     <div class="splash-sub">SPCC Exam Prep</div>
     <div class="splash-loader"><div class="splash-loader-fill"></div></div>
-    <div class="splash-version">v3.0</div>
+    <div class="splash-version">v3.1</div>
   </div>
   <noscript><style>#splash-screen{display:none!important;}</style></noscript>
 <div id="app">
@@ -4283,7 +4338,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
     </div>
   </div>
   <div style="padding:20px 18px;text-align:center;">
-    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;">PestPass · v3.0 · Georgia SPCC</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;">PestPass · v3.1 · Georgia SPCC</div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">400 questions · 576 flashcards · offline</div>
   </div>
 </div>
