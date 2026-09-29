@@ -1,11 +1,22 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE = 'ga-pest-v95';
-const ASSETS = ['./', './index.html', './privacy-policy.html'];
+const CACHE='ga-pest-053441b853';
+const ASSETS = ['./', './index.html', './privacy-policy.html',
+  './img/boss-roach.webp', './img/boss-ant.webp',
+  './img/boss-termite.webp', './img/boss-mosquito.webp'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  // Cache each asset individually: addAll() rejects the ENTIRE install if a
+  // single asset 404s (e.g. an optional page like privacy-policy.html that
+  // wasn't deployed), which would silently leave the app with no offline
+  // support at all. Caching individually means a missing optional file is
+  // skipped instead of killing the service worker.
+  e.waitUntil(
+    caches.open(CACHE).then(c =>
+      Promise.all(ASSETS.map(url => c.add(url).catch(() => {})))
+    )
+  );
   // Without this, a newly installed SW sits "waiting" until every open tab
   // is fully closed (not just refreshed) before it takes over — meaning an
   // update never reaches the user until they quit and relaunch the app.
