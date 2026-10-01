@@ -2981,6 +2981,54 @@ if('serviceWorker' in navigator){
   }).catch(function(){ /* offline caching unavailable; app still works online */ });
 }
 
+// ── MANUAL UPDATE CHECK (menu button) ──
+// The app already checks automatically on every launch and hourly while open;
+// this gives the user a way to force the check on demand and see the result.
+window.checkForUpdatesManual = function(){
+  var statusEl = document.getElementById('update-check-status');
+  function setStatus(msg){ if(statusEl) statusEl.textContent = msg; }
+  if(window.__ppCheckingUpdate) return; // ignore taps while a check is running
+  if(!('serviceWorker' in navigator)){ setStatus('Not available on this browser.'); return; }
+  window.__ppCheckingUpdate = true;
+  setStatus('Checking for updates\u2026');
+  var done = false;
+  function finish(msg){
+    if(done) return;
+    done = true;
+    window.__ppCheckingUpdate = false;
+    setStatus(msg);
+  }
+  function foundUpdate(reg){
+    // Nudge the standard "New version available / Refresh" toast in case the
+    // automatic updatefound listener missed it (e.g. worker already waiting).
+    try{
+      var w = reg.waiting || reg.installing;
+      if(w && navigator.serviceWorker.controller && typeof ppShowUpdateToast === 'function'){
+        ppShowUpdateToast(w);
+      }
+    }catch(e){}
+    finish('Update found \u2014 tap Refresh to install it.');
+  }
+  navigator.serviceWorker.getRegistration().then(function(reg){
+    if(!reg){ finish('Could not reach the update service.'); return; }
+    // An update may already be downloaded and waiting from an earlier check.
+    if((reg.waiting || reg.installing) && navigator.serviceWorker.controller){
+      foundUpdate(reg);
+      return;
+    }
+    function onFound(){ foundUpdate(reg); }
+    reg.addEventListener('updatefound', onFound);
+    try{ var p = reg.update(); if(p && p.catch) p.catch(function(){}); }catch(e){}
+    // Give the check a few seconds to fetch and install a new worker.
+    setTimeout(function(){
+      try{ reg.removeEventListener('updatefound', onFound); }catch(e){}
+      if(done) return;
+      if(reg.waiting || reg.installing){ foundUpdate(reg); }
+      else { finish('You\u2019re up to date.'); }
+    }, 6000);
+  }).catch(function(){ finish('Could not reach the update service.'); });
+};
+
 // ── Install prompt banner ──
 // PWA install prompt removed (APK mode)
 </script>
@@ -3161,7 +3209,7 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
     <div class="splash-name">Pest<span>Pass</span></div>
     <div class="splash-sub">SPCC Exam Prep</div>
     <div class="splash-loader"><div class="splash-loader-fill"></div></div>
-    <div class="splash-version">v4.8</div>
+    <div class="splash-version">v4.9</div>
   </div>
   <noscript><style>#splash-screen{display:none!important;}</style></noscript>
 <div id="app">
@@ -4759,12 +4807,21 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
       <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);">Privacy Policy</div>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </a>
+    <button type="button" role="button" tabindex="0" onclick="checkForUpdatesManual();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+      <div style="width:34px;height:34px;border-radius:9px;background:rgba(78,201,225,0.08);border:1px solid rgba(78,201,225,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--c-gen);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </div>
+      <div style="flex:1;text-align:left;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);">Check for Updates</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px;" id="update-check-status">Tap to check now</div>
+      </div>
+    </button>
     <div style="font-size:11px;line-height:1.6;color:var(--text3);padding:12px 0;">
       PestPass is an independent, unofficial study tool and is not affiliated with, endorsed by, or sponsored by the Georgia Department of Agriculture, the Georgia Structural Pest Control Commission, or the Georgia Department of Natural Resources. Content is prepared for exam-preparation purposes and may not reflect the most current rules — always verify current requirements with the official issuing agency before relying on this app for licensure or compliance decisions.
     </div>
   </div>
   <div style="padding:20px 18px;text-align:center;">
-    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;">PestPass · v4.8 · Georgia SPCC</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;">PestPass · v4.9 · Georgia SPCC</div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">400 questions · 576 flashcards · offline</div>
   </div>
 </div>
