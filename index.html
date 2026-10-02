@@ -201,25 +201,6 @@ body::before{display:none;}
 #daily-fc-btn:active{background:rgba(169,142,255,0.08);}
 
 /* Exam countdown + study plan card */
-#exam-plan-card{
-  background:linear-gradient(135deg, rgba(255,209,102,0.09) 0%, rgba(255,209,102,0.02) 100%);
-  border:1px solid rgba(255,209,102,0.28);
-  border-radius:14px;padding:14px 16px;margin-bottom:12px;
-}
-.ep-top{display:flex;align-items:center;gap:12px;}
-.ep-icon{width:42px;height:42px;border-radius:12px;background:rgba(255,209,102,0.14);color:#ffd166;display:flex;align-items:center;justify-content:center;flex:none;}
-.ep-days{font-family:var(--head);font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1.1;}
-.ep-days small{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:0;}
-.ep-date{font-size:11px;color:var(--text2);margin-top:2px;}
-.ep-plan{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,209,102,0.16);display:flex;flex-direction:column;gap:6px;}
-.ep-line{font-size:12px;color:var(--text2);display:flex;gap:8px;align-items:baseline;line-height:1.45;}
-.ep-line b{color:var(--text);font-weight:700;}
-.ep-dot{width:6px;height:6px;border-radius:50%;background:#ffd166;flex:none;transform:translateY(-1px);}
-.ep-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;}
-.ep-btn{font-size:12px;font-weight:700;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,209,102,0.4);background:rgba(255,209,102,0.12);color:#ffd166;cursor:pointer;}
-.ep-btn:disabled{opacity:.45;cursor:default;}
-.ep-btn.ghost{background:transparent;border-color:var(--border);color:var(--text2);}
-.ep-btn:active{transform:scale(.97);}
 .ep-input{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);color-scheme:dark;max-width:100%;}
 
 /* ═══════════════════════════════════════════════
@@ -2980,6 +2961,14 @@ if('serviceWorker' in navigator){
     function ppCheckUpdate(){ try{ reg.update().catch(function(){}); }catch(e){} }
     ppCheckUpdate();
     setInterval(ppCheckUpdate, 60*60*1000);
+    // Also check when the app comes back to the foreground — the PWA often
+    // stays alive in the background for days, so launch + hourly can miss
+    // the moment the user actually returns.
+    try{
+      document.addEventListener('visibilitychange', function(){
+        if(!document.hidden) ppCheckUpdate();
+      });
+    }catch(e){}
     reg.addEventListener('updatefound', function(){ ppWatchWorker(reg.installing); });
     // A new worker may have finished installing on a previous visit and be
     // waiting already; offer the refresh right away in that case.
@@ -3137,6 +3126,11 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
 </style>
 </head>
 <body>
+<script>
+// Apply the theme before first paint. Light is the default: without this the
+// page paints dark and then visibly flips to light when the load handler runs.
+try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-mode'); } }catch(e){}
+</script>
 
 
   
@@ -3376,11 +3370,6 @@ animation:arenaAmbientPulse 4.5s ease-in-out infinite alternate;
           <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-mosq-only" data-cat="Adulticides & ULV" onclick="event.stopPropagation(); setDailyFcCategory('Adulticides & ULV');">Adulticides &amp; ULV</button>
           <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-mosq-only" data-cat="Laws & Safety" onclick="event.stopPropagation(); setDailyFcCategory('Laws & Safety');">Laws &amp; Safety</button>
         </div>
-      </div>
-
-      <!-- ── EXAM COUNTDOWN + STUDY PLAN ── -->
-      <div id="exam-plan-card">
-        <div id="exam-plan-body"></div>
       </div>
 
       <!-- full hero (shown on first visit only) -->
@@ -7844,7 +7833,6 @@ function applyExamTrack(){
   if(typeof updateHomeCTA==='function') updateHomeCTA();
   if(typeof updateDailyFlashcardButton==='function') updateDailyFlashcardButton();
   if(typeof updateSWCards==='function') updateSWCards();
-  if(typeof renderExamPlan==='function') renderExamPlan();
   if(typeof renderMasteryPanel==='function') renderMasteryPanel();
   if(typeof renderHistory==='function') renderHistory();
   if(typeof renderCatProgress==='function') renderCatProgress();
@@ -8047,133 +8035,6 @@ function resumeQuizProgress(qp){
 }
 
 // ── SR due count helper (reads localStorage directly, no DOM needed) ──
-// ── Exam countdown + adaptive study plan ──────────────────────
-// Exam date stored per track as 'YYYY-MM-DD' (local calendar date).
-function getExamDateStr(){ try{ return safeLS.getItem(trackKey('exam_date'))||''; }catch(e){ return ''; } }
-function daysUntilExam(){
-  var str=getExamDateStr(); if(!str) return null;
-  var p=str.split('-'); if(p.length!==3) return null;
-  var d=new Date(+p[0], +p[1]-1, +p[2]); // local midnight — no timezone off-by-one
-  if(isNaN(d.getTime())) return null;
-  var now=new Date(); now.setHours(0,0,0,0);
-  return Math.round((d-now)/86400000);
-}
-function fmtExamDate(str){
-  var p=str.split('-');
-  return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
-var EP_CAL_ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
-function examPlanShowPicker(){
-  var body=document.getElementById('exam-plan-body'); if(!body) return;
-  var t=new Date();
-  var iso=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
-  var cur=getExamDateStr();
-  body.innerHTML=
-    '<div class="ep-top"><div class="ep-icon">'+EP_CAL_ICON+'</div>'+
-    '<div><div class="ep-days" style="font-size:16px;">Set your exam date</div>'+
-    '<div class="ep-date">Your daily plan adapts to the days remaining.</div></div></div>'+
-    '<div class="ep-actions" style="align-items:center;">'+
-    '<input type="date" id="exam-date-input" class="ep-input" value="'+esc(cur)+'" min="'+esc(iso)+'" aria-label="Exam date">'+
-    '<button type="button" class="ep-btn" id="exam-date-save" onclick="examPlanSaveDate()">Save</button>'+
-    '<button type="button" class="ep-btn ghost" onclick="renderExamPlan()">Cancel</button>'+
-    (cur?'<button type="button" class="ep-btn ghost" onclick="examPlanClearDate()">Remove</button>':'')+
-    '</div>';
-  var dinp=document.getElementById('exam-date-input');
-  var dsave=document.getElementById('exam-date-save');
-  function epToggleSave(){
-    if(dsave&&dinp) dsave.disabled = !/^\d{4}-\d{2}-\d{2}$/.test((dinp.value||'').trim());
-  }
-  if(dinp){
-    // Android Chrome sometimes focuses the field without opening the calendar
-    // popup — open it explicitly on tap (native tap behavior stays as fallback).
-    dinp.addEventListener('click',function(){ try{ this.showPicker(); }catch(e){} });
-    // Keep Save disabled until a real date is chosen, so a tap with an empty
-    // field can't silently do nothing.
-    dinp.addEventListener('input',epToggleSave);
-    dinp.addEventListener('change',epToggleSave);
-    epToggleSave();
-  }
-}
-function examPlanSaveDate(){
-  var inp=document.getElementById('exam-date-input'); if(!inp) return;
-  var v=(inp.value||'').trim();
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){
-    // No date chosen — nudge the field instead of silently doing nothing.
-    inp.style.borderColor='#e5484d';
-    try{ inp.focus(); }catch(e){}
-    setTimeout(function(){ inp.style.borderColor=''; }, 1500);
-    return;
-  }
-  try{ safeLS.setItem(trackKey('exam_date'), v); }catch(e){}
-  renderExamPlan();
-}
-function examPlanClearDate(){
-  try{ safeLS.removeItem(trackKey('exam_date')); }catch(e){}
-  renderExamPlan();
-}
-function renderExamPlan(){
-  var body=document.getElementById('exam-plan-body'); if(!body) return;
-  var days=daysUntilExam();
-  // No date set
-  if(days===null){
-    body.innerHTML=
-      '<div class="ep-top"><div class="ep-icon">'+EP_CAL_ICON+'</div>'+
-      '<div><div class="ep-days" style="font-size:16px;">When is your exam?</div>'+
-      '<div class="ep-date">Set a date for a countdown and a daily study plan.</div></div></div>'+
-      '<div class="ep-actions"><button type="button" class="ep-btn" onclick="examPlanShowPicker()">Set exam date</button></div>';
-    return;
-  }
-  var cur=getExamDateStr();
-  // Exam date has passed
-  if(days<0){
-    body.innerHTML=
-      '<div class="ep-top"><div class="ep-icon">'+EP_CAL_ICON+'</div>'+
-      '<div><div class="ep-days" style="font-size:16px;">That date has passed</div>'+
-      '<div class="ep-date">Exam was '+fmtExamDate(cur)+'. Hope it went well!</div></div></div>'+
-      '<div class="ep-actions"><button type="button" class="ep-btn" onclick="examPlanShowPicker()">Set a new date</button></div>';
-    return;
-  }
-  // Exam day
-  if(days===0){
-    var due0=(typeof getSRDueCount==='function')?getSRDueCount():0;
-    body.innerHTML=
-      '<div class="ep-top"><div class="ep-icon">'+EP_CAL_ICON+'</div>'+
-      '<div><div class="ep-days">Today is the day</div>'+
-      '<div class="ep-date">Good luck — trust your preparation.</div></div></div>'+
-      (due0?'<div class="ep-plan"><div class="ep-line"><span class="ep-dot"></span><span>Light review only: <b>'+due0+'</b> flashcard'+(due0>1?'s':'')+' due</span></div></div>':'')+
-      '<div class="ep-actions"><button type="button" class="ep-btn ghost" onclick="examPlanShowPicker()">Change date</button></div>';
-    return;
-  }
-  // Future date — adaptive daily plan from mastery + SR data
-  var pool=(typeof QS!=='undefined')?QS.filter(function(q){ return trackAllowsCategory(q.cat) && !isDrillOnlyCat(q.cat); }):[];
-  var db=(typeof window.loadMastery==='function')?window.loadMastery():{};
-  var unseen=0, byCat={};
-  pool.forEach(function(q){
-    var r=db[masteryKeyFor(q)];
-    if(!r||!r.attempts){ unseen++; }
-    else{ var c=byCat[q.cat]||(byCat[q.cat]={c:0,a:0}); c.c+=r.correct; c.a+=r.attempts; }
-  });
-  var worst=null, worstAcc=2;
-  Object.keys(byCat).forEach(function(c){
-    if(byCat[c].a>=3){ var acc=byCat[c].c/byCat[c].a; if(acc<worstAcc){ worstAcc=acc; worst=c; } }
-  });
-  var due=(typeof getSRDueCount==='function')?getSRDueCount():0;
-  var perDay=Math.ceil(unseen/days);
-  var lines=[];
-  lines.push(unseen>0
-    ? '<b>'+perDay+'</b>&nbsp;new questions/day to finish the bank'
-    : 'Question bank fully covered — drill your weak spots');
-  if(due>0) lines.push('<b>'+due+'</b>&nbsp;flashcard review'+(due>1?'s':'')+' due');
-  if(worst) lines.push('Weakest area: <b>'+worst+'</b> ('+Math.round(worstAcc*100)+'%)');
-  var planHtml=lines.map(function(l){ return '<div class="ep-line"><span class="ep-dot"></span><span>'+l+'</span></div>'; }).join('');
-  body.innerHTML=
-    '<div class="ep-top"><div class="ep-icon">'+EP_CAL_ICON+'</div>'+
-    '<div><div class="ep-days">'+days+' <small>day'+(days===1?'':'s')+' to go</small></div>'+
-    '<div class="ep-date">Exam: '+fmtExamDate(cur)+'</div></div></div>'+
-    '<div class="ep-plan">'+planHtml+'</div>'+
-    '<div class="ep-actions"><button type="button" class="ep-btn ghost" onclick="examPlanShowPicker()">Change date</button></div>';
-}
-
 function getSRDueCount(){
   try{
     var db = safeJSON('sr_cards', {});
@@ -8299,7 +8160,6 @@ function showScreen(name) {
   if(contentEl) contentEl.scrollTop = 0;
   document.getElementById('screen-'+name).classList.add('active');
   if(name==='studyguide'){ showEntrySplash('sg-entry-splash', 950); }
-  if(name==='home' && typeof renderExamPlan==='function'){ renderExamPlan(); }
   // cathub and tfblitz are sub-screens of home — keep home nav active
   const navName = ['cathub','tfblitz','survival','boss','mathdrill','sr'].includes(name) ? 'home' : (name === 'fc-home' ? 'flashcards' : name);
   if(name === 'fc-home') { if(typeof renderFCHome === 'function') renderFCHome(); }
