@@ -2978,6 +2978,19 @@ if('serviceWorker' in navigator){
     // A new worker may have finished installing on a previous visit and be
     // waiting already; offer the refresh right away in that case.
     if(reg.waiting && navigator.serviceWorker.controller) ppShowUpdateToast(reg.waiting);
+    // skipWaiting() means an update activates immediately instead of sitting
+    // "waiting", so the toast above often never fires — yet this open page is
+    // still the old copy. controllerchange is the reliable signal: a new
+    // worker just took over this page, so offer the one-tap refresh to load it.
+    try{
+      var ppHadControllerOnLoad = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', function(){
+        if(ppHadControllerOnLoad && !ppUpdateToastShown && typeof ppShowUpdateToast==='function'){
+          ppShowUpdateToast(navigator.serviceWorker.controller);
+        }
+        ppHadControllerOnLoad = true;
+      });
+    }catch(e){}
   }).catch(function(){ /* offline caching unavailable; app still works online */ });
 }
 
@@ -3024,7 +3037,23 @@ window.checkForUpdatesManual = function(){
       try{ reg.removeEventListener('updatefound', onFound); }catch(e){}
       if(done) return;
       if(reg.waiting || reg.installing){ foundUpdate(reg); }
-      else { finish('You\u2019re up to date.'); }
+      else {
+        finish('You\u2019re up to date.');
+        // The worker can be current while this open page is still an older
+        // copy (the update activated on an earlier visit). Offer a one-tap
+        // reload so the check actually lands the user on the newest version —
+        // no force-stop needed.
+        try{
+          if(statusEl && !document.getElementById('pp-reload-app-btn')){
+            var rb=document.createElement('button');
+            rb.id='pp-reload-app-btn'; rb.type='button'; rb.textContent='Reload app';
+            rb.setAttribute('aria-label','Reload the app to load the newest saved version');
+            rb.style.cssText='margin-left:8px;font-size:11px;font-weight:700;color:#0b0e13;background:#4ec9e1;border:0;border-radius:8px;padding:4px 10px;cursor:pointer;';
+            rb.addEventListener('click', function(){ window.location.reload(); });
+            statusEl.appendChild(rb);
+          }
+        }catch(e){}
+      }
     }, 6000);
   }).catch(function(){ finish('Could not reach the update service.'); });
 };
