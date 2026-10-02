@@ -1,7 +1,7 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE='ga-pest-18d3a53b02';
+const CACHE='ga-pest-2161672e';
 const ASSETS = ['./', './index.html', './privacy-policy.html'];
 
 self.addEventListener('install', e => {
@@ -15,12 +15,13 @@ self.addEventListener('install', e => {
       Promise.all(ASSETS.map(url => c.add(url).catch(() => {})))
     )
   );
-  // Without this, a newly installed SW sits "waiting" until every open tab
-  // is fully closed (not just refreshed) before it takes over — meaning an
-  // update never reaches the user until they quit and relaunch the app.
-  // For a single-file PWA under active iteration, that delay is a real
-  // problem, so the new worker activates as soon as it's installed instead.
-  self.skipWaiting();
+  // NOTE: no unconditional skipWaiting() here. A worker that activates
+  // silently gives the open page no reliable update signal — the
+  // 'installed' statechange can fire before the page's updatefound listener
+  // attaches, so the "New version available" toast never appears and users
+  // stay on the old copy without knowing. Instead the new worker parks in
+  // "waiting", the page reliably shows the one-tap Refresh toast, and
+  // tapping it sends SKIP_WAITING (handled below) to activate immediately.
 });
 
 self.addEventListener('activate', e => {
@@ -34,10 +35,10 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('message', e => {
-  // Lets a waiting worker activate immediately when the user taps
-  // "Refresh" in the in-app update toast (pairs with the updatefound
-  // handling in index.html). The install handler already calls
-  // skipWaiting() unconditionally, so this is a belt-and-braces path.
+  // Activates a waiting worker immediately when the user taps "Refresh" in
+  // the in-app update toast. This is the primary activation path: the
+  // install handler deliberately does NOT call skipWaiting(), so the update
+  // toast reliably appears instead of the worker activating silently.
   if(e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
