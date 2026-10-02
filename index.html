@@ -7722,7 +7722,9 @@ let isDrillMode=false;
 var EXAM_TRACK_KEY = 'examTrack';
 function getExamTrack(){
   var t = safeLS.getItem(EXAM_TRACK_KEY);
-  return (t==='rt' || t==='dnr' || t==='mosq') ? t : 'co';
+  // Default to 'rt' (Registered Technician): registered employee is the
+  // first step in pest control, so first-time users start there.
+  return (t==='co' || t==='dnr' || t==='mosq') ? t : 'rt';
 }
 // Storage-key namespacing for data that must NOT be shared between tracks —
 // weak spots, recent quizzes, and best scores are genuinely different
