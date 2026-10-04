@@ -3635,16 +3635,6 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         </button>
       </div>
 
-      <!-- ── WEAK SPOTS ── (per-question mastery) -->
-      <div id="mastery-panel" style="display:none;">
-        <div class="sec-label">Weak Spots <span id="mastery-weak-count" style="font-size:10px;color:var(--red);font-family:var(--mono);"></span></div>
-        <div class="mastery-panel">
-          <div class="mastery-weak-list" id="mastery-weak-list">
-            <div class="mastery-empty">Answer quiz questions to track weak spots.</div>
-          </div>
-        </div>
-      </div>
-
       <!-- ── RECENT QUIZZES ── -->
       <div id="history-section" style="display:none;">
         <div class="sec-label">Recent Quizzes</div>
@@ -8034,7 +8024,6 @@ function applyExamTrack(){
   if(typeof updateHomeCTA==='function') updateHomeCTA();
   if(typeof updateDailyFlashcardButton==='function') updateDailyFlashcardButton();
   if(typeof updateSWCards==='function') updateSWCards();
-  if(typeof renderMasteryPanel==='function') renderMasteryPanel();
   if(typeof renderHistory==='function') renderHistory();
   if(typeof renderCatProgress==='function') renderCatProgress();
   if(typeof renderRecentlyEffective==='function') renderRecentlyEffective();
@@ -8373,8 +8362,7 @@ function showScreen(name) {
   if(name==='bookmarks' && typeof updateSavedSRBanner==='function') updateSavedSRBanner();
   if(name==='studyguide') { if(typeof renderStudyGuide === 'function') renderStudyGuide(); }
   if(name==='home'){
-    if(typeof renderMasteryPanel==='function') renderMasteryPanel();
-    if(typeof renderMissedSection==='function') renderMissedSection();
+      if(typeof renderMissedSection==='function') renderMissedSection();
     if(typeof renderActivity==='function') renderActivity();
     if(typeof renderTrophyCase==='function') renderTrophyCase();
     if(typeof updateHomeCTA==='function') updateHomeCTA();
@@ -12430,43 +12418,6 @@ function renderMissedSection(){
     btn.style.pointerEvents='none';
   }
 }
-function drillWeakSpots(records){
-  if(!records || !records.length) return;
-  if(typeof examTimerInterval!=='undefined' && examTimerInterval){ clearInterval(examTimerInterval); examTimerInterval=null; }
-  if(typeof _pausedExamSeconds!=='undefined') _pausedExamSeconds=null;
-  // Index the bank once instead of QS.find per record (O(n) not O(n*m)).
-  var qById = {}, qByText2 = {};
-  QS.forEach(function(q){ if(q.id) qById[q.id] = q; qByText2[q.q] = q; });
-  var drillPool = records.map(function(r){
-    // Prefer matching by the stable question id, stored on the record itself.
-    // Records saved before this fix won't have one — for those, fall back to
-    // a prefix match against the stored (120-char-truncated) text snippet,
-    // rather than exact equality, since r.q is only ever a PREFIX of the real
-    // question once that question runs past 120 characters. Exact equality
-    // silently fails for any such question — which was most of Insect ID's
-    // bank specifically, and roughly a quarter of all questions overall.
-    if(r.qid && qById[r.qid]) return qById[r.qid];
-    if(r.q && qByText2[r.q]) return qByText2[r.q];
-    for(var qi=0; qi<QS.length; qi++){ var _qq=QS[qi]; if(_qq && _qq.q.indexOf(r.q) === 0) return _qq; }
-    return null;
-  }).filter(Boolean);
-  if(!drillPool.length) return;
-  isDrillMode = true;
-  window._quizIsTimed = false;
-  window._quizIsMock = false;
-  wrongAnswers = [];
-  qPool = shuffleInPlace(drillPool);
-  qIdx=0; qScore=0; qTotal=qPool.length; qAnswered=false;
-  showScreen('quiz');
-  document.getElementById('qp-step1').classList.add('hidden');
-  document.getElementById('qp-step2').classList.add('hidden');
-  document.getElementById('quiz-results').classList.add('hidden');
-  document.getElementById('quiz-active').classList.remove('hidden');
-  document.getElementById('drill-mode-banner').style.display='flex';
-  document.getElementById('exam-timer-wrap').style.display='none';
-  renderQ();
-}
-
 // ── Drill wrong answers as a quiz ──
 function drillWrongAnswers(){
   if(!wrongAnswers||wrongAnswers.length===0) return;
@@ -16280,39 +16231,6 @@ window.addEventListener('load', function(){
   };
 
   // Render weak spots panel on home screen
-  window.renderMasteryPanel = function(){
-    var db = loadMastery();
-    // A question belongs here purely because it's been missed — any attempt
-    // count, not just after 2+ tries. The old "attempts>=2 and below 70%"
-    // gate could hide a question that had been missed only once (attempts=1,
-    // correct=0 was excluded), which is the opposite of what "weak spots"
-    // should mean. It graduates back out once answered correctly 4 times in
-    // a row (streak, reset by any miss) — genuinely missed, but no longer
-    // weak.
-    var entries = Object.values(db).filter(function(r){
-      return r.attempts >= 1 && r.correct < r.attempts && (r.streak||0) < 4;
-    });
-    if(entries.length === 0){
-      document.getElementById('mastery-panel').style.display='none';
-      return;
-    }
-    // Sort by accuracy ascending (worst first)
-    entries.sort(function(a,b){ return (a.correct/a.attempts)-(b.correct/b.attempts); });
-    var worst = entries.slice(0,5);
-    document.getElementById('mastery-panel').style.display='block';
-    document.getElementById('mastery-weak-count').textContent = '(' + entries.length + ' missed)';
-    var list = document.getElementById('mastery-weak-list');
-    list.innerHTML='';
-    worst.forEach(function(rec){
-      var pct = Math.round(rec.correct/rec.attempts*100);
-      var div = document.createElement('div');
-      div.className='mastery-weak-item';
-      div.innerHTML='<div class="mwi-top"><span class="mwi-cat">'+rec.attempts+' attempts</span><span class="mwi-rate">'+pct+'% correct</span></div>'
-        +'<div class="mwi-q">'+rec.q+'</div>';
-      div.onclick=function(){ if(typeof drillWeakSpots==='function') drillWeakSpots(worst); };
-      list.appendChild(div);
-    });
-  };
 
 
 
