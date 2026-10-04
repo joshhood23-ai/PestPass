@@ -1487,11 +1487,11 @@ body::before{display:none;}
    been successfully registered — only then is it safe to stand down this
    fallback, since the two mechanisms must never fight for control. */
 #splash-screen:not(.js-armed){
-  animation: splashCssFallback 2.6s linear forwards;
+  animation: splashCssFallback 7s linear forwards;
 }
 @keyframes splashCssFallback{
-  0%, 40%{opacity:1; pointer-events:auto;}
-  41%{pointer-events:none;}
+  0%, 70%{opacity:1; pointer-events:auto;}
+  71%{pointer-events:none;}
   100%{opacity:0; pointer-events:none; visibility:hidden;}
 }
 #splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none;}
@@ -1502,11 +1502,37 @@ body::before{display:none;}
   position:absolute;left:50%;top:50%;z-index:2;
   line-height:1;pointer-events:none;
   opacity:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));
-  animation:splashBugFly 2.2s cubic-bezier(.3,.7,.4,1) .3s forwards;
+  animation:splashBugFly 4.6s cubic-bezier(.3,.7,.4,1) .3s forwards;
 }
 .splash-bug .bug-wing-l{transform-origin:20px 16px;animation:bugFlutter .18s ease-in-out infinite alternate;}
 .splash-bug .bug-wing-r{transform-origin:20px 16px;animation:bugFlutter .18s ease-in-out infinite alternate-reverse;}
 @keyframes bugFlutter{from{transform:scaleY(1);}to{transform:scaleY(.35);}}
+/* Slower wobbly flight: lands ~3.4s, settles with a happy wiggle, stays perched.
+   Touchdown at 74% of 4.6s + .3s delay ≈ 3.7s — splashLogoGlow is synced to it. */
+@keyframes splashBugFly{
+  0%{opacity:0;transform:translate(-52vw,-58vh) scale(.5) rotate(-24deg);}
+  6%{opacity:1;}
+  22%{transform:translate(-34vw,-44vh) scale(.62) rotate(10deg);}
+  38%{transform:translate(-20vw,-32vh) scale(.74) rotate(-8deg);}
+  54%{transform:translate(-10vw,-21vh) scale(.86) rotate(6deg);}
+  66%{transform:translate(-3vw,-13vh) scale(.95) rotate(-4deg);}
+  74%{transform:translate(-28px,-112px) scale(1.05) rotate(2deg);}
+  78%{transform:translate(-28px,-104px) scale(1) rotate(0deg);}
+  82%{transform:translate(-28px,-108px) scale(1) rotate(-6deg);}
+  86%{transform:translate(-28px,-104px) scale(1) rotate(6deg);}
+  90%{transform:translate(-28px,-104px) scale(1) rotate(0deg);}
+  100%{opacity:1;transform:translate(-28px,-104px) scale(1) rotate(0deg);}
+}
+/* Logo lights up the moment the bug lands */
+.splash-logo{animation:splashLogoGlow 1.1s ease 3.7s;}
+@keyframes splashLogoGlow{
+  0%{filter:drop-shadow(0 8px 20px rgba(78,201,225,0.25));}
+  35%{filter:drop-shadow(0 8px 20px rgba(78,201,225,0.25)) drop-shadow(0 0 28px rgba(127,227,245,0.95)) brightness(1.25);}
+  100%{filter:drop-shadow(0 8px 20px rgba(78,201,225,0.25));}
+}
+@media (prefers-reduced-motion:reduce){
+  .splash-logo{animation:none;}
+}
 @keyframes splashBugFly{
   0%{opacity:0;transform:translate(-52vw,-58vh) scale(.5) rotate(-24deg);}
   8%{opacity:1;}
@@ -3280,7 +3306,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
   <div id="offline-banner">⚡ You're offline — quiz data still works, fonts may look different</div>
 <!-- Splash Screen -->
   <div id="splash-screen">
-    <div class="splash-bug" aria-hidden="true"><svg viewBox="0 0 40 40" width="22" height="22">
+    <div class="splash-bug" aria-hidden="true"><svg viewBox="0 0 40 40" width="32" height="32">
   <ellipse class="bug-wing-l" cx="13" cy="12" rx="8" ry="5" fill="#cfe8ff" opacity="0.85" transform="rotate(-25 13 12)"/>
   <ellipse class="bug-wing-r" cx="27" cy="12" rx="8" ry="5" fill="#cfe8ff" opacity="0.85" transform="rotate(25 27 12)"/>
   <ellipse cx="20" cy="24" rx="10" ry="9" fill="#3a3f4a"/>
@@ -17332,14 +17358,14 @@ window.pwaBannerDismiss = function(){
   }
   // Primary: hide shortly after load completes (lets the logo animation play once)
   window.addEventListener('load', function(){
-    setTimeout(hideSplash, 900);
+    setTimeout(hideSplash, 5200);
   });
   // Safety net: if the user taps/touches anywhere before the timer fires,
   // hide immediately so the splash can never block real interaction.
   splash.addEventListener('click', hideSplash);
   splash.addEventListener('touchstart', hideSplash, {passive:true});
   // Absolute fallback in case 'load' never fires for some reason
-  setTimeout(hideSplash, 2500);
+  setTimeout(hideSplash, 7000);
   // Every JS-driven hide path above is now registered, so it's safe to
   // disarm the CSS-only fallback (see #splash-screen:not(.js-armed) in the
   // stylesheet) — it stays armed if anything above threw before this line.
