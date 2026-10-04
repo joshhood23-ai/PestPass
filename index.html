@@ -8127,7 +8127,8 @@ function trackAllowsCategory(cat){
 // this instead at those two specific gates — never in the "All"/mastery/
 // category-hub paths, where the exclusion from trackAllowsCategory is
 // exactly the intended behavior.
-var BONUS_CATEGORIES = { 'Insect ID': ['co','rt'], 'Georgia Regulations': ['co','rt'], 'Inspection Procedures': ['co','rt'], 'Visual ID': ['co','rt'] };
+// Insect ID / Visual ID (pest identification) are Certified Operator only — Registered Technicians aren't tested on visual ID.
+var BONUS_CATEGORIES = { 'Insect ID': ['co'], 'Georgia Regulations': ['co','rt'], 'Inspection Procedures': ['co','rt'], 'Visual ID': ['co'] };
 function categoryIsReachable(cat){
   if(BONUS_CATEGORIES[cat]) return BONUS_CATEGORIES[cat].indexOf(getExamTrack()) !== -1;
   return trackAllowsCategory(cat);
@@ -8739,7 +8740,7 @@ function openCatHub(cat){
   // wdo:1; HPC: everything else). Different categories, different drills.
   var idBtn = document.getElementById('cathub-btn-insectid');
   if(idBtn){
-    idBtn.style.display = (cat === 'HPC' || cat === 'WDO') ? 'flex' : 'none';
+    idBtn.style.display = ((cat === 'HPC' || cat === 'WDO') && getExamTrack() !== 'rt') ? 'flex' : 'none';
     var idSub = idBtn.querySelector('.cathub-action-sub');
     if(idSub) idSub.textContent = (cat === 'WDO')
       ? 'Termites, wood-boring beetles, carpenter ants & bees'
@@ -8757,7 +8758,7 @@ function openCatHub(cat){
 
   // Visual ID Drill — HPC and WDO hubs (photo-based pest identification)
   var visualidBtn = document.getElementById('cathub-btn-visualid');
-  if(visualidBtn) visualidBtn.style.display = (cat === 'HPC' || cat === 'WDO') ? 'flex' : 'none';
+  if(visualidBtn) visualidBtn.style.display = ((cat === 'HPC' || cat === 'WDO') && getExamTrack() !== 'rt') ? 'flex' : 'none';
 
   // "Identification" section header — only show it when at least one of the
   // ID drills is visible (GEN/FUM hubs show none of them).
@@ -8793,9 +8794,9 @@ function openCatHub(cat){
   var clockBtn = document.getElementById('cathub-btn-clock');
   if(clockBtn) clockBtn.style.display = (cat === 'General Knowledge') ? 'flex' : 'none';
 
-  // Photo Frenzy — HPC hub only (photo bank is household pests, not WDO)
+  // Photo Frenzy — HPC hub only (photo bank is household pests, not WDO); hidden for Reg. Tech (no visual ID)
   var frenzyBtn = document.getElementById('cathub-btn-frenzy');
-  if(frenzyBtn) frenzyBtn.style.display = (cat === 'HPC') ? 'flex' : 'none';
+  if(frenzyBtn) frenzyBtn.style.display = (cat === 'HPC' && getExamTrack() !== 'rt') ? 'flex' : 'none';
 
   // Boss Battle subtitle: the player's actual current level for this category
   var bossSub = document.getElementById('cathub-boss-sub');
