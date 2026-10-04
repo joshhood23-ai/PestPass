@@ -1471,8 +1471,11 @@ body::before{display:none;}
 #splash-screen{
   position:fixed;inset:0;z-index:99999;background:var(--bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity .35s ease, visibility .35s ease;
+  transition:opacity .7s ease, visibility .7s ease;
 }
+#splash-screen.hidden .splash-logo{transform:scale(1.12);opacity:0;transition:transform .7s ease, opacity .7s ease;}
+#splash-screen.hidden .splash-name,#splash-screen.hidden .splash-sub,#splash-screen.hidden .splash-version{opacity:0;transition:opacity .5s ease;}
+#splash-screen.hidden .splash-bug{opacity:0!important;transition:opacity .3s ease;}
 @media (min-width:640px){
   #splash-screen{width:100%;max-width:480px;left:50%;right:auto;transform:translateX(-50%);
     border-left:1px solid var(--border2);border-right:1px solid var(--border2);}
@@ -8726,8 +8729,6 @@ function cathubGoQuiz(){
   if(!_catHubCurrent) return;
   showScreen('quiz');
   if(typeof selectQCat === 'function') selectQCat(_catHubCurrent);
-  themeEntrySplashIcon('quiz-entry-splash-icon', _catHubCurrent);
-  showEntrySplash('quiz-entry-splash', 950);
 }
 
 function cathubGoBlitz(){
@@ -8800,24 +8801,18 @@ function cathubGoInsectID(){
   var wdoHub = _catHubCurrent === 'WDO';
   var pool = QS.filter(function(q){ return q.cat === 'Insect ID' && (wdoHub ? !!q.wdo : !q.wdo); });
   startQuiz('Insect ID', 20, pool);
-  themeEntrySplashIcon('quiz-entry-splash-icon', _catHubCurrent);
-  showEntrySplash('quiz-entry-splash', 950);
 }
 
 function cathubGoGARegs(){
   if(!_catHubCurrent) return;
   window._bonusReturnHub = _catHubCurrent;
   startQuiz('Georgia Regulations', 20);
-  themeEntrySplashIcon('quiz-entry-splash-icon', _catHubCurrent);
-  showEntrySplash('quiz-entry-splash', 950);
 }
 
 function cathubGoInspect(){
   if(!_catHubCurrent) return;
   window._bonusReturnHub = _catHubCurrent;
   startQuiz('Inspection Procedures', 20);
-  themeEntrySplashIcon('quiz-entry-splash-icon', _catHubCurrent);
-  showEntrySplash('quiz-entry-splash', 950);
 }
 
 // Visual ID questions depicting wood-destroying organisms (termites, carpenter
@@ -8832,8 +8827,6 @@ function cathubGoVisualID(){
     poolOverride = QS.filter(function(q){ return q && q.cat==='Visual ID' && q.img && WDO_VISUAL_IDS.indexOf(q.id)!==-1; });
   }
   startQuiz('Visual ID', 20, poolOverride);
-  themeEntrySplashIcon('quiz-entry-splash-icon', _catHubCurrent);
-  showEntrySplash('quiz-entry-splash', 950);
 }
 
 // ── Entry splash (generic) ──────────────────────────────────
@@ -8883,6 +8876,36 @@ function themeEntrySplashIcon(iconElId, catFullName){
 }
 
 function mdShowEntrySplash(){ showEntrySplash('md-entry-splash', 950); }
+
+// Sets custom kicker/title/sub/icon on the quiz entry splash so each drill
+// mode gets its own branded splash instead of the generic "Practice Quiz".
+function setQuizSplash(kicker, title, sub, iconSVG){
+  var splash = document.getElementById('quiz-entry-splash');
+  if(!splash) return;
+  var k = splash.querySelector('.entry-splash-kicker');
+  var t = splash.querySelector('.entry-splash-title');
+  var s = splash.querySelector('.entry-splash-sub');
+  var icon = document.getElementById('quiz-entry-splash-icon');
+  if(k && kicker) k.textContent = kicker;
+  if(t && title) t.textContent = title;
+  if(s && sub) s.textContent = sub;
+  if(icon && iconSVG){
+    // Replace the svg inside the icon, keeping the ring span
+    var old = icon.querySelector('svg');
+    if(old) old.remove();
+    var tmp = document.createElement('div');
+    tmp.innerHTML = iconSVG;
+    var svg = tmp.querySelector('svg');
+    if(svg) icon.appendChild(svg);
+  }
+}
+var QUIZ_SPLASH_ICONS = {
+  quiz: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  visual: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+  insect: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="8" height="12" rx="4"/><path d="M12 8v12"/><path d="M8 10H4m4 4H3m5 4H4m12-8h4m-4 4h5m-5 4h4"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>',
+  regs: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  inspect: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+};
 
 // ═══════════════════════════════════════════════════════════
 //  STUDY GUIDE (Cliffnotes) — original condensed explainers
