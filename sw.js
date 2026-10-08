@@ -1,10 +1,10 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE='ga-pest-1170a30ee7';          // rewritten by tools/build.js on every build
+const CACHE='ga-pest-ff056fe820';          // rewritten by tools/build.js on every build
 const IMG_CACHE='ga-pest-img';             // the photo + boss-art files; their names are content-hashed, so entries never go stale
 const ASSETS = ['./', './index.html', './privacy-policy.html'];
-const PACKS = /*@@PACKS@@*/["photos-e45afae60e.js","boss-94aa1a49b0.js"];             // rewritten by tools/build.js — the photos-*.js and boss-*.js files
+const PACKS = /*@@PACKS@@*/["photos-b264e3c50d.js","boss-94aa1a49b0.js"];             // rewritten by tools/build.js — the photos-*.js and boss-*.js files
 
 self.addEventListener('install', e => {
   // Cache each asset individually: addAll() rejects the ENTIRE install if a
