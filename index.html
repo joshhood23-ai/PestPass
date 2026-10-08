@@ -9077,8 +9077,8 @@ function openCatHub(cat){
     bossSub.textContent = 'Level '+lvl+' · '+bossName+' · '+qN+' questions · '+lvN+' lives';
   }
 
-  // "Drills" section — clones of all visible drill buttons, placed before
-  // the Identification section. Drills stay in their hub positions too.
+  // "Drills" section — moves all visible drill buttons here, placed before
+  // the Identification section. Each drill appears exactly once.
   var drillsSec = document.getElementById('cathub-sec-drills');
   var drillsList = document.getElementById('cathub-drills-list');
   if(drillsSec && drillsList){
@@ -9088,15 +9088,23 @@ function openCatHub(cat){
     drillIds.forEach(function(id){
       var b = document.getElementById(id);
       if(b && b.style.display !== 'none'){
-        var c = b.cloneNode(true);
-        c.removeAttribute('id');
-        c.style.display = 'flex';
-        drillsList.appendChild(c);
+        b.style.display = 'flex';
+        drillsList.appendChild(b);
         anyDrill = true;
       }
     });
     drillsSec.style.display = anyDrill ? 'block' : 'none';
     drillsList.style.display = anyDrill ? 'block' : 'none';
+    // Hide the Identification header when all its buttons moved to Drills
+    var identSec = document.getElementById('cathub-sec-ident');
+    if(identSec){
+      var sib = identSec.nextElementSibling, hasVisible = false;
+      while(sib && !(sib.classList && sib.classList.contains('sec-label'))){
+        if(sib.tagName === 'BUTTON' && sib.style.display !== 'none'){ hasVisible = true; break; }
+        sib = sib.nextElementSibling;
+      }
+      identSec.style.display = hasVisible ? 'block' : 'none';
+    }
   }
 
   showScreen('cathub');
