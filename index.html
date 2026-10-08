@@ -14765,10 +14765,10 @@ function renderFCHome() {
     } else {
       frzStreak = 0;
       card.classList.add('flash-wrong');
-      flash.textContent = q.opts[q.ans];
+      flash.innerHTML = '<div><div style="font-weight:800;margin-bottom:6px;">'+esc(q.opts[q.ans])+'</div><div style="font-size:13px;font-weight:400;line-height:1.4;opacity:.92;">'+esc(q.exp||'')+'</div></div>';
       if(typeof playSound==='function') playSound('wrong');
       if(typeof haptic==='function') haptic('wrong');
-      setTimeout(frzNext, 1200);
+      setTimeout(frzNext, 3000);
     }
     frzSyncHud();
     if(typeof recordMastery==='function') recordMastery(q.q, correct, q.cat, q.id);
@@ -14785,9 +14785,9 @@ function renderFCHome() {
     });
     var card = document.getElementById('frz-photo-card');
     card.classList.add('flash-wrong');
-    document.getElementById('frz-flash').textContent = q.opts[q.ans];
+    document.getElementById('frz-flash').innerHTML = '<div><div style="font-weight:800;margin-bottom:6px;">'+esc(q.opts[q.ans])+'</div><div style="font-size:13px;font-weight:400;line-height:1.4;opacity:.92;">'+esc(q.exp||'')+'</div></div>';
     frzSyncHud();
-    setTimeout(frzNext, 1200);
+    setTimeout(frzNext, 3000);
   }
 
   function frzNext(){ frzIdx++; frzShowCard(); }
