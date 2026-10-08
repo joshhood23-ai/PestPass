@@ -1516,7 +1516,7 @@ body::before{display:none;}
 }
 .sb-y,.sb-s,.sb-bob{will-change:transform;}
 .sb-art{position:relative;width:48px;height:47px;}
-.sb-layer{position:absolute;left:0;top:0;width:100%;height:100%;display:block;-webkit-user-drag:none;user-select:none;pointer-events:none;}
+.sb-layer{position:absolute;left:0;top:0;width:100%;height:100%;display:block;-webkit-user-drag:none;user-select:none;pointer-events:none;}.sb-body{transition:opacity .1s ease;}
 .sb-wing{will-change:transform;}
 .sb-wing-l{transform-origin:23.6% 59.6%;}
 .sb-wing-r{transform-origin:76.4% 59.6%;}
@@ -3605,13 +3605,13 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         function swapPose(newSrc){
           if(!newSrc || bodyImg.src === newSrc) return;
           bodyImg.style.opacity = '0';
-          setTimeout(function(){ bodyImg.src = newSrc; bodyImg.style.opacity = '1'; }, 250);
+          setTimeout(function(){ bodyImg.src = newSrc; bodyImg.style.opacity = '1'; }, 100);
         }
-        // Land at ~3.2s (0.3s delay + 2.9s duration): crossfade to sitting
-        setTimeout(function(){ swapPose(sitting); }, 3200);
-        // Wink at ~4.8s: crossfade to winking, hold, crossfade back
-        setTimeout(function(){ swapPose(winking); }, 4800);
-        setTimeout(function(){ swapPose(sitting); }, 5600);
+        // Land at ~2.6s (0.1s delay + 2.5s duration): crossfade to sitting
+        setTimeout(function(){ swapPose(sitting); }, 2600);
+        // Wink at ~3.6s: crossfade to winking, hold, crossfade back (all before 5.2s hide)
+        setTimeout(function(){ swapPose(winking); }, 3600);
+        setTimeout(function(){ swapPose(sitting); }, 4300);
       }
     }
     function afterPaint(){ requestAnimationFrame(function(){ requestAnimationFrame(go); }); }
