@@ -8812,6 +8812,21 @@ function showScreen(name) {
   }
 }
 window.addEventListener('popstate', function(e){
+  // System back button while the settings drawer is open: close the drawer
+  // and stay on the current screen instead of navigating away.
+  if(document.body.classList.contains('menu-open')){
+    window._menuHistPushed = false;
+    window.closeMenu();
+    return;
+  }
+  // Back press landing on a leftover drawer entry (pushed by openMenu; the
+  // drawer was already closed via X/tap): skip past it so a single press
+  // reaches the right screen instead of swallowing the press.
+  if(e.state && e.state.ppMenu){
+    window._menuHistPushed = false;
+    try{ history.back(); }catch(e){}
+    return;
+  }
   var target = (e.state && e.state.screen) || 'home';
   window._navFromPopstate = true;
   showScreen(target);
@@ -16341,17 +16356,27 @@ window.resetStats = function(){
 // Visibility is stylesheet-driven via body.menu-open (see CSS). The drawer
 // and backdrop are direct children of <body> (outside #app) so no ancestor
 // transform/flex can break their fixed positioning.
+// Back-button integration: opening the drawer pushes a lightweight history
+// entry so the Android system back button closes the menu instead of
+// leaving the app (blank page). The popstate handler below consumes it.
 window.openMenu = function(){
   try{ menuSyncState(); }catch(e){ console.error('menuSyncState error:', e); }
   document.body.classList.add('menu-open');
   var backdrop = document.getElementById('menu-backdrop');
   if(backdrop) backdrop.setAttribute('aria-hidden','false');
+  if(!window._menuHistPushed){
+    try{ history.pushState({ppMenu:true}, '', location.href); window._menuHistPushed = true; }catch(e){}
+  }
 };
 
 window.closeMenu = function(){
+  if(!document.body.classList.contains('menu-open')) return;
   document.body.classList.remove('menu-open');
   var backdrop = document.getElementById('menu-backdrop');
   if(backdrop) backdrop.setAttribute('aria-hidden','true');
+  // NOTE: the history entry pushed by openMenu is intentionally left for the
+  // popstate handler to skip (see below) — popping it here would race with
+  // a navigation started from a drawer item tap and yank the user back.
 };
 // If the menu drawer is open when the app goes to background (minimized,
 // switched away), Android's WebView can restore it in a broken visual state —
