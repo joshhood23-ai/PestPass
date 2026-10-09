@@ -1765,6 +1765,12 @@ z-index:5;
 /* menu open/close handled via inline styles in JS */
 .menu-toggle-on{background:var(--c-gen)!important;}
 .light-mode #menu-drawer{background:var(--bg2);}
+/* ── Hamburger menu drawer: body-level fixed overlay, hidden by default.
+   Shown via body.menu-open (stylesheet-driven, not inline styles). */
+#menu-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:10000;opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;}
+#menu-drawer{position:fixed;top:0;right:0;bottom:0;width:280px;max-width:85vw;background:var(--bg2);border-left:1px solid var(--border2);z-index:10001;transform:translateX(105%);visibility:hidden;transition:transform .25s cubic-bezier(.4,0,.2,1),visibility .25s;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+body.menu-open #menu-backdrop{opacity:1;visibility:visible;}
+body.menu-open #menu-drawer{transform:translateX(0);visibility:visible;}
 
 /* ── Light mode (kept for toggle compatibility) ── */
 .light-mode{
@@ -5269,9 +5275,11 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     </div>
   </div>
 </div>
+</div>
+
 <!-- ── HAMBURGER MENU DRAWER ── -->
-<div id="menu-backdrop" onclick="closeMenu()" aria-hidden="true" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:10000;opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;"></div>
-<div id="menu-drawer" style="position:fixed;top:0;right:0;bottom:0;width:280px;max-width:85vw;background:var(--bg2);border-left:1px solid var(--border2);z-index:10001;transform:translateX(100%);visibility:hidden;transition:transform .25s cubic-bezier(.4,0,.2,1),visibility .25s;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+<div id="menu-backdrop" onclick="closeMenu()" aria-hidden="true"></div>
+<div id="menu-drawer">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top, 0px)) 18px 12px;border-bottom:1px solid var(--border);">
     <div style="font-family:var(--head);font-size:14px;font-weight:700;color:var(--text);">Settings</div>
     <button onclick="closeMenu()" aria-label="Close settings menu" style="background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
@@ -5369,8 +5377,6 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;" data-pp-ver>PestPass · v4.13 · Georgia SPCC</div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">400 questions · 576 flashcards · offline</div>
   </div>
-</div>
-
 <!-- ── FIRST-RUN TUTORIAL ── -->
 <div id="tutorial-overlay" role="dialog" aria-modal="true" aria-label="Welcome tutorial">
   <div class="tutorial-card">
@@ -8708,8 +8714,7 @@ document.addEventListener('keydown', function(e){
     if(typeof closePause === 'function') closePause();
     return;
   }
-  var menuBackdrop = document.getElementById('menu-backdrop');
-  if(menuBackdrop && menuBackdrop.style.visibility === 'visible'){
+  if(document.body.classList.contains('menu-open')){
     if(typeof closeMenu === 'function') closeMenu();
     return;
   }
@@ -16333,25 +16338,20 @@ window.resetStats = function(){
 }
 
 // ── Hamburger Menu ──
+// Visibility is stylesheet-driven via body.menu-open (see CSS). The drawer
+// and backdrop are direct children of <body> (outside #app) so no ancestor
+// transform/flex can break their fixed positioning.
 window.openMenu = function(){
-  var backdrop = document.getElementById('menu-backdrop');
-  var drawer   = document.getElementById('menu-drawer');
-  if(!backdrop || !drawer) return;
   try{ menuSyncState(); }catch(e){ console.error('menuSyncState error:', e); }
-  backdrop.style.opacity = '1';
-  backdrop.style.visibility = 'visible';
-  drawer.style.visibility = 'visible';
-  drawer.style.transform = 'translateX(0)';
+  document.body.classList.add('menu-open');
+  var backdrop = document.getElementById('menu-backdrop');
+  if(backdrop) backdrop.setAttribute('aria-hidden','false');
 };
 
 window.closeMenu = function(){
+  document.body.classList.remove('menu-open');
   var backdrop = document.getElementById('menu-backdrop');
-  var drawer   = document.getElementById('menu-drawer');
-  if(!backdrop || !drawer) return;
-  backdrop.style.opacity = '0';
-  backdrop.style.visibility = 'hidden';
-  drawer.style.visibility = 'hidden';
-  drawer.style.transform = 'translateX(100%)';
+  if(backdrop) backdrop.setAttribute('aria-hidden','true');
 };
 // If the menu drawer is open when the app goes to background (minimized,
 // switched away), Android's WebView can restore it in a broken visual state —
