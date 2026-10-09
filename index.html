@@ -16346,6 +16346,13 @@ window.closeMenu = function(){
   backdrop.style.visibility = 'hidden';
   drawer.style.transform = 'translateX(100%)';
 };
+// If the menu drawer is open when the app goes to background (minimized,
+// switched away), Android's WebView can restore it in a broken visual state —
+// the drawer renders as full-width inline content instead of the slide-in
+// panel. Closing it on hide guarantees a clean state on return.
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden){ try{ window.closeMenu(); }catch(e){} }
+});
 
 // ── PHOTO CREDITS ──
 // Builds the attribution list from Visual ID question credits.
