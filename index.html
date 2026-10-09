@@ -9005,6 +9005,11 @@ function openCatHub(cat){
   // WDO Math Drill — WDO-only action
   var mdBtn = document.getElementById('cathub-btn-mathdrill');
   if(mdBtn) mdBtn.style.display = (cat === 'WDO') ? 'flex' : 'none';
+  // Photo Frenzy — General Knowledge hub only. The frenzy pool is already
+  // hub-independent (all Visual ID minus WDO), and having it beside the
+  // Visual ID drill in every hub was repetitive.
+  var frzBtn = document.getElementById('cathub-btn-frenzy');
+  if(frzBtn) frzBtn.style.display = (cat === 'GEN') ? 'flex' : 'none';
 
   // Insect ID Drill — shown in both HPC and WDO hubs, but each hub drills
   // its own insects with zero overlap (WDO: wood-destroying insects flagged
