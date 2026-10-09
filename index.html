@@ -3676,7 +3676,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
       <div class="hsub" id="header-sub">SPCC &middot; Certified Operator Prep</div>
     </div>
     <div class="top-actions">
-      <button class="icon-btn" id="hamburger-btn" onclick="openMenu()" title="Settings" aria-label="Open settings menu">
+      <button class="icon-btn" id="hamburger-btn" onclick="showScreen('settings');try{menuSyncState();}catch(e){}" title="Settings" aria-label="Open settings menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
@@ -5252,32 +5252,14 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     </button>
   </nav>
 <!-- ── PHOTO CREDITS ── -->
-<div id="screen-credits" class="screen">
-  <div style="padding:14px 16px 20px;max-width:640px;margin:0 auto;">
-    <button class="cathub-back" onclick="showScreen('home')">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      BACK
-    </button>
-    <div style="font-size:20px;font-weight:800;color:var(--text);margin:10px 0 4px;">Photo Credits</div>
-    <div style="font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:14px;">
-      All pest identification photos in PestPass are AI-generated reference images created
-      specifically for this app. No copyrighted photographs are used.
+<div id="screen-settings" class="screen">
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <button class="icon-btn" onclick="history.back()" aria-label="Back" style="flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="font-family:var(--head);font-size:20px;font-weight:800;letter-spacing:-.5px;">Settings</div>
     </div>
-    <div id="credits-list"></div>
-    <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-top:16px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;">
-      
-    </div>
-  </div>
-</div>
-<!-- ── HAMBURGER MENU DRAWER ── -->
-<div id="menu-backdrop" onclick="closeMenu()" aria-hidden="true" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:10000;opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;"></div>
-<div id="menu-drawer" style="position:fixed;top:0;right:0;bottom:0;width:280px;max-width:85vw;background:var(--bg2);border-left:1px solid var(--border2);z-index:10001;transform:translateX(100%);visibility:hidden;transition:transform .25s cubic-bezier(.4,0,.2,1),visibility .25s;overflow-y:auto;-webkit-overflow-scrolling:touch;">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top, 0px)) 18px 12px;border-bottom:1px solid var(--border);">
-    <div style="font-family:var(--head);font-size:14px;font-weight:700;color:var(--text);">Settings</div>
-    <button onclick="closeMenu()" aria-label="Close settings menu" style="background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
   <div style="padding:14px 18px 6px;">
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Appearance</div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
@@ -5306,13 +5288,13 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <div style="font-size:11px;color:var(--text3);margin-top:1px;">Save or move your progress</div>
       </div>
     </button>
-    <button type="button" role="button" tabindex="0" onclick="closeMenu();resetStats();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+    <button type="button" role="button" tabindex="0" onclick="resetStats();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
       <div style="width:34px;height:34px;border-radius:9px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--red);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.59"/></svg>
       </div>
       <div style="flex:1;font-size:13px;font-weight:600;color:var(--red);">Reset Progress</div>
     </button>
-    <button type="button" role="button" tabindex="0" onclick="closeMenu();tutorialReplay();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+    <button type="button" role="button" tabindex="0" onclick="tutorialReplay();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
       <div style="width:34px;height:34px;border-radius:9px;background:rgba(169,142,255,0.08);border:1px solid rgba(169,142,255,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#a98eff;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </div>
@@ -5341,7 +5323,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
       <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);">Privacy Policy</div>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </a>
-    <button type="button" role="button" tabindex="0" onclick="closeMenu();showScreen('credits');renderCredits();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;width:100%;text-align:left;">
+    <button type="button" role="button" tabindex="0" onclick="showScreen('credits');renderCredits();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;width:100%;text-align:left;">
       <div style="width:34px;height:34px;border-radius:9px;background:rgba(78,201,225,0.08);border:1px solid rgba(78,201,225,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--c-gen);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
 <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
@@ -5369,7 +5351,26 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;" data-pp-ver>PestPass · v4.13 · Georgia SPCC</div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">400 questions · 576 flashcards · offline</div>
   </div>
+
 </div>
+<div id="screen-credits" class="screen">
+  <div style="padding:14px 16px 20px;max-width:640px;margin:0 auto;">
+    <button class="cathub-back" onclick="showScreen('home')">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      BACK
+    </button>
+    <div style="font-size:20px;font-weight:800;color:var(--text);margin:10px 0 4px;">Photo Credits</div>
+    <div style="font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:14px;">
+      All pest identification photos in PestPass are AI-generated reference images created
+      specifically for this app. No copyrighted photographs are used.
+    </div>
+    <div id="credits-list"></div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-top:16px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;">
+      
+    </div>
+  </div>
+</div>
+<!-- ── HAMBURGER MENU DRAWER ── -->
 
 <!-- ── FIRST-RUN TUTORIAL ── -->
 <div id="tutorial-overlay" role="dialog" aria-modal="true" aria-label="Welcome tutorial">
