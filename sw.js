@@ -1,7 +1,7 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE='ga-pest-b49f5a66d2';          // rewritten by tools/build.js on every build
+const CACHE='ga-pest-025c12d6ca';          // rewritten by tools/build.js on every build
 // The photo packs are NOT content-hashed (photos-e138ab4101-p1.js keeps its name
 // across content changes), so the image cache MUST be versioned with the build
 // stamp. A fixed image-cache name would serve stale packs forever: prefetch
