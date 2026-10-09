@@ -5271,7 +5271,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
 </div>
 <!-- ── HAMBURGER MENU DRAWER ── -->
 <div id="menu-backdrop" onclick="closeMenu()" aria-hidden="true" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:10000;opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;"></div>
-<div id="menu-drawer" style="position:fixed;top:0;right:0;bottom:0;width:min(280px,85vw);background:var(--bg2);border-left:1px solid var(--border2);z-index:10001;transform:translateX(100%);visibility:hidden;transition:transform .25s cubic-bezier(.4,0,.2,1),visibility .25s;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+<div id="menu-drawer" style="position:fixed;top:0;right:0;bottom:0;width:280px;max-width:85vw;background:var(--bg2);border-left:1px solid var(--border2);z-index:10001;transform:translateX(100%);visibility:hidden;transition:transform .25s cubic-bezier(.4,0,.2,1),visibility .25s;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top, 0px)) 18px 12px;border-bottom:1px solid var(--border);">
     <div style="font-family:var(--head);font-size:14px;font-weight:700;color:var(--text);">Settings</div>
     <button onclick="closeMenu()" aria-label="Close settings menu" style="background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
