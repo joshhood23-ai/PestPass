@@ -1,8 +1,12 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE='ga-pest-1efde53cac';          // rewritten by tools/build.js on every build
-const IMG_CACHE='ga-pest-img';             // the photo + boss-art files; their names are content-hashed, so entries never go stale
+const CACHE='ga-pest-1e88c34c46';          // rewritten by tools/build.js on every build
+// The photo packs are NOT content-hashed (photos-e138ab4101-p1.js keeps its name
+// across content changes), so the image cache MUST be versioned with the build
+// stamp. A fixed image-cache name would serve stale packs forever: prefetch
+// skips URLs already cached and the fetch handler is cache-first.
+const IMG_CACHE='ga-pest-img-'+CACHE;
 const ASSETS = ['./', './index.html', './privacy-policy.html'];
 const PACKS = /*@@PACKS@@*/["photos-e138ab4101-p1.js","photos-e138ab4101-p2.js","photos-e138ab4101-p3.js","photos-e138ab4101-p4.js","photos-e138ab4101-p5.js","photos-e138ab4101-p6.js","photos-e138ab4101-p7.js","photos-e138ab4101-p8.js","photos-e138ab4101-p9.js","photos-e138ab4101-p10.js","photos-e138ab4101-p11.js","photos-e138ab4101-p12.js","photos-e138ab4101-p13.js","photos-e138ab4101-p14.js","photos-e138ab4101-p15.js","photos-e138ab4101-p16.js","photos-e138ab4101-p17.js","photos-e138ab4101-p18.js","boss-187592eb8d.js"];             // rewritten by tools/build.js — the photos-*.js and boss-*.js files
 
@@ -47,7 +51,7 @@ async function prefetchImages() {
   const have = new Set((await cache.keys()).map(r => r.url));
   await Promise.all([...have].filter(u => !wanted.has(u)).map(u => cache.delete(u)));
   for (const u of [...wanted].filter(u => !have.has(u))) {
-    try { const res = await fetch(u); if (res && res.ok) await cache.put(u, res); } catch (e) {}
+    try { const res = await fetch(u, {cache:'reload'}); if (res && res.ok) await cache.put(u, res); } catch (e) {}
   }
 }
 
