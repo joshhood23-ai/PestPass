@@ -1,7 +1,7 @@
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
-const CACHE='ga-pest-c7a482259d';          // rewritten by tools/build.js on every build
+const CACHE='ga-pest-25bda332ee';          // rewritten by tools/build.js on every build
 // The photo packs are NOT content-hashed (photos-e138ab4101-p1.js keeps its name
 // across content changes), so the image cache MUST be versioned with the build
 // stamp. A fixed image-cache name would serve stale packs forever: prefetch
@@ -69,7 +69,7 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   // Photo / boss-art files: cache-first from the image cache, fall back to network and remember it.
-  if (url.origin === self.location.origin && /\/(photos|boss)-[0-9a-f]+\.js$/.test(url.pathname)) {
+  if (url.origin === self.location.origin && /\/(photos|boss)-[0-9a-f]+(-p\d+)?\.js$/.test(url.pathname)) {
     e.respondWith(
       caches.open(IMG_CACHE).then(c =>
         c.match(e.request).then(hit => hit || fetch(e.request).then(res => {
