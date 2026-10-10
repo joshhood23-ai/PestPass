@@ -9018,7 +9018,7 @@ function openCatHub(cat){
   // wdo:1; HPC: everything else). Different categories, different drills.
   var idBtn = document.getElementById('cathub-btn-insectid');
   if(idBtn){
-    idBtn.style.display = ((cat === 'HPC' || cat === 'WDO') && getExamTrack() !== 'rt') ? 'flex' : 'none';
+    idBtn.style.display = (cat === 'HPC' || cat === 'WDO') ? 'flex' : 'none';
     var idSub = idBtn.querySelector('.cathub-action-sub');
     if(idSub) idSub.textContent = (cat === 'WDO')
       ? 'Termites, wood-boring beetles, carpenter ants & bees'
@@ -9036,7 +9036,7 @@ function openCatHub(cat){
 
   // Visual ID Drill — HPC and WDO hubs (photo-based pest identification)
   var visualidBtn = document.getElementById('cathub-btn-visualid');
-  if(visualidBtn) visualidBtn.style.display = ((cat === 'HPC' || cat === 'WDO') && getExamTrack() !== 'rt') ? 'flex' : 'none';
+  if(visualidBtn) visualidBtn.style.display = (cat === 'HPC' || cat === 'WDO') ? 'flex' : 'none';
 
   // "Identification" section header — only show it when at least one of the
   // ID drills is visible (GEN/FUM hubs show none of them).
