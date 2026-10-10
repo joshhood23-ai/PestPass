@@ -2246,8 +2246,8 @@ body.track-dnr .track-co-only, body.track-mosq .track-co-only{ display:none !imp
   box-shadow:0 4px 16px rgba(0,0,0,0.1), 0 14px 34px -8px rgba(0,0,0,0.18);
 }
 .daily-fc-menu.open{display:block;}
-.daily-fc-menu{background-color:#181d26;}
-.light-mode .daily-fc-menu{background-color:#eef0f6;}
+.daily-fc-menu{background-color:#181d26 !important;}
+.light-mode .daily-fc-menu{background-color:#eef0f6 !important;}
 .daily-fc-menu-item{
   display:block;width:100%;text-align:left;font:inherit;
   padding:10px 12px;border-radius:8px;font-size:13px;color:var(--text);
@@ -17825,7 +17825,9 @@ window.addEventListener('load', function(){
     if(!pool.length) return null; // this track genuinely has no flashcard content
     var d = new Date();
     var seed = (d.getFullYear() * 366 + dayOfYear(d)) % pool.length;
-    return pool[seed];
+    var card = pool[seed];
+    if(!card && pool.length) card = pool[0]; // safety: never return undefined
+    return card || null;
   }
 
   window.toggleDailyFcMenu = function(){
