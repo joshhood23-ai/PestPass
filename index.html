@@ -9102,7 +9102,8 @@ function openCatHub(cat){
   var drillsSec = document.getElementById('cathub-sec-drills');
   var drillsList = document.getElementById('cathub-drills-list');
   if(drillsSec && drillsList){
-    drillsList.innerHTML = '';
+    // Note: do NOT clear with innerHTML — it destroys the buttons on second run.
+    // appendChild moves them safely; already-placed buttons just re-order.
     var drillIds = ['cathub-btn-visualid','cathub-btn-insectid','cathub-btn-garegs','cathub-btn-inspect'];
     var anyDrill = false;
     drillIds.forEach(function(id){
@@ -17933,7 +17934,8 @@ window.addEventListener('load', function(){
       // leaving stale text from whatever track was active before, or
       // silently falling back to unrelated SPCC content.
       sub.textContent = 'Flashcards coming soon for this track';
-      if(btn) btn.style.opacity = '0.55';
+      // Note: do NOT set opacity on the button — it contains the dropdown menu
+      // and opacity on parent makes the menu transparent too.
     }
     markSelectedMenuItem();
   }
