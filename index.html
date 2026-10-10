@@ -17814,20 +17814,23 @@ window.addEventListener('load', function(){
   }
 
   function todaysCard(){
-    if(typeof FC === 'undefined' || !FC.length) return null;
-    var cat = getCategory();
-    var pool = cat === 'All' ? FC : FC.filter(function(c){ return c.cat === cat; });
-    // Never surface a category the current track doesn't include (e.g.
-    // Fumigation on RT, General Knowledge on RT) as the daily pick, even if
-    // 'All' or a stale stored category preference would otherwise include it.
-    pool = pool.filter(function(c){ return trackAllowsCategory(c.cat); });
-    if(!pool.length) pool = FC.filter(function(c){ return trackAllowsCategory(c.cat); }); // safety fallback if a category is ever empty
-    if(!pool.length) return null; // this track genuinely has no flashcard content
-    var d = new Date();
-    var seed = (d.getFullYear() * 366 + dayOfYear(d)) % pool.length;
-    var card = pool[seed];
-    if(!card && pool.length) card = pool[0]; // safety: never return undefined
-    return card || null;
+    try{
+      if(typeof FC === 'undefined' || !FC || !FC.length) return null;
+      var track = 'rt';
+      try{ track = getExamTrack(); }catch(e){}
+      var allowedCats = {co:['General Knowledge','HPC','WDO','Fumigation'],rt:['General Knowledge','HPC','WDO'],dnr:['Regulations & Permits','Procedures & Damage ID'],mosq:['Mosquito Biology','Larvicides','Adulticides & ULV','Laws & Safety']};
+      var allowed = allowedCats[track] || allowedCats.rt;
+      var pool = [];
+      for(var i=0;i<FC.length;i++){
+        var c = FC[i];
+        if(c && c.cat && allowed.indexOf(c.cat) !== -1) pool.push(c);
+      }
+      if(!pool.length) return null;
+      var d = new Date();
+      var dayNum = Math.floor(d.getTime() / 86400000);
+      var pickIdx = Math.abs(dayNum) % pool.length;
+      return pool[pickIdx] || pool[0] || null;
+    }catch(e){ return null; }
   }
 
   window.toggleDailyFcMenu = function(){
