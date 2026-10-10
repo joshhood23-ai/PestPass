@@ -9021,14 +9021,14 @@ function openCatHub(cat){
   // hub-independent (all Visual ID minus WDO), and having it beside the
   // Visual ID drill in every hub was repetitive.
   var frzBtn = document.getElementById('cathub-btn-frenzy');
-  if(frzBtn) frzBtn.style.display = (cat === 'GEN') ? 'flex' : 'none';
+  if(frzBtn) frzBtn.style.display = (cat === 'General Knowledge') ? 'flex' : 'none';
 
   // Insect ID Drill — shown in both HPC and WDO hubs, but each hub drills
   // its own insects with zero overlap (WDO: wood-destroying insects flagged
   // wdo:1; HPC: everything else). Different categories, different drills.
   var idBtn = document.getElementById('cathub-btn-insectid');
   if(idBtn){
-    idBtn.style.display = (cat === 'HPC' || cat === 'WDO') ? 'flex' : 'none';
+    idBtn.style.display = ((cat === 'HPC' || cat === 'WDO') && getExamTrack() !== 'rt') ? 'flex' : 'none';
     var idSub = idBtn.querySelector('.cathub-action-sub');
     if(idSub) idSub.textContent = (cat === 'WDO')
       ? 'Termites, wood-boring beetles, carpenter ants & bees'
@@ -9046,7 +9046,7 @@ function openCatHub(cat){
 
   // Visual ID Drill — HPC and WDO hubs (photo-based pest identification)
   var visualidBtn = document.getElementById('cathub-btn-visualid');
-  if(visualidBtn) visualidBtn.style.display = (cat === 'HPC' || cat === 'WDO') ? 'flex' : 'none';
+  if(visualidBtn) visualidBtn.style.display = ((cat === 'HPC' || cat === 'WDO') && getExamTrack() !== 'rt') ? 'flex' : 'none';
 
   // "Identification" section header — only show it when at least one of the
   // ID drills is visible (GEN/FUM hubs show none of them).
