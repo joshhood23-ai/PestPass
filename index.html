@@ -9072,9 +9072,9 @@ function openCatHub(cat){
   var clockBtn = document.getElementById('cathub-btn-clock');
   if(clockBtn) clockBtn.style.display = (cat === 'General Knowledge') ? 'flex' : 'none';
 
-  // Photo Frenzy — HPC hub only (photo bank is household pests, not WDO); hidden for Reg. Employee (no visual ID)
+  // Photo Frenzy — General Knowledge hub only (user request 2026-10-09)
   var frenzyBtn = document.getElementById('cathub-btn-frenzy');
-  if(frenzyBtn) frenzyBtn.style.display = (cat === 'HPC' && getExamTrack() !== 'rt') ? 'flex' : 'none';
+  if(frenzyBtn) frenzyBtn.style.display = (cat === 'General Knowledge') ? 'flex' : 'none';
 
   // Boss Battle subtitle: the player's actual current level for this category
   var bossSub = document.getElementById('cathub-boss-sub');
@@ -17838,7 +17838,14 @@ window.addEventListener('load', function(){
     if(!menu) return;
     var willOpen = !menu.classList.contains('open');
     menu.classList.toggle('open', willOpen);
-    if(willOpen) markSelectedMenuItem();
+    if(willOpen){
+      markSelectedMenuItem();
+      // Force opaque background via JS (fixes transparent dropdown)
+      var isLight = document.body.classList.contains('light-mode');
+      var bg = isLight ? '#eef0f6' : '#181d26';
+      menu.style.setProperty('background-color', bg, 'important');
+      menu.style.setProperty('background', bg, 'important');
+    }
   };
 
   window.setDailyFcCategory = function(cat){
