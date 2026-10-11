@@ -12426,6 +12426,7 @@ function mdSelectAnswer(el, chosenVal){
     window.AnswerPopup.show({
       correct: true,
       statusText: 'Correct!',
+      imageSrc: null,
       explanationHtml: xpLine,
       continueLabel: 'Continue →',
       onContinue: function(){ mdAdvanceOrRecap(); }
@@ -12435,6 +12436,7 @@ function mdSelectAnswer(el, chosenVal){
     window.AnswerPopup.show({
       correct: false,
       correctText: correctText,
+      imageSrc: null,
       explanationHtml: stepsHtml,
       continueLabel: 'Continue →',
       onContinue: function(){ mdContinue(); }
@@ -13300,6 +13302,7 @@ function answerQ(chosen,btn){
     correct: correct,
     statusText: correct ? 'Correct!' : 'Not quite',
     correctText: correct ? null : q.opts[q.ans],
+    imageSrc: (q && q.img) ? q.img : null,
     explanationHtml: esc(q.exp),
     continueLabel: qIdx===qTotal-1?'See Results →':'Next Question →',
     onContinue: function(){ nextQuestion(); }
@@ -15390,6 +15393,7 @@ function renderFCHome() {
         correct: false,
         statusText: '💔 Revive used!',
         correctText: q.opts[q.ans],
+        imageSrc: (q && q.img) ? q.img : null,
         explanationHtml: esc(q.exp),
         continueLabel: 'Back In — Streak Reset →',
         onContinue: function(){
@@ -15406,6 +15410,7 @@ function renderFCHome() {
       window.AnswerPopup.show({
         correct: false,
         correctText: q.opts[q.ans],
+        imageSrc: (q && q.img) ? q.img : null,
         explanationHtml: esc(q.exp),
         continueLabel: 'See Results →',
         onContinue: function(){ survDie(); }
@@ -15940,6 +15945,7 @@ function renderFCHome() {
       window.AnswerPopup.show({
         correct: false,
         correctText: q.opts[q.ans],
+        imageSrc: (q && q.img) ? q.img : null,
         explanationHtml: esc(q.exp),
         continueLabel: isDead ? 'See Results →' : 'Continue',
         onContinue: function(){
@@ -19706,12 +19712,17 @@ window.BossCombatFX = (function(){
     <div class="answer-popup-status" id="answer-popup-status">Correct!</div>
     <div class="answer-popup-correct" id="answer-popup-correct" style="display:none;"></div>
     <div class="answer-popup-exp" id="answer-popup-exp"></div>
-    <button class="answer-popup-btn" id="answer-popup-btn">Continue</button>
+    <div style="display:flex;gap:10px;">
+      <button class="answer-popup-btn" id="answer-popup-viewimg-btn" style="display:none;flex:1;background:var(--bg2);color:var(--text);border:1px solid var(--border2);">View Image</button>
+      <button class="answer-popup-btn" id="answer-popup-btn" style="flex:2;">Continue</button>
+    </div>
   </div>
 </div>
+<!-- Floating back button for image review -->
+<button id="answer-popup-back-btn" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:10001;padding:12px 24px;border-radius:24px;background:var(--accent);color:#fff;border:none;font-weight:600;font-size:15px;box-shadow:0 4px 16px rgba(0,0,0,0.3);">Back to Explanation</button>
 <script>
 window.AnswerPopup = (function(){
-  var overlay, card, status, correctLine, expLine, btn, inited=false, hideTimer=null;
+  var overlay, card, status, correctLine, expLine, btn, viewImgBtn, backBtn, inited=false, hideTimer=null, lastOpts=null;
   function init(){
     overlay = document.getElementById('answer-popup-overlay');
     card = document.getElementById('answer-popup-card');
@@ -19719,12 +19730,36 @@ window.AnswerPopup = (function(){
     correctLine = document.getElementById('answer-popup-correct');
     expLine = document.getElementById('answer-popup-exp');
     btn = document.getElementById('answer-popup-btn');
+    viewImgBtn = document.getElementById('answer-popup-viewimg-btn');
+    backBtn = document.getElementById('answer-popup-back-btn');
+    if(backBtn){
+      backBtn.onclick = function(){
+        backBtn.style.display = 'none';
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(function(){ card.classList.add('show'); });
+      };
+    }
     inited = true;
   }
-  // opts: {correct, statusText, correctText, explanationHtml, continueLabel, onContinue}
+  // opts: {correct, statusText, correctText, explanationHtml, continueLabel, onContinue, imageSrc}
   function show(opts){
     if(!inited) init();
     if(hideTimer){ clearTimeout(hideTimer); hideTimer=null; }
+    lastOpts = opts;
+    // Show View Image button only for wrong answers with an image
+    if(viewImgBtn){
+      if(!opts.correct && opts.imageSrc){
+        viewImgBtn.style.display = 'block';
+        viewImgBtn.onclick = function(){
+          overlay.classList.add('hidden');
+          card.classList.remove('show');
+          if(backBtn) backBtn.style.display = 'block';
+        };
+      } else {
+        viewImgBtn.style.display = 'none';
+      }
+    }
+    if(backBtn) backBtn.style.display = 'none';
     var correct = !!opts.correct;
     overlay.classList.remove('hidden');
     overlay.classList.toggle('ap-correct', correct);
