@@ -9017,11 +9017,13 @@ function openCatHub(cat){
   // WDO Math Drill — WDO-only action
   var mdBtn = document.getElementById('cathub-btn-mathdrill');
   if(mdBtn) mdBtn.style.display = (cat === 'WDO') ? 'flex' : 'none';
-  // Photo Frenzy — General Knowledge hub only. The frenzy pool is already
+  // Photo Frenzy — General Knowledge hub, CO track only (user request
+  // 2026-10-12: photo ID is a CO-track feature; the RE track's real exam
+  // has no picture-ID questions). The frenzy pool is already
   // hub-independent (all Visual ID minus WDO), and having it beside the
   // Visual ID drill in every hub was repetitive.
   var frzBtn = document.getElementById('cathub-btn-frenzy');
-  if(frzBtn) frzBtn.style.display = (cat === 'General Knowledge') ? 'flex' : 'none';
+  if(frzBtn) frzBtn.style.display = (cat === 'General Knowledge' && getExamTrack() !== 'rt') ? 'flex' : 'none';
 
   // Insect ID Drill — shown in both HPC and WDO hubs, but each hub drills
   // its own insects with zero overlap (WDO: wood-destroying insects flagged
@@ -9082,9 +9084,10 @@ function openCatHub(cat){
   var clockBtn = document.getElementById('cathub-btn-clock');
   if(clockBtn) clockBtn.style.display = (cat === 'General Knowledge') ? 'flex' : 'none';
 
-  // Photo Frenzy — General Knowledge hub only (user request 2026-10-09)
+  // Photo Frenzy — General Knowledge hub only (user request 2026-10-09),
+  // hidden on the RE track (user request 2026-10-12: photo ID is CO-track)
   var frenzyBtn = document.getElementById('cathub-btn-frenzy');
-  if(frenzyBtn) frenzyBtn.style.display = (cat === 'General Knowledge') ? 'flex' : 'none';
+  if(frenzyBtn) frenzyBtn.style.display = (cat === 'General Knowledge' && getExamTrack() !== 'rt') ? 'flex' : 'none';
 
   // Boss Battle subtitle: the player's actual current level for this category
   var bossSub = document.getElementById('cathub-boss-sub');
