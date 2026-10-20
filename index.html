@@ -3561,7 +3561,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     <div class="splash-name">Pest<span>Pass</span></div>
     <div class="splash-sub">SPCC Exam Prep</div>
     <div class="splash-loader"><div class="splash-loader-fill"></div></div>
-    <div class="splash-version">v4.13</div>
+    <div class="splash-version">v4.14</div>
   </div>
   <script>
   // Photos and boss art live in two lazily-loaded files (not inside index.html).
@@ -5324,15 +5324,6 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
   
   <div style="padding:14px 18px 6px;">
   <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:12px 0 10px;">Data</div>
-    <button type="button" role="button" tabindex="0" onclick="ppOpenBackup();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;width:100%;background:none;border-left:none;border-right:none;border-top:none;text-align:left;">
-      <div style="width:34px;height:34px;border-radius:9px;background:rgba(77,214,140,0.08);border:1px solid rgba(77,214,140,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--green);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      </div>
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:600;color:var(--text);">Backup &amp; Restore</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:1px;">Save or move your progress</div>
-      </div>
-    </button>
     <button type="button" role="button" tabindex="0" onclick="closeMenu();resetStats();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
       <div style="width:34px;height:34px;border-radius:9px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--red);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.59"/></svg>
@@ -5390,7 +5381,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     </div>
   </div>
   <div style="padding:20px 18px;text-align:center;">
-    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;" data-pp-ver>PestPass · v4.13 · Georgia SPCC</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;" data-pp-ver>PestPass · v4.14 · Georgia SPCC</div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">400 questions · 576 flashcards · offline</div>
   </div>
   </div>
@@ -19850,7 +19841,7 @@ document.addEventListener('DOMContentLoaded', function(){
   'use strict';
   // Single source of truth for version labels. Bump `content` whenever the
   // question bank / study guide changes (alongside the sw.js CACHE name).
-  var V = window.PP_VERSION = { app:'4.13', content:'2026.10.07' };
+  var V = window.PP_VERSION = { app:'4.14', content:'2026.10.07' };
   var SUPPORT_EMAIL = 'pestpassoffice@gmail.com';
 
   function $(id){ return document.getElementById(id); }
