@@ -192,13 +192,6 @@ body::before{display:none;}
 .home-cta:active .home-cta-arrow{transform:translateX(2px);}
 .home-cta-arrow svg{width:14px;height:14px;stroke:var(--text2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
-/* Daily Flashcard card — visually distinct from the Continue CTA above */
-#daily-fc-btn{
-  background:linear-gradient(180deg, rgba(169,142,255,0.10) 0%, var(--bg2) 100%);
-  border:1px solid rgba(169,142,255,0.30);
-}
-#daily-fc-btn .home-cta-label{color:#a98eff;}
-#daily-fc-btn:active{background:rgba(169,142,255,0.08);}
 
 /* Exam countdown + study plan card */
 .ep-input{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);color-scheme:dark;max-width:100%;}
@@ -2204,7 +2197,6 @@ body.track-dnr .track-co-only, body.track-mosq .track-co-only{ display:none !imp
 #fc-complete-overlay{display:none;position:fixed;inset:0;background:rgba(8,9,12,0.88);z-index:8000;align-items:center;justify-content:center;}
 #fc-complete-overlay.active{display:flex;}
 
-/* ── Daily Flashcard Popup ── */
 /* ── FIRST-RUN TUTORIAL ── */
 #tutorial-overlay{display:none;position:fixed;inset:0;background:rgba(8,9,12,0.9);z-index:10002;align-items:center;justify-content:center;padding:20px;}
 #tutorial-overlay.active{display:flex;}
@@ -2226,51 +2218,6 @@ body.track-dnr .track-co-only, body.track-mosq .track-co-only{ display:none !imp
 .tutorial-skip{display:block;margin:12px auto 0;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;}
 .track-pulse{animation:trackPulse 1.2s ease 2;}
 @keyframes trackPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,201,225,0);}50%{box-shadow:0 0 0 5px rgba(78,201,225,0.45);}}
-#daily-fc-overlay{display:none;position:fixed;inset:0;background:rgba(8,9,12,0.88);z-index:8000;align-items:center;justify-content:center;}
-#daily-fc-overlay.active{display:flex;}
-.daily-fc-opt{padding:9px 11px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);font-size:12px;color:var(--text2);line-height:1.5;}
-.daily-fc-opt.correct{border-color:rgba(77,214,140,0.4);background:rgba(77,214,140,0.1);color:var(--text);font-weight:600;}
-
-/* ── Daily Flashcard category menu ── */
-#daily-fc-btn{position:relative;}
-.daily-fc-menu-btn{
-  background:transparent;border:none;padding:8px;margin:-8px;border-radius:8px;
-  color:var(--text3);cursor:pointer;flex-shrink:0;
-  -webkit-tap-highlight-color:transparent;
-}
-.daily-fc-menu-btn svg{width:20px;height:20px;display:block;}
-.daily-fc-menu-btn:active{background:var(--surface2);}
-.daily-fc-menu{
-  display:none;position:absolute;top:52px;right:14px;z-index:9999;
-  isolation:isolate !important;
-  background-color:#181d26 !important;background:#181d26 !important;
-  opacity:1 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
-  border:2px solid #fff;border-radius:12px;
-  box-shadow:0 12px 32px rgba(0,0,0,0.5);padding:6px;min-width:190px;
-}
-.light-mode .daily-fc-menu{
-  background-color:#eef0f6 !important;background:#eef0f6 !important;
-  opacity:1 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
-  border:2px solid #ccc;
-}
-[data-theme="light"] .daily-fc-menu, .light-mode .daily-fc-menu{
-  border-color:rgba(0,0,0,0.14);
-  box-shadow:0 4px 16px rgba(0,0,0,0.1), 0 14px 34px -8px rgba(0,0,0,0.18);
-}
-.daily-fc-menu.open{display:block;}
-
-.light-mode 
-.daily-fc-menu-item{
-  display:block;width:100%;text-align:left;font:inherit;
-  padding:10px 12px;border-radius:8px;font-size:13px;color:var(--text);
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-  background-color:#181d26 !important;background:#181d26 !important;opacity:1 !important;
-}
-.light-mode .daily-fc-menu-item{
-  background-color:#eef0f6 !important;background:#eef0f6 !important;opacity:1 !important;
-}
-.daily-fc-menu-item:active{background:var(--surface2);}
-.daily-fc-menu-item.selected{color:var(--text);font-weight:600;background:#a98eff !important;background-color:#a98eff !important;}
 .fc-complete-card{background:var(--bg2);border:1px solid rgba(77,214,140,0.2);border-radius:20px;padding:26px 22px;text-align:center;max-width:320px;width:90%;position:relative;}
 .fc-complete-card::before{display:none;}
 .fc-complete-icon{font-size:44px;margin-bottom:9px;}
@@ -3670,21 +3617,6 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
       <button class="pause-quit-btn" onclick="exitQuiz();closePause()">Quit & Save Progress</button>
     </div>
   </div>
-<!-- Daily Flashcard Overlay -->
-  <div id="daily-fc-overlay">
-    <div class="fc-complete-card" style="max-width:340px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div class="card-pill" id="daily-fc-cat">Category</div>
-        <div class="hero-compact-sub" id="daily-fc-date" style="margin:0;">—</div>
-      </div>
-      <div class="card-q" id="daily-fc-q" style="text-align:left;margin-bottom:14px;">Loading…</div>
-      <div id="daily-fc-back" style="text-align:left;">
-        <div id="daily-fc-opts-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;width:100%;"></div>
-        <div class="card-a" id="daily-fc-exp" style="font-size:12px;color:var(--text2);line-height:1.6;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;"></div>
-      </div>
-      <button class="fc-quiz-no-btn" onclick="closeDailyFlashcard()">Close</button>
-    </div>
-  </div>
 
 <!-- PWA Install Banner -->
   <div class="header">
@@ -3749,33 +3681,6 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         </div>
       </button>
 
-      <!-- Daily Flashcard — same size/style as the Continue Studying CTA above -->
-      <div class="home-cta" id="daily-fc-btn" onclick="openDailyFlashcard()" role="button" tabindex="0" aria-label="View today's flashcard">
-        <div class="home-cta-icon cta-flash">
-          <svg viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="home-cta-body">
-          <div class="home-cta-label" id="daily-fc-label">Daily Flashcard</div>
-          <div class="home-cta-title">Today's pick</div>
-          <div class="home-cta-sub" id="daily-fc-sub">Loading…</div>
-        </div>
-        <button type="button" class="daily-fc-menu-btn" id="daily-fc-menu-btn" onclick="event.stopPropagation(); toggleDailyFcMenu();" aria-label="Choose flashcard category" aria-haspopup="true">
-          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="daily-fc-menu" id="daily-fc-menu">
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item" data-cat="All" onclick="event.stopPropagation(); setDailyFcCategory('All');">All Categories</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-co-only" data-cat="General Knowledge" onclick="event.stopPropagation(); setDailyFcCategory('General Knowledge');">General Knowledge</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-spcc-only" data-cat="HPC" onclick="event.stopPropagation(); setDailyFcCategory('HPC');">HPC</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-spcc-only" data-cat="WDO" onclick="event.stopPropagation(); setDailyFcCategory('WDO');">WDO</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-fum-only" data-cat="Fumigation" onclick="event.stopPropagation(); setDailyFcCategory('Fumigation');">Fumigation</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-dnr-only" data-cat="Regulations & Permits" onclick="event.stopPropagation(); setDailyFcCategory('Regulations & Permits');">Regulations &amp; Permits</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-dnr-only" data-cat="Procedures & Damage ID" onclick="event.stopPropagation(); setDailyFcCategory('Procedures & Damage ID');">Procedures &amp; Damage ID</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-mosq-only" data-cat="Mosquito Biology" onclick="event.stopPropagation(); setDailyFcCategory('Mosquito Biology');">Mosquito Biology</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-mosq-only" data-cat="Larvicides" onclick="event.stopPropagation(); setDailyFcCategory('Larvicides');">Larvicides</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-mosq-only" data-cat="Adulticides & ULV" onclick="event.stopPropagation(); setDailyFcCategory('Adulticides & ULV');">Adulticides &amp; ULV</button>
-          <button type="button" role="button" tabindex="0" class="daily-fc-menu-item track-mosq-only" data-cat="Laws & Safety" onclick="event.stopPropagation(); setDailyFcCategory('Laws & Safety');">Laws &amp; Safety</button>
-        </div>
-      </div>
 
       <!-- full hero (shown on first visit only) -->
       <div class="hero">
@@ -8453,7 +8358,6 @@ function applyExamTrack(){
     renderStudyGuide();
   }
   if(typeof updateHomeCTA==='function') updateHomeCTA();
-  if(typeof updateDailyFlashcardButton==='function') updateDailyFlashcardButton();
   if(typeof updateSWCards==='function') updateSWCards();
   if(typeof renderHistory==='function') renderHistory();
   if(typeof renderCatProgress==='function') renderCatProgress();
@@ -8707,11 +8611,6 @@ document.addEventListener('keydown', function(e){
 // Keyboard users had no way to back out of these without a mouse before this.
 document.addEventListener('keydown', function(e){
   if(e.key !== 'Escape') return;
-  var dailyMenu = document.getElementById('daily-fc-menu');
-  if(dailyMenu && dailyMenu.classList.contains('open')){
-    dailyMenu.classList.remove('open');
-    return;
-  }
   var quizModal = document.getElementById('quiz-modal');
   if(quizModal && quizModal.style.display !== 'none' && quizModal.style.display !== ''){
     if(typeof closeQuizModal === 'function') closeQuizModal();
@@ -17814,166 +17713,6 @@ window.addEventListener('load', function(){
   };
 
   document.addEventListener('DOMContentLoaded', renderStudyTime);
-})();
-
-
-// ════════════════════════════════════════════════════════
-//  DAILY FLASHCARD
-//  Shows exactly one flashcard per calendar day (local date),
-//  deterministically picked so it's the same card all day and
-//  changes automatically at local midnight. No storage needed
-//  for the pick itself — the index is derived purely from
-//  today's date (and the chosen category, if any).
-// ════════════════════════════════════════════════════════
-(function(){
-  var CAT_KEY = 'daily_fc_category';
-  var CATS = ['All', 'General Knowledge', 'HPC', 'WDO', 'Fumigation', 'Regulations & Permits', 'Procedures & Damage ID', 'Mosquito Biology', 'Larvicides', 'Adulticides & ULV', 'Laws & Safety'];
-
-  function getCategory(){
-    var saved = safeLS.getItem(CAT_KEY);
-    return CATS.indexOf(saved) !== -1 ? saved : 'All';
-  }
-
-  function dayOfYear(d){
-    // Math.round (not floor): on DST transition days the elapsed wall-clock
-    // time is 23 or 25 hours, and floor would flip the daily pick mid-day.
-    var start = new Date(d.getFullYear(), 0, 0);
-    var diff = d - start;
-    return Math.round(diff / 86400000);
-  }
-
-  function todaysCard(){
-    try{
-      if(typeof FC === 'undefined' || !FC || !FC.length) return null;
-      var track = 'rt';
-      try{ track = getExamTrack(); }catch(e){}
-      var allowedCats = {co:['General Knowledge','HPC','WDO','Fumigation'],rt:['General Knowledge','HPC','WDO'],dnr:['Regulations & Permits','Procedures & Damage ID'],mosq:['Mosquito Biology','Larvicides','Adulticides & ULV','Laws & Safety']};
-      var allowed = allowedCats[track] || allowedCats.rt;
-      var pool = [];
-      for(var i=0;i<FC.length;i++){
-        var c = FC[i];
-        if(c && c.cat && allowed.indexOf(c.cat) !== -1) pool.push(c);
-      }
-      if(!pool.length) return null;
-      // Honor the category picked in the Daily Flashcard menu. This filter
-      // was missing: the picker saved the choice and updated the button
-      // subtitle, but the card itself always came from the whole track
-      // pool — so every category showed the same card and the dropdown
-      // looked broken (bug reported 2026-10-20). If the picked category
-      // has no cards on this track, fall back to the full track pool.
-      var selCat = 'All';
-      try{ selCat = getCategory(); }catch(e){}
-      if(selCat && selCat !== 'All'){
-        var catPool = [];
-        for(var j=0;j<pool.length;j++){ if(pool[j].cat === selCat) catPool.push(pool[j]); }
-        if(catPool.length) pool = catPool;
-      }
-      var d = new Date();
-      var dayNum = Math.floor(d.getTime() / 86400000);
-      var pickIdx = Math.abs(dayNum) % pool.length;
-      return pool[pickIdx] || pool[0] || null;
-    }catch(e){ return null; }
-  }
-
-  window.toggleDailyFcMenu = function(){
-    var menu = document.getElementById('daily-fc-menu');
-    if(!menu) return;
-    var willOpen = !menu.classList.contains('open');
-    menu.classList.toggle('open', willOpen);
-    if(willOpen){
-      markSelectedMenuItem();
-      // Force opaque background via JS (fixes transparent dropdown)
-      var isLight = document.body.classList.contains('light-mode');
-      var bg = isLight ? '#eef0f6' : '#181d26';
-      menu.style.setProperty('background-color', bg);
-      menu.style.setProperty('background', bg);
-      menu.style.setProperty('opacity', '1');
-      // CSS handles !important; JS sets without to avoid conflicts
-    }
-  };
-
-  window.setDailyFcCategory = function(cat){
-    safeLS.setItem(CAT_KEY, cat);
-    var menu = document.getElementById('daily-fc-menu');
-    if(menu) menu.classList.remove('open');
-    updateDailyFlashcardButton();
-    // Previously stopped here — picking a category just updated the button's
-    // subtitle text and left the person back where they started, needing a
-    // separate tap on the button to actually see a card. Since the whole
-    // point of this menu is choosing which category's card to view right
-    // now, it should show one immediately rather than adding an extra step.
-    window.openDailyFlashcard();
-  };
-
-  function markSelectedMenuItem(){
-    var cat = getCategory();
-    var items = document.querySelectorAll('.daily-fc-menu-item');
-    items.forEach(function(item){
-      item.classList.toggle('selected', item.getAttribute('data-cat') === cat);
-    });
-  }
-
-  // Close the menu on any tap outside it (but not on the menu button itself,
-  // which already stops propagation before this listener would fire).
-  document.addEventListener('click', function(e){
-    var menu = document.getElementById('daily-fc-menu');
-    if(menu && menu.classList.contains('open') && !menu.contains(e.target)){
-      menu.classList.remove('open');
-    }
-  });
-
-  window.openDailyFlashcard = function(){
-    var card = todaysCard();
-    if(!card) return;
-    window._dailyFCCard = card;
-    var catEl = document.getElementById('daily-fc-cat');
-    var qEl = document.getElementById('daily-fc-q');
-    var dateEl = document.getElementById('daily-fc-date');
-    var overlay = document.getElementById('daily-fc-overlay');
-    if(catEl) catEl.textContent = card.cat;
-    if(qEl) qEl.textContent = card.q;
-    if(dateEl) dateEl.textContent = new Date().toLocaleDateString(undefined, {month:'short', day:'numeric'});
-    var list = document.getElementById('daily-fc-opts-list');
-    if(list){
-      list.innerHTML = '';
-      card.opts.forEach(function(opt, i){
-        var div = document.createElement('div');
-        div.className = 'daily-fc-opt' + (i === card.ans ? ' correct' : '');
-        div.textContent = opt;
-        list.appendChild(div);
-      });
-    }
-    var expEl = document.getElementById('daily-fc-exp');
-    if(expEl) expEl.textContent = card.exp;
-    if(overlay) overlay.classList.add('active');
-    if(typeof trackUsage === 'function') trackUsage('daily_flashcard');
-  };
-
-  window.closeDailyFlashcard = function(){
-    var overlay = document.getElementById('daily-fc-overlay');
-    if(overlay) overlay.classList.remove('active');
-  };
-
-  function updateDailyFlashcardButton(){
-    var card = todaysCard();
-    var cat = getCategory();
-    var sub = document.getElementById('daily-fc-sub');
-    var btn = document.getElementById('daily-fc-btn');
-    if(sub && card){
-      sub.textContent = cat === 'All' ? (card.cat + ' — tap to view') : (cat + ' — tap to view');
-      if(btn) btn.style.opacity = '';
-    } else if(sub && !card){
-      // DNR Trapping has no flashcard bank yet — say so plainly rather than
-      // leaving stale text from whatever track was active before, or
-      // silently falling back to unrelated SPCC content.
-      sub.textContent = 'Flashcards coming soon for this track';
-      // Note: do NOT set opacity on the button — it contains the dropdown menu
-      // and opacity on parent makes the menu transparent too.
-    }
-    markSelectedMenuItem();
-  }
-  window.updateDailyFlashcardButton = updateDailyFlashcardButton;
-  document.addEventListener('DOMContentLoaded', updateDailyFlashcardButton);
 })();
 
 
