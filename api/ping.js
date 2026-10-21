@@ -4,6 +4,10 @@
 // counts), and per-version open counts. No IP addresses, no personal data, no study data.
 // Backing store: Upstash Redis via its REST API (env: UPSTASH_REDIS_REST_URL/TOKEN,
 // or the Vercel KV aliases KV_REST_API_URL/TOKEN).
+//
+// NOTE: this handler never async-iterates the request stream — on this Vercel runtime
+// that hangs POST requests. It uses the runtime-parsed body (the client sends JSON),
+// with a short bounded event-based fallback so a request can never hang here.
 const crypto = require('crypto');
 
 function redisConfig() {
@@ -12,15 +16,29 @@ function redisConfig() {
   return url && token ? { url: url.replace(/\/$/, ''), token } : null;
 }
 
-async function readBody(req) {
-  if (req.body != null) {
-    if (typeof req.body === 'object') return req.body;
-    try { return JSON.parse(req.body); } catch (e) { return null; }
-  }
-  const chunks = [];
-  for await (const c of req) chunks.push(c);
-  if (!chunks.length) return null;
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch (e) { return null; }
+function parseBodyValue(b) {
+  if (b == null) return null;
+  if (typeof b === 'object' && !Buffer.isBuffer(b)) return b;
+  const s = Buffer.isBuffer(b) ? b.toString('utf8') : String(b);
+  try { return JSON.parse(s); } catch (e) { return null; }
+}
+
+function readBody(req) {
+  const parsed = parseBodyValue(req.body);
+  if (parsed) return Promise.resolve(parsed);
+  if (req.body != null) return Promise.resolve(null); // body present but unparseable
+  // Fallback: collect the raw stream via events, bounded to 2.5s so we never hang.
+  return new Promise(resolve => {
+    const chunks = [];
+    let done = false;
+    const finish = v => { if (!done) { done = true; resolve(v); } };
+    const timer = setTimeout(() => finish(null), 2500);
+    try {
+      req.on('data', c => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
+      req.on('end', () => { clearTimeout(timer); finish(parseBodyValue(Buffer.concat(chunks))); });
+      req.on('error', () => { clearTimeout(timer); finish(null); });
+    } catch (e) { clearTimeout(timer); finish(null); }
+  });
 }
 
 module.exports = async (req, res) => {
