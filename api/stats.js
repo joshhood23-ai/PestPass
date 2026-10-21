@@ -171,6 +171,7 @@ function renderHtml(data) {
     '@media (max-width:480px){th,td{padding:8px 7px;font-size:12.5px}.barcell{display:none}h1{font-size:20px}.card .n{font-size:25px}}' +
     '</style></head><body><div class="wrap">' +
     '<h1>🐞 PestPass Usage</h1><div class="sub">Anonymous counts only — app opens and distinct devices. No personal data.</div>' +
+    '<div class="sub">Counts are live. Page updated <span id="upd-t">just now</span> — it refreshes itself when you come back to it.</div>' +
     '<div class="cards">' +
     '<div class="card"><div class="n">' + data.totalUniqueUsers + '</div><div class="l">total users (devices)</div></div>' +
     '<div class="card"><div class="n">' + data.totalOpens + '</div><div class="l">total app opens</div></div>' +
@@ -184,5 +185,8 @@ function renderHtml(data) {
     '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th><th></th></tr>' + rows + '</table>' +
     '<h2>Opens by app version</h2>' + versionRows +
     '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. Total opens in the last 30 days: ' + opens30 + '.</div>' +
-    '</div></body></html>';
+    '</div>' +
+    '<script>document.getElementById("upd-t").textContent = new Date().toLocaleTimeString();' +
+    'window.addEventListener("pageshow", function (e) { if (e.persisted) location.reload(); });</script>' +
+    '</body></html>';
 }
