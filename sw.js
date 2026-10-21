@@ -68,6 +68,11 @@ self.addEventListener('message', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
+  // API endpoints (usage-counter pings' sibling reads, the stats dashboard) are
+  // always live data: never intercept and never cache them — the browser must
+  // fetch them from the network every time. (The cache-first handler below
+  // froze the owner's stats dashboard at its first load; found 2026-10-21.)
+  if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) return;
   // Photo / boss-art files: cache-first from the image cache, fall back to network and remember it.
   if (url.origin === self.location.origin && /\/(photos|boss)-[0-9a-f]+(-p\d+)?\.js$/.test(url.pathname)) {
     e.respondWith(
