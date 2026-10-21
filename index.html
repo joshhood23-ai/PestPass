@@ -19934,15 +19934,21 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     /* Time-in-app: accumulate foreground seconds; flush whenever the app is
        hidden or closed, then keep counting if the user comes back. */
-    var acc = 0, since = (document.visibilityState === 'visible') ? Date.now() : null;
+    var acc = 0, since = (document.visibilityState === 'visible') ? Date.now() : null, hiddenAt = null;
     function flush() {
       if (since != null) { acc += (Date.now() - since) / 1000; since = null; }
       var secs = Math.floor(acc);
       if (secs >= 1) { send({ id: id, v: ver, t: 'end', secs: Math.min(secs, 43200) }); acc = 0; }
     }
     document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'hidden') { flush(); }
-      else if (since == null) { since = Date.now(); }
+      if (document.visibilityState === 'hidden') { hiddenAt = Date.now(); flush(); }
+      else {
+        if (since == null) { since = Date.now(); }
+        /* Resume visit: coming back after 30+ minutes in the background counts
+           as a new visit (the open ping above fires only on a fresh load). */
+        if (hiddenAt && (Date.now() - hiddenAt) >= 1800000) { send({ id: id, v: ver, t: 'resume' }); }
+        hiddenAt = null;
+      }
     });
     window.addEventListener('pagehide', flush);
   } catch (e) { /* the counter must never break the app */ }
