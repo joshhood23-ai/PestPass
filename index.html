@@ -13200,6 +13200,7 @@ function answerQ(chosen,btn){
     statusText: correct ? 'Correct!' : 'Not quite',
     correctText: correct ? null : q.opts[q.ans],
     imageSrc: (q && q.img) ? q.img : null,
+    reviewable: true,
     explanationHtml: esc(q.exp),
     continueLabel: qIdx===qTotal-1?'See Results →':'Next Question →',
     onContinue: function(){ nextQuestion(); }
@@ -19509,9 +19510,13 @@ window.AnswerPopup = (function(){
     if(!inited) init();
     if(hideTimer){ clearTimeout(hideTimer); hideTimer=null; }
     lastOpts = opts;
-    // Show View Image button only for wrong answers with an image
+    // Show the review button for wrong answers: "View Image" when the
+    // question has a photo, "View Question" for text questions whose
+    // caller marks them reviewable (quiz engine) — same review path
+    // ID questions have always had, extended to test questions.
     if(viewImgBtn){
-      if(!opts.correct && opts.imageSrc){
+      if(!opts.correct && (opts.imageSrc || opts.reviewable)){
+        viewImgBtn.textContent = opts.imageSrc ? 'View Image' : 'View Question';
         viewImgBtn.style.display = 'block';
         viewImgBtn.onclick = function(){
           overlay.classList.add('hidden');
