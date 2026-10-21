@@ -55,13 +55,28 @@ module.exports = async (req, res) => {
 
   const day = new Date().toISOString().slice(0, 10); // UTC day
   const hash = crypto.createHash('sha256').update(id).digest('hex');
-  const pipeline = [
-    ['INCR', 'pp:opens:total'],
-    ['INCR', 'pp:opens:day:' + day],
-    ['SADD', 'pp:users:all', hash],
-    ['SADD', 'pp:users:day:' + day, hash],
-    ['HINCRBY', 'pp:versions', v, 1]
-  ];
+  let pipeline;
+  if (body.t === 'end') {
+    // Session-end ping: foreground seconds accumulated since the last flush.
+    const secs = Math.floor(Number(body.secs));
+    if (!Number.isFinite(secs) || secs < 1 || secs > 43200) {
+      res.status(400).json({ error: 'bad secs' }); return;
+    }
+    pipeline = [
+      ['INCRBY', 'pp:time:total', secs],
+      ['INCRBY', 'pp:time:day:' + day, secs],
+      ['INCR', 'pp:sessions:total'],
+      ['INCR', 'pp:sessions:day:' + day]
+    ];
+  } else {
+    pipeline = [
+      ['INCR', 'pp:opens:total'],
+      ['INCR', 'pp:opens:day:' + day],
+      ['SADD', 'pp:users:all', hash],
+      ['SADD', 'pp:users:day:' + day, hash],
+      ['HINCRBY', 'pp:versions', v, 1]
+    ];
+  }
 
   try {
     const r = await fetch(cfg.url + '/pipeline', {
