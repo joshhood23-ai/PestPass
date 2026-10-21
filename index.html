@@ -19924,8 +19924,8 @@ document.addEventListener('DOMContentLoaded', function(){
       localStorage.setItem('ppAnonId', id);
     }
     var payload = JSON.stringify({ id: id, v: (typeof PP_VERSION !== 'undefined' && PP_VERSION && PP_VERSION.app) || '?' });
-    if (navigator.sendBeacon) { navigator.sendBeacon('/api/ping', payload); }
-    else if (window.fetch) { fetch('/api/ping', { method: 'POST', body: payload, keepalive: true }).catch(function () {}); }
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/ping', new Blob([payload], { type: 'application/json' })); }
+    else if (window.fetch) { fetch('/api/ping', { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(function () {}); }
   } catch (e) { /* the counter must never break the app */ }
 })();
 </script>
