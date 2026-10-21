@@ -83,6 +83,7 @@ module.exports = async (req, res) => {
     last30Days: byDay
   };
 
+  res.setHeader('Cache-Control', 'no-store');
   if (req.query && req.query.format === 'html') {
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(renderHtml(data));
     return;
@@ -144,6 +145,7 @@ function renderHtml(data) {
     '.barcell{width:34%}.bar{height:8px;border-radius:4px;background:var(--ac);min-width:2px}' +
     '.verrow{display:flex;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px;margin-bottom:8px}' +
     '.foot{color:var(--tx2);font-size:12px;margin-top:22px;line-height:1.5}' +
+    '@media (max-width:480px){th,td{padding:8px 7px;font-size:12.5px}.barcell{display:none}h1{font-size:20px}.card .n{font-size:25px}}' +
     '</style></head><body><div class="wrap">' +
     '<h1>🐞 PestPass Usage</h1><div class="sub">Anonymous counts only — app opens and distinct devices. No personal data.</div>' +
     '<div class="cards">' +
