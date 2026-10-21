@@ -1,7 +1,11 @@
 // PestPass anonymous usage counter — receive endpoint.
-// Receives one ping per app open: { id: <random on-device install ID>, v: <app version> }.
+// Receives one ping per app visit: { id: <random on-device install ID>, v: <app version> },
+// where a visit is a fresh open or a return after 30+ minutes in the background
+// (t: 'resume'), plus a session-end ping carrying foreground seconds (t: 'end').
 // Stores ONLY: daily + total open counts, the set of SHA-256-hashed IDs (for unique
-// counts), and per-version open counts. No IP addresses, no personal data, no study data.
+// counts), per-version open counts, session seconds, and per-device-type visit counts
+// bucketed from the request's user-agent (the user-agent itself is never stored).
+// No IP addresses, no personal data, no study data.
 // Backing store: Upstash Redis via its REST API (env: UPSTASH_REDIS_REST_URL/TOKEN,
 // or the Vercel KV aliases KV_REST_API_URL/TOKEN).
 //
@@ -21,6 +25,18 @@ function parseBodyValue(b) {
   if (typeof b === 'object' && !Buffer.isBuffer(b)) return b;
   const s = Buffer.isBuffer(b) ? b.toString('utf8') : String(b);
   try { return JSON.parse(s); } catch (e) { return null; }
+}
+
+// Coarse device class from the user-agent header. Only the bucket label is
+// stored — never the user-agent string itself. Bot/automation first, because
+// those agents often also carry platform tokens.
+function deviceBucket(ua) {
+  const s = String(ua || '');
+  if (/bot|crawler|spider|crawling|headless|phantom|selenium|puppeteer|playwright|lighthouse|slurp|scraper|curl\/|wget|python-requests|python-urllib|axios|okhttp|go-http-client|java\/|libwww|httpclient/i.test(s)) return 'Bot / automated';
+  if (/android/i.test(s)) return 'Android';
+  if (/iphone|ipad|ipod/i.test(s)) return 'iPhone / iPad';
+  if (/windows|macintosh|mac os x|linux|cros/i.test(s)) return 'Desktop';
+  return 'Other';
 }
 
 function readBody(req) {
@@ -69,12 +85,16 @@ module.exports = async (req, res) => {
       ['INCR', 'pp:sessions:day:' + day]
     ];
   } else {
+    // Open ping (no t) and resume ping (t: 'resume') both count as one visit.
+    const bucket = deviceBucket(req.headers && req.headers['user-agent']);
     pipeline = [
       ['INCR', 'pp:opens:total'],
       ['INCR', 'pp:opens:day:' + day],
       ['SADD', 'pp:users:all', hash],
       ['SADD', 'pp:users:day:' + day, hash],
-      ['HINCRBY', 'pp:versions', v, 1]
+      ['HINCRBY', 'pp:versions', v, 1],
+      ['HINCRBY', 'pp:devices:all', bucket, 1],
+      ['HINCRBY', 'pp:devices:day:' + day, bucket, 1]
     ];
   }
 

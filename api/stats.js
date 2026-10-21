@@ -26,6 +26,8 @@ module.exports = async (req, res) => {
   days.forEach(d => { pipeline.push(['GET', 'pp:opens:day:' + d]); pipeline.push(['SCARD', 'pp:users:day:' + d]); });
   days.forEach(d => { pipeline.push(['SMEMBERS', 'pp:users:day:' + d]); });
   days.forEach(d => { pipeline.push(['GET', 'pp:time:day:' + d]); pipeline.push(['GET', 'pp:sessions:day:' + d]); });
+  pipeline.push(['HGETALL', 'pp:devices:all']);
+  days.forEach(d => { pipeline.push(['HGETALL', 'pp:devices:day:' + d]); });
 
   let out;
   try {
@@ -74,12 +76,24 @@ module.exports = async (req, res) => {
     sessions: parseInt(val(timeBase + i * 2 + 1), 10) || 0
   }));
 
+  // Device buckets: pp:devices:all HGETALL sits right after the time/sessions
+  // block, then one HGETALL per day in the same order as `days`.
+  const devBase = timeBase + days.length * 2;
+  const hashOf = i => {
+    const a = Array.isArray(val(i)) ? val(i) : [];
+    const o = {};
+    for (let j = 0; j + 1 < a.length; j += 2) o[a[j]] = parseInt(a[j + 1], 10) || 0;
+    return o;
+  };
+  const devices = { totals: hashOf(devBase), today: hashOf(devBase + 1) };
+
   const data = {
     totalOpens: parseInt(val(0), 10) || 0,
     totalUniqueUsers: parseInt(val(1), 10) || 0,
     opensByVersion: versions,
     totalTimeSeconds: parseInt(val(3), 10) || 0,
     totalSessions: parseInt(val(4), 10) || 0,
+    devices: devices,
     last30Days: byDay
   };
 
@@ -127,6 +141,15 @@ function renderHtml(data) {
     '<div class="verrow"><span>Version ' + v + '</span><strong>' + data.opensByVersion[v] + ' opens</strong></div>'
   ).join('\n') || '<div class="verrow"><span>No version data yet</span></div>';
 
+  const devOrder = ['Android', 'iPhone / iPad', 'Desktop', 'Bot / automated', 'Other'];
+  const devTotal = devOrder.reduce((a, k) => a + (data.devices.totals[k] || 0), 0);
+  const deviceRows = devOrder.map(k => {
+    const n = data.devices.totals[k] || 0;
+    const t = data.devices.today[k] || 0;
+    const pct = devTotal ? Math.round((n / devTotal) * 100) : 0;
+    return '<div class="verrow"><span>' + k + ' — ' + pct + '%</span><strong>' + n + ' visits (' + t + ' today)</strong></div>';
+  }).join('\n');
+
   return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
     '<title>PestPass Usage</title><style>' +
@@ -158,7 +181,8 @@ function renderHtml(data) {
     '<div class="card"><div class="n">' + fmtTime(data.totalSessions ? data.totalTimeSeconds / data.totalSessions : 0) + '</div><div class="l">avg time per visit</div></div>' +
     '</div>' +
     '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th><th></th></tr>' + rows + '</table>' +
+    '<h2>Visits by device type</h2>' + deviceRows +
     '<h2>Opens by app version</h2>' + versionRows +
-    '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. Total opens in the last 30 days: ' + opens30 + '.</div>' +
+    '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. Total opens in the last 30 days: ' + opens30 + '.</div>' +
     '</div></body></html>';
 }
