@@ -180,8 +180,8 @@ function renderHtml(data) {
     '<div class="card"><div class="n">' + fmtTime(data.totalTimeSeconds) + '</div><div class="l">total time in app</div></div>' +
     '<div class="card"><div class="n">' + fmtTime(data.totalSessions ? data.totalTimeSeconds / data.totalSessions : 0) + '</div><div class="l">avg time per visit</div></div>' +
     '</div>' +
-    '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th><th></th></tr>' + rows + '</table>' +
     '<h2>Visits by device type</h2>' + deviceRows +
+    '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th><th></th></tr>' + rows + '</table>' +
     '<h2>Opens by app version</h2>' + versionRows +
     '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. Total opens in the last 30 days: ' + opens30 + '.</div>' +
     '</div></body></html>';
