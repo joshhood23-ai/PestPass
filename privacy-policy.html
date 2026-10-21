@@ -69,21 +69,30 @@
 <div class="wrap">
   <div class="badge"><span class="dot"></span>PestPass · Privacy Policy</div>
   <h1>Privacy Policy</h1>
-  <div class="updated">Last updated: October 4, 2026</div>
+  <div class="updated">Last updated: October 21, 2026</div>
 
   <div class="callout" style="border-color:rgba(255,209,102,0.35);background:rgba(255,209,102,0.07);">
     <strong>⚠️ Test version:</strong> This app is currently in testing. Features, questions, and content may change before the final release.
   </div>
 
   <div class="callout good">
-    <strong>The short version:</strong> PestPass doesn't collect, transmit, or share any personal information. Everything you do in the app — quiz scores, flashcard progress, bookmarks, streaks, settings — stays stored locally on your own device. Nothing is sent to us or anyone else automatically, because there's no server for it to go to. The only time anything leaves your device is if you personally choose to email us feedback or a question report (see below), and you can read the message before it goes.
+    <strong>The short version:</strong> PestPass doesn't collect, transmit, or share any personal information. Everything you do in the app — quiz scores, flashcard progress, bookmarks, streaks, settings — stays stored locally on your own device. The one exception: so we can tell how many people use PestPass and how often, the app sends a single anonymous usage count each time it is opened (see "Anonymous usage counting" below). It contains no personal information and nothing about your studying. The only other time anything leaves your device is if you personally choose to email us feedback or a question report (see below), and you can read the message before it goes.
   </div>
 
   <h2>What this app is</h2>
-  <p>PestPass (<a href="https://pest-pass.vercel.app/">pest-pass.vercel.app</a>) is a self-contained study tool for the Georgia Structural Pest Control Commission (SPCC) Certified Operator, Registered Technician, and DNR Nuisance Wildlife Control exam tracks. It runs entirely on your device.</p>
+  <p>PestPass (<a href="https://pest-pass.vercel.app/">pest-pass.vercel.app</a>) is a self-contained study tool for the Georgia Structural Pest Control Commission (SPCC) Certified Operator, Registered Technician, and DNR Nuisance Wildlife Control exam tracks. Your study data lives entirely on your device; the only things that ever leave it are the anonymous usage count described below, and anything you choose to email us.</p>
 
   <h2>Information we collect</h2>
-  <p><strong>Nothing automatically.</strong> PestPass does not have a server, does not create user accounts, and does not request or transmit any personal information on its own. The app does not know who you are, where you are, or what device you're using. We only receive information if you choose to email us (see "Feedback, question reports, and backups" below).</p>
+  <p><strong>No personal information.</strong> PestPass does not create user accounts, does not ask for your name, email address, or location, and never receives your study data. The app does not know who you are. Apart from the anonymous usage count below, we only receive information if you choose to email us (see "Feedback, question reports, and backups").</p>
+
+  <h2>Anonymous usage counting</h2>
+  <p>So we can tell how many people use PestPass and how often, the app sends one small count to our own server each time it is opened. Here is exactly what that involves:</p>
+  <ul>
+    <li>The message contains a <strong>random identifier generated on your device</strong>, the app version, and nothing else. The identifier is a string of random characters — it is not your name, not your device's serial number or advertising ID, and it is never shared with anyone.</li>
+    <li>On our side, the identifier is stored only in <strong>scrambled (hashed) form</strong>, and the counter keeps simple totals: how many times the app was opened each day, and how many different identifiers have opened it.</li>
+    <li>The counter does <strong>not</strong> store your IP address, and it never receives quiz answers, scores, categories, bookmarks, or any other study activity.</li>
+    <li>It uses <strong>no cookies</strong> and does not track you across other apps or websites. If you are offline when you open the app, nothing is sent.</li>
+  </ul>
 
   <h2>Information stored on your device</h2>
   <p>To let you track progress and pick up where you left off, the app stores the following <strong>locally on your device only</strong>, using standard browser storage (localStorage):</p>
@@ -93,8 +102,9 @@
     <li>App preferences (theme, selected exam track)</li>
     <li>A short log of recent app error messages (up to 15 entries: the error text and the line of code it came from, with no study answers or personal details). It is used only to help diagnose problems and is never sent unless you tick "Include technical info" when sending feedback.</li>
     <li>If you choose to enable it, an app-lock username and password — stored and checked entirely on-device; we never see them and they're never transmitted anywhere</li>
+    <li>The random anonymous identifier used for the usage count described above. It is generated on your device and is not linked to your identity; clearing the app's site data deletes it (a new one is generated the next time the app is opened)</li>
   </ul>
-  <p>None of this data is sent to us. We have no way to access it, back it up, or see it, because it's never transmitted to us in the first place.</p>
+  <p>With the single exception of the anonymous identifier (which is sent only as the usage count described above), none of this data is sent to us. We have no way to access your study data, back it up, or see it, because it is never transmitted to us.</p>
 
   <h2>Feedback, question reports, and backups</h2>
   <p>These features only act when you tap them, and nothing is sent in the background.</p>
@@ -104,19 +114,19 @@
   </ul>
 
   <h2>Analytics, ads, and third parties</h2>
-  <p>PestPass contains no advertising, no analytics or tracking SDKs, and no third-party services of any kind. No data is shared with anyone because no data is collected in the first place.</p>
+  <p>PestPass contains no advertising and no third-party analytics or tracking SDKs, and no data is sold or shared with anyone. The only measurement is our own anonymous usage counter described above, which we run ourselves on our hosting platform.</p>
 
   <h2>Internet connection</h2>
-  <p>PestPass works fully offline after the first load. It doesn't need — and doesn't use — an internet connection to function. (Sending a feedback email naturally requires your email app to be online.)</p>
+  <p>PestPass works fully offline after the first load. It doesn't need an internet connection to function. The anonymous usage count is the only thing the app ever sends on its own, and only when a connection is available. (Sending a feedback email naturally requires your email app to be online.)</p>
 
   <h2>Children's privacy</h2>
-  <p>PestPass is a professional exam-preparation tool intended for adults pursuing pest control or wildlife control licensure and is not directed at children. We do not knowingly collect information from anyone, of any age, because we don't collect information at all.</p>
+  <p>PestPass is a professional exam-preparation tool intended for adults pursuing pest control or wildlife control licensure and is not directed at children. We do not knowingly collect personal information from anyone, of any age. The anonymous usage count contains no personal information.</p>
 
   <h2>Deleting your data</h2>
   <p>Since everything is stored locally, you're always in full control of it:</p>
   <ul>
     <li>Use <strong>Settings → Reset Progress</strong> in the app to clear your study data at any time</li>
-    <li>Clearing your browser's site data for this app, or uninstalling the app, removes everything permanently, including the on-device error log</li>
+    <li>Clearing your browser's site data for this app, or uninstalling the app, removes everything permanently, including the on-device error log and the anonymous usage identifier. The usage totals already counted contain no personal information and cannot be traced back to you or your device</li>
     <li>Backup files you saved, and any emails you sent us, are outside the app. Delete your backup files yourself, and email us if you'd like a report you sent deleted</li>
   </ul>
 

@@ -19909,5 +19909,25 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 
 </div><!-- /#app -->
+<script>
+/* Anonymous usage counter (see Privacy Policy): one ping per app open carrying only
+   a random on-device install ID + the app version. No personal data, no study
+   content, no cookies, no fingerprinting. Silent on failure; offline sends nothing. */
+(function () {
+  try {
+    if (sessionStorage.getItem('ppCounted')) return;
+    sessionStorage.setItem('ppCounted', '1');
+    var id = localStorage.getItem('ppAnonId');
+    if (!id) {
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); });
+      localStorage.setItem('ppAnonId', id);
+    }
+    var payload = JSON.stringify({ id: id, v: (typeof PP_VERSION !== 'undefined' && PP_VERSION && PP_VERSION.app) || '?' });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/ping', payload); }
+    else if (window.fetch) { fetch('/api/ping', { method: 'POST', body: payload, keepalive: true }).catch(function () {}); }
+  } catch (e) { /* the counter must never break the app */ }
+})();
+</script>
 </body>
 </html>
