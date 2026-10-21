@@ -3629,7 +3629,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     </div>
     <div class="htext">
       <div class="htitle">Pest<span class="htitle-accent">Pass</span></div>
-      <div class="hsub" id="header-sub">SPCC &middot; Certified Operator Prep</div>
+      <div class="hsub" id="header-sub">Certified Operator Prep</div>
     </div>
     <div class="top-actions">
       <button class="icon-btn" id="hamburger-btn" onclick="openMenu()" title="Settings" aria-label="Open settings menu">
@@ -8340,12 +8340,12 @@ function applyExamTrack(){
   if(btnDNR) btnDNR.classList.toggle('active', track==='dnr');
   if(btnMOSQ) btnMOSQ.classList.toggle('active', track==='mosq');
   var headerSub = document.getElementById('header-sub');
-  if(headerSub) headerSub.textContent = track==='dnr' ? 'GA DNR \u00b7 Exam Prep' : track==='mosq' ? 'GA Dept of Ag \u00b7 Exam Prep' : 'SPCC \u00b7 Exam Prep';
+  if(headerSub) headerSub.textContent = track==='dnr' ? 'DNR \u00b7 Exam Prep' : track==='mosq' ? 'Mosquito Control \u00b7 Exam Prep' : 'Exam Prep';
   var heroEye = document.getElementById('hero-eye');
-  if(heroEye) heroEye.textContent = track==='dnr' ? 'Georgia DNR Nuisance Wildlife Control' : track==='mosq' ? 'Georgia Category 41 Mosquito Control' : 'Pest Control Exam Prep';
+  if(heroEye) heroEye.textContent = track==='dnr' ? 'DNR Nuisance Wildlife Control' : track==='mosq' ? 'Category 41 Mosquito Control' : 'Pest Control Exam Prep';
   var heroName = document.getElementById('hero-track-name');
   if(heroName) heroName.textContent = track==='rt' ? 'Registered Employee' : track==='dnr' ? 'Nuisance Wildlife Control' : track==='mosq' ? 'Mosquito Control' : 'Certified Operator';
-  document.title = track==='rt' ? 'PestPass \u2014 SPCC Registered Employee Prep' : track==='dnr' ? 'PestPass \u2014 GA DNR Trapping Prep' : track==='mosq' ? 'PestPass \u2014 GA Category 41 Mosquito Control Prep' : 'PestPass \u2014 SPCC Certified Operator Prep';
+  document.title = track==='rt' ? 'PestPass \u2014 Registered Employee Prep' : track==='dnr' ? 'PestPass \u2014 DNR Trapping Prep' : track==='mosq' ? 'PestPass \u2014 Category 41 Mosquito Control Prep' : 'PestPass \u2014 Certified Operator Prep';
   // bestScores is a shared module-level variable read by many functions
   // without re-fetching it themselves — reload it here, right on switch,
   // so every consumer sees the new track's data immediately rather than
@@ -19597,7 +19597,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // Footer version label
   try{
     var fv = document.querySelector('#menu-drawer [data-pp-ver]');
-    if(fv) fv.textContent = 'PestPass · v'+V.app+' · content '+V.content+' · Georgia SPCC';
+    if(fv) fv.textContent = 'PestPass · v'+V.app+' · content '+V.content;
   }catch(e){}
 
   // ── Stable item ids ──────────────────────────────────
