@@ -29,6 +29,17 @@ module.exports = async (req, res) => {
   pipeline.push(['HGETALL', 'pp:devices:all']);
   days.forEach(d => { pipeline.push(['HGETALL', 'pp:devices:day:' + d]); });
 
+  // Feature-use block (appended last): per feature, total opens, distinct
+  // users, and today's opens.
+  const FEATURES = ['quiz', 'flashcards', 'spaced-review', 'study-guides', 'bookmarks',
+    'visual-id', 'insect-id', 'photo-frenzy', 'bug-blitz', 'survival', 'beat-the-clock',
+    'math-drill', 'boss-battle', 'mock-exam'];
+  FEATURES.forEach(f => {
+    pipeline.push(['GET', 'pp:feat:' + f + ':total']);
+    pipeline.push(['SCARD', 'pp:feat:' + f + ':users']);
+    pipeline.push(['GET', 'pp:feat:' + f + ':day:' + days[0]]);
+  });
+
   let out;
   try {
     const r = await fetch(cfg.url + '/pipeline', {
@@ -87,6 +98,16 @@ module.exports = async (req, res) => {
   };
   const devices = { totals: hashOf(devBase), today: hashOf(devBase + 1) };
 
+  const featBase = devBase + 1 + days.length;
+  const FEATURE_LABELS = { quiz: 'Quiz', flashcards: 'Flashcards', 'spaced-review': 'Spaced Review', 'study-guides': 'Study Guides', bookmarks: 'Bookmarks', 'visual-id': 'Visual ID drill', 'insect-id': 'Insect ID drill', 'photo-frenzy': 'Photo Frenzy', 'bug-blitz': 'True/False Blitz', survival: 'Survival', 'beat-the-clock': 'Beat the Clock', 'math-drill': 'Math Drill', 'boss-battle': 'Boss Battle', 'mock-exam': 'Mock Exam' };
+  const features = FEATURES.map((f, i) => ({
+    name: f,
+    label: FEATURE_LABELS[f] || f,
+    opens: parseInt(val(featBase + i * 3), 10) || 0,
+    users: parseInt(val(featBase + i * 3 + 1), 10) || 0,
+    today: parseInt(val(featBase + i * 3 + 2), 10) || 0
+  })).sort((a, b) => b.opens - a.opens);
+
   const data = {
     totalOpens: parseInt(val(0), 10) || 0,
     totalUniqueUsers: parseInt(val(1), 10) || 0,
@@ -94,6 +115,7 @@ module.exports = async (req, res) => {
     totalTimeSeconds: parseInt(val(3), 10) || 0,
     totalSessions: parseInt(val(4), 10) || 0,
     devices: devices,
+    features: features,
     last30Days: byDay
   };
 
@@ -141,6 +163,10 @@ function renderHtml(data) {
     '<div class="verrow"><span>Version ' + v + '</span><strong>' + data.opensByVersion[v] + ' opens</strong></div>'
   ).join('\n') || '<div class="verrow"><span>No version data yet</span></div>';
 
+  const featureRows = data.features.filter(f => f.opens > 0).map(f =>
+    '<div class="verrow"><span>' + f.label + '</span><strong>' + f.opens + ' opens · ' + f.users + ' users (' + f.today + ' today)</strong></div>'
+  ).join('\n') || '<div class="verrow"><span>No feature data yet — counting starts with the current app version</span></div>';
+
   const devOrder = ['Android', 'iPhone / iPad', 'Desktop', 'Bot / automated', 'Other'];
   const devTotal = devOrder.reduce((a, k) => a + (data.devices.totals[k] || 0), 0);
   const deviceRows = devOrder.map(k => {
@@ -182,9 +208,10 @@ function renderHtml(data) {
     '<div class="card"><div class="n" id="st-avgvisit">' + fmtTime(data.totalSessions ? data.totalTimeSeconds / data.totalSessions : 0) + '</div><div class="l">avg time per visit</div></div>' +
     '</div>' +
     '<h2>Visits by device type</h2><div id="dev-rows">' + deviceRows + '</div>' +
+    '<h2>Feature use — what people open</h2><div id="feat-rows">' + featureRows + '</div>' +
     '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th><th></th></tr><tbody id="days-body">' + rows + '</tbody></table>' +
     '<h2>Opens by app version</h2><div id="ver-rows">' + versionRows + '</div>' +
-    '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. Total opens in the last 30 days: ' + opens30 + '.</div>' +
+    '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. <strong>Feature use</strong> counts one ping each time a feature is opened — only the feature\'s name, never answers, scores or content — and is counted since Oct 22, 2026. Total opens in the last 30 days: ' + opens30 + '.</div>' +
     '</div>' +
     '<script>' +
     // The page refreshes its own numbers from the JSON endpoint. Every fetch
@@ -206,6 +233,7 @@ function renderHtml(data) {
     ' document.getElementById("dev-rows").innerHTML = order.map(function (k) { var n = d.devices.totals[k] || 0; var t = d.devices.today[k] || 0; var pct = dt ? Math.round(n / dt * 100) : 0; return "<div class=\\"verrow\\"><span>" + k + " — " + pct + "%</span><strong>" + n + " visits (" + t + " today)</strong></div>"; }).join("");' +
     ' var mx = Math.max.apply(null, [1].concat(days.map(function (x) { return x.opens; })));' +
     ' document.getElementById("days-body").innerHTML = days.map(function (x, i) { var pct = Math.round(x.opens / mx * 100); return "<tr" + (i === 0 ? " class=\\"today\\"" : "") + "><td>" + (i === 0 ? "Today" : pd(x.day)) + "</td><td class=\\"num\\">" + x.opens + "</td><td class=\\"num\\">" + x.uniques + "</td><td class=\\"num newn\\">" + x.newUsers + "</td><td class=\\"num\\">" + fd(x.timeSeconds) + "</td><td class=\\"barcell\\"><div class=\\"bar\\" style=\\"width:" + pct + "%\\"></div></td></tr>"; }).join("");' +
+    ' var fr = (d.features || []).filter(function (f) { return f.opens > 0; }); document.getElementById("feat-rows").innerHTML = fr.length ? fr.map(function (f) { return "<div class=\"verrow\"><span>" + f.label + "</span><strong>" + f.opens + " opens · " + f.users + " users (" + f.today + " today)</strong></div>"; }).join("") : "<div class=\"verrow\"><span>No feature data yet — counting starts with the current app version</span></div>";' +
     ' var vk = Object.keys(d.opensByVersion).sort(); document.getElementById("ver-rows").innerHTML = vk.length ? vk.map(function (v) { return "<div class=\\"verrow\\"><span>Version " + v + "</span><strong>" + d.opensByVersion[v] + " opens</strong></div>"; }).join("") : "<div class=\\"verrow\\"><span>No version data yet</span></div>";' +
     ' document.getElementById("upd-t").textContent = new Date().toLocaleTimeString();' +
     '}).catch(function () {}); }' +

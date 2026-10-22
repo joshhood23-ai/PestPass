@@ -1,10 +1,13 @@
 // PestPass anonymous usage counter — receive endpoint.
 // Receives one ping per app visit: { id: <random on-device install ID>, v: <app version> },
 // where a visit is a fresh open or a return after 30+ minutes in the background
-// (t: 'resume'), plus a session-end ping carrying foreground seconds (t: 'end').
+// (t: 'resume'), plus a session-end ping carrying foreground seconds (t: 'end'),
+// and a feature-open ping (t: 'ev', e: <feature name>) fired when a user opens a
+// feature — only the feature's name, counted in aggregate.
 // Stores ONLY: daily + total open counts, the set of SHA-256-hashed IDs (for unique
-// counts), per-version open counts, session seconds, and per-device-type visit counts
-// bucketed from the request's user-agent (the user-agent itself is never stored).
+// counts), per-version open counts, session seconds, per-feature open counts, and
+// per-device-type visit counts bucketed from the request's user-agent (the
+// user-agent itself is never stored).
 // No IP addresses, no personal data, no study data.
 // Backing store: Upstash Redis via its REST API (env: UPSTASH_REDIS_REST_URL/TOKEN,
 // or the Vercel KV aliases KV_REST_API_URL/TOKEN).
@@ -69,6 +72,10 @@ module.exports = async (req, res) => {
     res.status(400).json({ error: 'bad ping' }); return;
   }
 
+  const FEATURES = ['quiz', 'flashcards', 'spaced-review', 'study-guides', 'bookmarks',
+    'visual-id', 'insect-id', 'photo-frenzy', 'bug-blitz', 'survival', 'beat-the-clock',
+    'math-drill', 'boss-battle', 'mock-exam'];
+
   const day = new Date().toISOString().slice(0, 10); // UTC day
   const hash = crypto.createHash('sha256').update(id).digest('hex');
   let pipeline;
@@ -83,6 +90,17 @@ module.exports = async (req, res) => {
       ['INCRBY', 'pp:time:day:' + day, secs],
       ['INCR', 'pp:sessions:total'],
       ['INCR', 'pp:sessions:day:' + day]
+    ];
+  } else if (body.t === 'ev') {
+    // Feature-open ping: aggregate counts per feature name (allowlisted).
+    const e = typeof body.e === 'string' ? body.e : '';
+    if (FEATURES.indexOf(e) < 0) {
+      res.status(400).json({ error: 'bad feature' }); return;
+    }
+    pipeline = [
+      ['INCR', 'pp:feat:' + e + ':total'],
+      ['INCR', 'pp:feat:' + e + ':day:' + day],
+      ['SADD', 'pp:feat:' + e + ':users', hash]
     ];
   } else {
     // Open ping (no t) and resume ping (t: 'resume') both count as one visit.
