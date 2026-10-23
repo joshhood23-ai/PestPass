@@ -40,6 +40,13 @@ module.exports = async (req, res) => {
     pipeline.push(['GET', 'pp:feat:' + f + ':day:' + days[0]]);
   });
 
+  // Daily feature opens (appended last of all): per-feature day totals for
+  // the last 7 days, so the dashboard can show what was used each day.
+  const FEAT_DAYS = 7;
+  for (let di = 0; di < FEAT_DAYS; di++) {
+    FEATURES.forEach(f => { pipeline.push(['GET', 'pp:feat:' + f + ':day:' + days[di]]); });
+  }
+
   let out;
   try {
     const r = await fetch(cfg.url + '/pipeline', {
@@ -108,6 +115,24 @@ module.exports = async (req, res) => {
     today: parseInt(val(featBase + i * 3 + 2), 10) || 0
   })).sort((a, b) => b.opens - a.opens);
 
+  // Daily detail augmentation: per-day device mix (the per-day HGETALLs are
+  // already in the pipeline), per-day average session time, and the last
+  // FEAT_DAYS days of feature opens (appended block at the very end).
+  const featDayBase = featBase + FEATURES.length * 3;
+  byDay.forEach((r, i) => {
+    r.devices = hashOf(devBase + 1 + i);
+    r.avgTimePerSession = r.sessions ? Math.round(r.timeSeconds / r.sessions) : 0;
+    if (i < FEAT_DAYS) {
+      const fd = [];
+      FEATURES.forEach((f, fi) => {
+        const n = parseInt(val(featDayBase + i * FEATURES.length + fi), 10) || 0;
+        if (n > 0) fd.push({ name: f, label: FEATURE_LABELS[f] || f, opens: n });
+      });
+      fd.sort((a, b) => b.opens - a.opens);
+      r.features = fd;
+    }
+  });
+
   const data = {
     totalOpens: parseInt(val(0), 10) || 0,
     totalUniqueUsers: parseInt(val(1), 10) || 0,
@@ -155,8 +180,21 @@ function renderHtml(data) {
     const pct = Math.round((r.opens / maxOpens) * 100);
     return '<tr' + (i === 0 ? ' class="today"' : '') + '><td>' + (i === 0 ? 'Today' : prettyDay(r.day)) +
       '</td><td class="num">' + r.opens + '</td><td class="num">' + r.uniques + '</td>' +
-      '<td class="num newn">' + r.newUsers + '</td><td class="num">' + fmtTime(r.timeSeconds) + '</td>' +
+      '<td class="num newn">' + r.newUsers + '</td><td class="num retc">' + r.returningUsers + '</td>' +
+      '<td class="num">' + r.sessions + '</td><td class="num">' + fmtTime(r.timeSeconds) + '</td>' +
+      '<td class="num">' + fmtTime(r.avgTimePerSession || 0) + '</td>' +
       '<td class="barcell"><div class="bar" style="width:' + pct + '%"></div></td></tr>';
+  }).join('\n');
+
+  const devOrderD = ['Android', 'iPhone / iPad', 'Desktop', 'Bot / automated', 'Other'];
+  const detailHtml = days.slice(0, 7).map((r, i) => {
+    const devs = devOrderD.filter(k => (r.devices || {})[k]).map(k => k + ' ' + r.devices[k]).join(' · ');
+    const feats = (r.features || []).slice(0, 5).map(f => f.label + ' ' + f.opens).join(' · ');
+    return '<div class="dday"><div class="dhead">' + (i === 0 ? 'Today' : prettyDay(r.day)) + '</div>' +
+      '<div class="dline">' + r.opens + ' opens · ' + r.uniques + ' users (' + r.newUsers + ' new, ' + r.returningUsers + ' returning) · ' +
+      r.sessions + ' timed sessions · ' + fmtTime(r.timeSeconds) + ' total · avg ' + fmtTime(r.avgTimePerSession || 0) + ' per session</div>' +
+      '<div class="dline dim">Devices: ' + (devs || 'no visits recorded') + '</div>' +
+      '<div class="dline dim">Top features: ' + (feats || 'none opened') + '</div></div>';
   }).join('\n');
 
   const versionRows = Object.keys(data.opensByVersion).sort().map(v =>
@@ -192,6 +230,11 @@ function renderHtml(data) {
     'th{color:var(--tx2);font-weight:600;font-size:12px}tr:last-child td{border-bottom:none}' +
     'td.num{font-weight:700}td.newn{color:var(--gn)}.today td{background:rgba(78,201,225,.08)}.today td:first-child{color:var(--ac);font-weight:700}' +
     '.barcell{width:34%}.bar{height:8px;border-radius:4px;background:var(--ac);min-width:2px}' +
+    '.dday{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}' +
+    '.dday .dhead{font-weight:800;font-size:14.5px;margin-bottom:3px}' +
+    '.dday .dline{font-size:13.5px;line-height:1.55}' +
+    '.dday .dim{color:var(--tx2);font-size:12.5px}' +
+    '@media (max-width:480px){.retc{display:none}}' +
     '.verrow{display:flex;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px;margin-bottom:8px}' +
     '.foot{color:var(--tx2);font-size:12px;margin-top:22px;line-height:1.5}' +
     '@media (max-width:480px){th,td{padding:8px 7px;font-size:12.5px}.barcell{display:none}h1{font-size:20px}.card .n{font-size:25px}}' +
@@ -205,13 +248,15 @@ function renderHtml(data) {
     '<div class="card"><div class="n" id="st-avgopens">' + avg + '</div><div class="l">avg opens per user</div></div>' +
     '<div class="card wide"><div class="n" id="st-new7">' + new7 + '</div><div class="l">brand-new users — last 7 days</div></div>' +
     '<div class="card"><div class="n" id="st-time">' + fmtTime(data.totalTimeSeconds) + '</div><div class="l">total time in app</div></div>' +
-    '<div class="card"><div class="n" id="st-avgvisit">' + fmtTime(data.totalSessions ? data.totalTimeSeconds / data.totalSessions : 0) + '</div><div class="l">avg time per visit</div></div>' +
+    '<div class="card"><div class="n" id="st-avgvisit">' + fmtTime(data.totalSessions ? data.totalTimeSeconds / data.totalSessions : 0) + '</div><div class="l">avg time per session</div></div>' +
+    '<div class="card"><div class="n" id="st-sessions">' + data.totalSessions + '</div><div class="l">sessions that reported time</div></div>' +
     '</div>' +
     '<h2>Visits by device type</h2><div id="dev-rows">' + deviceRows + '</div>' +
     '<h2>Feature use — what people open</h2><div id="feat-rows">' + featureRows + '</div>' +
-    '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th><th></th></tr><tbody id="days-body">' + rows + '</tbody></table>' +
+    '<h2>Daily detail — last 7 days</h2><div id="daily-detail">' + detailHtml + '</div>' +
+    '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th class="retc">Ret.</th><th>Sess.</th><th>Time</th><th>Avg</th><th></th></tr><tbody id="days-body">' + rows + '</tbody></table>' +
     '<h2>Opens by app version</h2><div id="ver-rows">' + versionRows + '</div>' +
-    '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. <strong>Feature use</strong> counts one ping each time a feature is opened — only the feature\'s name, never answers, scores or content — and is counted since Oct 22, 2026. Total opens in the last 30 days: ' + opens30 + '.</div>' +
+    '<div class="foot">Days are counted in UTC. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. <strong>Daily detail</strong> breaks the last 7 days down by timed sessions, device mix and top features; feature-by-day counting started Oct 22, 2026 and device-by-day on Oct 21, 2026, so earlier days show none. <strong>Avg time per session</strong> is reported time divided by the sessions that reported time — most visits never report time, so it is NOT an average over all visits. <strong>Feature use</strong> counts one ping each time a feature is opened — only the feature\'s name, never answers, scores or content — and is counted since Oct 22, 2026. Total opens in the last 30 days: ' + opens30 + '.</div>' +
     '</div>' +
     '<script>' +
     // The page refreshes its own numbers from the JSON endpoint. Every fetch
@@ -229,11 +274,13 @@ function renderHtml(data) {
     ' document.getElementById("st-new7").textContent = sum(days.slice(0, 7), "newUsers");' +
     ' document.getElementById("st-time").textContent = fd(d.totalTimeSeconds);' +
     ' document.getElementById("st-avgvisit").textContent = fd(d.totalSessions ? d.totalTimeSeconds / d.totalSessions : 0);' +
+    ' document.getElementById("st-sessions").textContent = d.totalSessions;' +
     ' var order = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; var dt = 0; order.forEach(function (k) { dt += (d.devices.totals[k] || 0); });' +
     ' document.getElementById("dev-rows").innerHTML = order.map(function (k) { var n = d.devices.totals[k] || 0; var t = d.devices.today[k] || 0; var pct = dt ? Math.round(n / dt * 100) : 0; return "<div class=\\"verrow\\"><span>" + k + " — " + pct + "%</span><strong>" + n + " visits (" + t + " today)</strong></div>"; }).join("");' +
     ' var mx = Math.max.apply(null, [1].concat(days.map(function (x) { return x.opens; })));' +
-    ' document.getElementById("days-body").innerHTML = days.map(function (x, i) { var pct = Math.round(x.opens / mx * 100); return "<tr" + (i === 0 ? " class=\\"today\\"" : "") + "><td>" + (i === 0 ? "Today" : pd(x.day)) + "</td><td class=\\"num\\">" + x.opens + "</td><td class=\\"num\\">" + x.uniques + "</td><td class=\\"num newn\\">" + x.newUsers + "</td><td class=\\"num\\">" + fd(x.timeSeconds) + "</td><td class=\\"barcell\\"><div class=\\"bar\\" style=\\"width:" + pct + "%\\"></div></td></tr>"; }).join("");' +
-    ' var fr = (d.features || []).filter(function (f) { return f.opens > 0; }); document.getElementById("feat-rows").innerHTML = fr.length ? fr.map(function (f) { return "<div class=\"verrow\"><span>" + f.label + "</span><strong>" + f.opens + " opens · " + f.users + " users (" + f.today + " today)</strong></div>"; }).join("") : "<div class=\"verrow\"><span>No feature data yet — counting starts with the current app version</span></div>";' +
+    ' document.getElementById("days-body").innerHTML = days.map(function (x, i) { var pct = Math.round(x.opens / mx * 100); return "<tr" + (i === 0 ? " class=\\"today\\"" : "") + "><td>" + (i === 0 ? "Today" : pd(x.day)) + "</td><td class=\\"num\\">" + x.opens + "</td><td class=\\"num\\">" + x.uniques + "</td><td class=\\"num newn\\">" + x.newUsers + "</td><td class=\\"num retc\\">" + x.returningUsers + "</td><td class=\\"num\\">" + x.sessions + "</td><td class=\\"num\\">" + fd(x.timeSeconds) + "</td><td class=\\"num\\">" + fd(x.avgTimePerSession || 0) + "</td><td class=\\"barcell\\"><div class=\\"bar\\" style=\\"width:" + pct + "%\\"></div></td></tr>"; }).join("");' +
+    ' var dord = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; document.getElementById("daily-detail").innerHTML = days.slice(0, 7).map(function (x, i) { var devs = dord.filter(function (k) { return (x.devices || {})[k]; }).map(function (k) { return k + " " + x.devices[k]; }).join(" · "); var feats = (x.features || []).slice(0, 5).map(function (f) { return f.label + " " + f.opens; }).join(" · "); return "<div class=\\"dday\\"><div class=\\"dhead\\">" + (i === 0 ? "Today" : pd(x.day)) + "</div><div class=\\"dline\\">" + x.opens + " opens · " + x.uniques + " users (" + x.newUsers + " new, " + x.returningUsers + " returning) · " + x.sessions + " timed sessions · " + fd(x.timeSeconds) + " total · avg " + fd(x.avgTimePerSession || 0) + " per session</div><div class=\\"dline dim\\">Devices: " + (devs || "no visits recorded") + "</div><div class=\\"dline dim\\">Top features: " + (feats || "none opened") + "</div></div>"; }).join("");' +
+    ' var fr = (d.features || []).filter(function (f) { return f.opens > 0; }); document.getElementById("feat-rows").innerHTML = fr.length ? fr.map(function (f) { return "<div class=\\"verrow\\"><span>" + f.label + "</span><strong>" + f.opens + " opens · " + f.users + " users (" + f.today + " today)</strong></div>"; }).join("") : "<div class=\\"verrow\\"><span>No feature data yet — counting starts with the current app version</span></div>";' +
     ' var vk = Object.keys(d.opensByVersion).sort(); document.getElementById("ver-rows").innerHTML = vk.length ? vk.map(function (v) { return "<div class=\\"verrow\\"><span>Version " + v + "</span><strong>" + d.opensByVersion[v] + " opens</strong></div>"; }).join("") : "<div class=\\"verrow\\"><span>No version data yet</span></div>";' +
     ' document.getElementById("upd-t").textContent = new Date().toLocaleTimeString();' +
     '}).catch(function () {}); }' +
