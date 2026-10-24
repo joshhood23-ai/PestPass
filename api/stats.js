@@ -188,8 +188,9 @@ function bar30Html(daysDesc, mode) {
       : r.opens + ' opens');
     return '<div class="col" title="' + title + '">' + val + '<div class="colbar">' + segs + '</div></div>';
   }).join('');
+  const step = rows.length <= 10 ? 1 : rows.length <= 20 ? 2 : 5;
   const labels = rows.map((r, i) =>
-    '<span>' + ((i % 5 === 0 || i === rows.length - 1) ? String(parseInt(r.day.slice(8, 10), 10)) : '') + '</span>'
+    '<span>' + ((i % step === 0 || i === rows.length - 1) ? String(parseInt(r.day.slice(8, 10), 10)) : '') + '</span>'
   ).join('');
   return '<div class="cols' + (mode === 'o' ? ' short' : '') + '">' + cols + '</div><div class="xrow">' + labels + '</div>';
 }
@@ -240,10 +241,13 @@ function renderHtml(data) {
     const n = data.devices.totals[k] || 0;
     const t = data.devices.today[k] || 0;
     const pct = devTotal ? Math.round((n / devTotal) * 100) : 0;
-    return '<div class="frow"><div class="frow-top"><span>' + k + ' — ' + pct + '%</span><strong>' + n + ' visits (' + t + ' today)</strong></div>' +
-      '<div class="ftrack"><div class="ffill dev" style="width:' + pct + '%"></div></div></div>';
+    return '<div class="verrow"><span>' + k + ' — ' + pct + '%</span><strong>' + n + ' visits (' + t + ' today)</strong></div>';
   }).join('\n');
 
+  const rangeBar = '<div class="rangebar">' +
+    '<button class="rbtn" data-n="7" onclick="setRange(7)">7 days</button>' +
+    '<button class="rbtn" data-n="15" onclick="setRange(15)">15 days</button>' +
+    '<button class="rbtn on" data-n="30" onclick="setRange(30)">30 days</button></div>';
   const usersChart = bar30Html(days, 'u');
   const opensChart = bar30Html(days, 'o');
   const legend = '<div class="chead"><span class="lg"><i class="sw" style="background:var(--gn)"></i>New users</span>' +
@@ -276,17 +280,18 @@ function renderHtml(data) {
     '.dday .dhead{font-weight:800;font-size:14.5px;margin-bottom:3px}' +
     '.dday .dline{font-size:13.5px;line-height:1.55}' +
     '.dday .dim{color:var(--tx2);font-size:12.5px}' +
-    '.chart{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px 8px}' +
+    '.rangebar{display:flex;gap:8px;margin:0 0 10px}.rbtn{flex:1;padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx2);font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer}.rbtn.on{background:var(--ac);color:#0b0e13;border-color:transparent}' +
+    '.chart{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 8px 8px}' +
     '.chead{display:flex;gap:14px;align-items:center;margin-bottom:8px;font-size:12px;color:var(--tx2)}' +
     '.chead .lg{display:flex;align-items:center;gap:5px}.chead .sw{display:inline-block;width:10px;height:10px;border-radius:3px}' +
     '.chead .lgdim{margin-left:auto;font-size:11px}' +
-    '.cols{display:flex;gap:2px;height:176px;border-bottom:1px solid var(--line)}' +
-    '.cols.short{height:128px}' +
-    '.col{flex:1;display:flex;flex-direction:column;min-width:3px}' +
-    '.bval{height:18px;text-align:center;font-size:12px;font-weight:800;line-height:18px}' +
+    '.cols{display:flex;gap:1px;height:240px;border-bottom:1px solid var(--line)}' +
+    '.cols.short{height:176px}' +
+    '.col{flex:1;display:flex;flex-direction:column;min-width:4px}' +
+    '.bval{height:20px;text-align:center;font-size:13px;font-weight:800;line-height:20px}' +
     '.colbar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;border-radius:3px 3px 0 0;overflow:hidden}' +
     '.segN{background:var(--gn)}.segR{background:var(--ac);opacity:.55}.segO{background:var(--ac)}' +
-    '.xrow{display:flex;gap:2px;margin-top:4px}.xrow span{flex:1;text-align:center;font-size:10.5px;color:var(--tx2);min-width:3px}' +
+    '.xrow{display:flex;gap:1px;margin-top:4px}.xrow span{flex:1;text-align:center;font-size:11.5px;color:var(--tx2);min-width:3px}' +
     '.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}.kv:last-child{border-bottom:none}.kv .k{color:var(--tx2)}.kv .v{font-weight:700;text-align:right}.kv .newn{color:var(--gn)}' +
     '.frow{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px 12px;margin-bottom:8px}' +
     '.frow-top{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:7px}' +
@@ -310,7 +315,7 @@ function renderHtml(data) {
     kvRow('Opens — last 7 days', '<span id="st-opens7">' + opens7 + '</span>') +
     kvRow('Brand-new users — last 7 days', '<span id="st-new7">' + new7 + '</span>') +
     kvRow('Avg opens per user', '<span id="st-avgopens">' + avg + '</span>') + '</div>' +
-    '<h2>Users per day — new vs returning</h2><div class="chart" id="chart-users">' + legend + usersChart + '</div>' +
+    '<h2>Users per day — new vs returning</h2>' + rangeBar + '<div class="chart" id="chart-users">' + legend + usersChart + '</div>' +
     '<h2>Opens per day</h2><div class="chart" id="chart-opens">' + opensChart + '</div>' +
     '<h2>Daily detail — last 7 days</h2><div id="daily-detail">' + detailHtml + '</div>' +
     '<h2>Feature use — what people open</h2><div id="feat-rows">' + featureRows + '</div>' +
@@ -326,7 +331,7 @@ function renderHtml(data) {
     'var KEY = new URLSearchParams(location.search).get("key") || "";' +
     'function fd(sec) { sec = Math.round(sec || 0); if (sec < 60) return sec + "s"; var m = Math.floor(sec / 60); if (m < 60) return m + "m"; var h = Math.floor(m / 60); var rm = m % 60; return rm ? h + "h " + rm + "m" : h + "h"; }' +
     'function pd(iso) { return new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }); }' +
-    'function kv(k, v) { return "<div class=\"kv\"><span class=\"k\">" + k + "</span><span class=\"v\">" + v + "</span></div>"; }' +
+    'function kv(k, v) { return "<div class=\\"kv\\"><span class=\\"k\\">" + k + "</span><span class=\\"v\\">" + v + "</span></div>"; }' +
     'function sh(v, mx) { return v <= 0 ? 0 : Math.max(4, Math.round(v / mx * 100)); }' +
     'function b30(days, mode) {' +
     ' var rows = days.slice().reverse(); var mx = 1; rows.forEach(function (r) { var v = mode === "u" ? r.uniques : r.opens; if (v > mx) mx = v; });' +
@@ -336,8 +341,10 @@ function renderHtml(data) {
     '  var val = total > 0 && (i === rows.length - 1 || total === mx) ? "<div class=\\"bval\\">" + total + "</div>" : "<div class=\\"bval\\"></div>";' +
     '  var title = pd(r.day) + " — " + (mode === "u" ? r.uniques + " users (" + r.newUsers + " new, " + r.returningUsers + " returning)" : r.opens + " opens");' +
     '  return "<div class=\\"col\\" title=\\"" + title + "\\">" + val + "<div class=\\"colbar\\">" + segs + "</div></div>"; }).join("");' +
-    ' var labels = rows.map(function (r, i) { return "<span>" + ((i % 5 === 0 || i === rows.length - 1) ? String(parseInt(r.day.slice(8, 10), 10)) : "") + "</span>"; }).join("");' +
+    ' var step = rows.length <= 10 ? 1 : rows.length <= 20 ? 2 : 5; var labels = rows.map(function (r, i) { return "<span>" + ((i % step === 0 || i === rows.length - 1) ? String(parseInt(r.day.slice(8, 10), 10)) : "") + "</span>"; }).join("");' +
     ' return "<div class=\\"cols" + (mode === "o" ? " short" : "") + "\\">" + cols + "</div><div class=\\"xrow\\">" + labels + "</div>"; }' +
+    'var RANGE = 30;' +
+    'function setRange(n) { RANGE = n; var bs = document.querySelectorAll(".rbtn"); for (var i = 0; i < bs.length; i++) { bs[i].className = "rbtn" + (parseInt(bs[i].getAttribute("data-n"), 10) === n ? " on" : ""); } poll(); }' +
     'var LEGEND = "<div class=\\"chead\\"><span class=\\"lg\\"><i class=\\"sw\\" style=\\"background:var(--gn)\\"></i>New users</span><span class=\\"lg\\"><i class=\\"sw\\" style=\\"background:var(--ac);opacity:.55\\"></i>Returning</span><span class=\\"lgdim\\">oldest → today</span></div>";' +
     'function poll() { fetch(location.pathname + "?key=" + encodeURIComponent(KEY) + "&cb=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {' +
     ' var days = d.last30Days; var sum = function (arr, k) { return arr.reduce(function (a, x) { return a + x[k]; }, 0); };' +
@@ -349,13 +356,13 @@ function renderHtml(data) {
     ' document.getElementById("st-time").textContent = fd(d.totalTimeSeconds);' +
     ' document.getElementById("st-avgvisit").textContent = fd(d.totalSessions ? d.totalTimeSeconds / d.totalSessions : 0);' +
     ' document.getElementById("st-sessions").textContent = d.totalSessions;' +
-    ' document.getElementById("chart-users").innerHTML = LEGEND + b30(days, "u");' +
-    ' document.getElementById("chart-opens").innerHTML = b30(days, "o");' +
-    ' var tt = days[0]; var tf = (d.features || []).slice().sort(function (a, b) { return b.today - a.today; }).filter(function (f) { return f.today > 0; })[0]; document.getElementById("today-box").innerHTML = "<div class=\"dhead\">Today so far</div>" + kv("Opens", tt.opens) + kv("Users", tt.uniques) + kv("New users", "<span class=\"newn\">" + tt.newUsers + "</span>") + kv("Returning users", tt.returningUsers) + kv("Time in app", fd(tt.timeSeconds)) + kv("Avg per session", fd(tt.avgTimePerSession || 0)) + kv("Top feature today", tf ? tf.label + " (" + tf.today + " opens)" : "none yet");' +
+    ' document.getElementById("chart-users").innerHTML = LEGEND + b30(days.slice(0, RANGE), "u");' +
+    ' document.getElementById("chart-opens").innerHTML = b30(days.slice(0, RANGE), "o");' +
+    ' var tt = days[0]; var tf = (d.features || []).slice().sort(function (a, b) { return b.today - a.today; }).filter(function (f) { return f.today > 0; })[0]; document.getElementById("today-box").innerHTML = "<div class=\\"dhead\\">Today so far</div>" + kv("Opens", tt.opens) + kv("Users", tt.uniques) + kv("New users", "<span class=\\"newn\\">" + tt.newUsers + "</span>") + kv("Returning users", tt.returningUsers) + kv("Time in app", fd(tt.timeSeconds)) + kv("Avg per session", fd(tt.avgTimePerSession || 0)) + kv("Top feature today", tf ? tf.label + " (" + tf.today + " opens)" : "none yet");' +
     ' var order = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; var dt = 0; order.forEach(function (k) { dt += (d.devices.totals[k] || 0); });' +
-    ' document.getElementById("dev-rows").innerHTML = order.map(function (k) { var n = d.devices.totals[k] || 0; var t = d.devices.today[k] || 0; var pct = dt ? Math.round(n / dt * 100) : 0; return "<div class=\\"frow\\"><div class=\\"frow-top\\"><span>" + k + " — " + pct + "%</span><strong>" + n + " visits (" + t + " today)</strong></div><div class=\\"ftrack\\"><div class=\\"ffill dev\\" style=\\"width:" + pct + "%\\"></div></div></div>"; }).join("");' +
+    ' document.getElementById("dev-rows").innerHTML = order.map(function (k) { var n = d.devices.totals[k] || 0; var t = d.devices.today[k] || 0; var pct = dt ? Math.round(n / dt * 100) : 0; return "<div class=\\"verrow\\"><span>" + k + " — " + pct + "%</span><strong>" + n + " visits (" + t + " today)</strong></div>"; }).join("");' +
     ' document.getElementById("days-body").innerHTML = days.map(function (x, i) { return "<tr" + (i === 0 ? " class=\\"today\\"" : "") + "><td>" + (i === 0 ? "Today" : pd(x.day)) + "</td><td class=\\"num\\">" + x.opens + "</td><td class=\\"num\\">" + x.uniques + "</td><td class=\\"num newn\\">" + x.newUsers + "</td><td class=\\"num\\">" + fd(x.timeSeconds) + "</td></tr>"; }).join("");' +
-    ' var dord = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; document.getElementById("daily-detail").innerHTML = days.slice(0, 7).map(function (x, i) { var devs = dord.filter(function (k) { return (x.devices || {})[k]; }).map(function (k) { return k + " " + x.devices[k]; }).join(" · "); var feats = (x.features || []).slice(0, 5).map(function (f) { return f.label + " " + f.opens; }).join(" · "); return "<div class=\"dday\"><div class=\"dhead\">" + (i === 0 ? "Today" : pd(x.day)) + "</div>" + kv("Opens", x.opens) + kv("Users", x.uniques) + kv("New users", "<span class=\"newn\">" + x.newUsers + "</span>") + kv("Returning users", x.returningUsers) + kv("Time in app", fd(x.timeSeconds)) + kv("Avg per session", fd(x.avgTimePerSession || 0)) + kv("Sessions reporting time", x.sessions) + "<div class=\"dline dim\" style=\"margin-top:6px\">Devices: " + (devs || "no visits recorded") + "</div><div class=\"dline dim\">Top features: " + (feats || "none opened") + "</div></div>"; }).join("");' +
+    ' var dord = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; document.getElementById("daily-detail").innerHTML = days.slice(0, 7).map(function (x, i) { var devs = dord.filter(function (k) { return (x.devices || {})[k]; }).map(function (k) { return k + " " + x.devices[k]; }).join(" · "); var feats = (x.features || []).slice(0, 5).map(function (f) { return f.label + " " + f.opens; }).join(" · "); return "<div class=\\"dday\\"><div class=\\"dhead\\">" + (i === 0 ? "Today" : pd(x.day)) + "</div>" + kv("Opens", x.opens) + kv("Users", x.uniques) + kv("New users", "<span class=\\"newn\\">" + x.newUsers + "</span>") + kv("Returning users", x.returningUsers) + kv("Time in app", fd(x.timeSeconds)) + kv("Avg per session", fd(x.avgTimePerSession || 0)) + kv("Sessions reporting time", x.sessions) + "<div class=\\"dline dim\\" style=\\"margin-top:6px\\">Devices: " + (devs || "no visits recorded") + "</div><div class=\\"dline dim\\">Top features: " + (feats || "none opened") + "</div></div>"; }).join("");' +
     ' var fr = (d.features || []).filter(function (f) { return f.opens > 0; }); var mf = 1; fr.forEach(function (f) { if (f.opens > mf) mf = f.opens; }); document.getElementById("feat-rows").innerHTML = fr.length ? fr.map(function (f) { return "<div class=\\"frow\\"><div class=\\"frow-top\\"><span>" + f.label + "</span><strong>" + f.opens + " opens · " + f.users + " users (" + f.today + " today)</strong></div><div class=\\"ftrack\\"><div class=\\"ffill\\" style=\\"width:" + Math.max(2, Math.round(f.opens / mf * 100)) + "%\\"></div></div></div>"; }).join("") : "<div class=\\"verrow\\"><span>No feature data yet — counting starts with the current app version</span></div>";' +
     ' var vk = Object.keys(d.opensByVersion).sort(); document.getElementById("ver-rows").innerHTML = vk.length ? vk.map(function (v) { return "<div class=\\"verrow\\"><span>Version " + v + "</span><strong>" + d.opensByVersion[v] + " opens</strong></div>"; }).join("") : "<div class=\\"verrow\\"><span>No version data yet</span></div>";' +
     ' document.getElementById("upd-t").textContent = new Date().toLocaleTimeString();' +
