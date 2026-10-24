@@ -186,22 +186,22 @@ function yaxHtml(max, mode) {
 
 function bar30Html(daysDesc, mode) {
   const rows = daysDesc.slice().reverse(); // oldest first, today last
-  const max = Math.max(1, ...rows.map(r => (mode === 'u' ? r.uniques : r.opens)));
+  const max = Math.max(1, ...rows.map(r => (mode === 'u' ? Math.max(r.newUsers, r.returningUsers) : r.opens)));
   const cols = rows.map((r, i) => {
     const isToday = i === rows.length - 1;
-    const total = mode === 'u' ? r.uniques : r.opens;
-    let segs;
-    if (mode === 'u') {
-      segs = '<div class="segR" style="height:' + chartSegH(r.returningUsers, max) + '%"></div>' +
-             '<div class="segN" style="height:' + chartSegH(r.newUsers, max) + '%"></div>';
-    } else {
-      segs = '<div class="segO" style="height:' + chartSegH(r.opens, max) + '%"></div>';
-    }
-    const val = total > 0 && (isToday || total === max) ? '<div class="bval">' + total + '</div>' : '<div class="bval"></div>';
     const title = prettyDay(r.day) + ' — ' + (mode === 'u'
       ? r.uniques + ' users (' + r.newUsers + ' new, ' + r.returningUsers + ' returning)'
       : r.opens + ' opens');
-    return '<div class="col" title="' + title + '">' + val + '<div class="colbar">' + segs + '</div></div>';
+    if (mode === 'u') {
+      const one = (v, cls) => {
+        const val = v > 0 && (isToday || v === max) ? '<div class="bval">' + v + '</div>' : '<div class="bval"></div>';
+        return '<div class="col">' + val + '<div class="colbar"><div class="' + cls + '" style="height:' + chartSegH(v, max) + '%"></div></div></div>';
+      };
+      return '<div class="colpair" title="' + title + '">' + one(r.newUsers, 'segN') + one(r.returningUsers, 'segR') + '</div>';
+    }
+    const total = r.opens;
+    const val = total > 0 && (isToday || total === max) ? '<div class="bval">' + total + '</div>' : '<div class="bval"></div>';
+    return '<div class="col" title="' + title + '">' + val + '<div class="colbar"><div class="segO" style="height:' + chartSegH(r.opens, max) + '%"></div></div></div>';
   }).join('');
   const step = rows.length <= 10 ? 1 : rows.length <= 20 ? 2 : 5;
   const labels = rows.map((r, i) =>
@@ -301,6 +301,7 @@ function renderHtml(data) {
     '.chead{display:flex;gap:14px;align-items:center;margin-bottom:8px;font-size:12px;color:var(--tx2)}' +
     '.chead .lg{display:flex;align-items:center;gap:5px}.chead .sw{display:inline-block;width:10px;height:10px;border-radius:3px}' +
     '.chead .lgdim{margin-left:auto;font-size:11px}' +
+    '.colpair{flex:1;display:flex;gap:3px;min-width:0}#chart-users .cols{gap:7px}' +
     '.chartflex{display:flex;gap:6px}.yax{width:24px;display:flex;flex-direction:column;flex:none}.yax-sp{height:20px}.yax-labs{flex:1;position:relative}.yt{position:absolute;right:0;font-size:10.5px;color:var(--tx2);font-weight:700}.yt.ym{transform:translateY(-50%)}.yt.yb{transform:translateY(50%)}.plot{flex:1;min-width:0}.gl{position:absolute;left:0;right:0;border-top:1px dashed rgba(127,140,170,.28);pointer-events:none}' +
     '.cols{position:relative;display:flex;gap:1px;height:240px;border-bottom:1px solid var(--line)}' +
     '.cols.short{height:176px}' +
@@ -339,7 +340,7 @@ function renderHtml(data) {
     '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th></tr><tbody id="days-body">' + rows + '</tbody></table>' +
     '<h2>Visits by device type</h2><div id="dev-rows">' + deviceRows + '</div>' +
     '<h2>Opens by app version</h2><div id="ver-rows">' + versionRows + '</div>' +
-    '<div class="foot">Days run midnight to midnight, Eastern time. The two charts show the same 30 days as the table — in the users chart, green is first-time users and blue is returning users, and the number on top of a bar is that day\'s total. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Bots are not counted as users</strong> — automated visits still show in Opens and in the device chart, but since Oct 24, 2026 their IDs are kept out of the user counts entirely; days before that can still include bot visits in their user numbers. <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. <strong>Daily detail</strong> breaks the last 7 days down by timed sessions, device mix and top features; feature-by-day counting started Oct 22, 2026 and device-by-day on Oct 21, 2026, so earlier days show none. <strong>Avg time per session</strong> is reported time divided by the sessions that reported time — most visits never report time, so it is NOT an average over all visits. <strong>Feature use</strong> counts one ping each time a feature is opened — only the feature\'s name, never answers, scores or content — and is counted since Oct 22, 2026. Total opens in the last 30 days: ' + opens30 + '.</div>' +
+    '<div class="foot">Days run midnight to midnight, Eastern time. The two charts show the same 30 days as the table — in the users chart, green is first-time users and blue is returning users, and the numbers on top of the bars are the new and returning counts for the biggest day and for today. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Bots are not counted as users</strong> — automated visits still show in Opens and in the device chart, but since Oct 24, 2026 their IDs are kept out of the user counts entirely; days before that can still include bot visits in their user numbers. <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. <strong>Daily detail</strong> breaks the last 7 days down by timed sessions, device mix and top features; feature-by-day counting started Oct 22, 2026 and device-by-day on Oct 21, 2026, so earlier days show none. <strong>Avg time per session</strong> is reported time divided by the sessions that reported time — most visits never report time, so it is NOT an average over all visits. <strong>Feature use</strong> counts one ping each time a feature is opened — only the feature\'s name, never answers, scores or content — and is counted since Oct 22, 2026. Total opens in the last 30 days: ' + opens30 + '.</div>' +
     '</div>' +
     '<script>' +
     // The page refreshes its own numbers from the JSON endpoint. Every fetch
@@ -352,13 +353,11 @@ function renderHtml(data) {
     'function sh(v, mx) { return v <= 0 ? 0 : Math.max(4, Math.round(v / mx * 100)); }' +
     'function yaxh(mx, mode) { var colbarH = mode === "o" ? 156 : 220; var gl = ""; [0.25, 0.5, 0.75].forEach(function (f) { gl += "<div class=\\"gl\\" style=\\"bottom:" + Math.round(f * colbarH) + "px\\"></div>"; }); var yax = "<div class=\\"yax\\"><div class=\\"yax-sp\\"></div><div class=\\"yax-labs\\"><span class=\\"yt\\" style=\\"top:0\\">" + mx + "</span><span class=\\"yt ym\\" style=\\"top:50%\\">" + Math.round(mx / 2) + "</span><span class=\\"yt yb\\" style=\\"bottom:0\\">0</span></div></div>"; return { gl: gl, yax: yax }; }' +
     'function b30(days, mode) {' +
-    ' var rows = days.slice().reverse(); var mx = 1; rows.forEach(function (r) { var v = mode === "u" ? r.uniques : r.opens; if (v > mx) mx = v; });' +
-    ' var cols = rows.map(function (r, i) { var total = mode === "u" ? r.uniques : r.opens; var segs;' +
-    '  if (mode === "u") { segs = "<div class=\\"segR\\" style=\\"height:" + sh(r.returningUsers, mx) + "%\\"></div><div class=\\"segN\\" style=\\"height:" + sh(r.newUsers, mx) + "%\\"></div>"; }' +
-    '  else { segs = "<div class=\\"segO\\" style=\\"height:" + sh(r.opens, mx) + "%\\"></div>"; }' +
-    '  var val = total > 0 && (i === rows.length - 1 || total === mx) ? "<div class=\\"bval\\">" + total + "</div>" : "<div class=\\"bval\\"></div>";' +
-    '  var title = pd(r.day) + " — " + (mode === "u" ? r.uniques + " users (" + r.newUsers + " new, " + r.returningUsers + " returning)" : r.opens + " opens");' +
-    '  return "<div class=\\"col\\" title=\\"" + title + "\\">" + val + "<div class=\\"colbar\\">" + segs + "</div></div>"; }).join("");' +
+    ' var rows = days.slice().reverse(); var mx = 1; rows.forEach(function (r) { var v = mode === "u" ? Math.max(r.newUsers, r.returningUsers) : r.opens; if (v > mx) mx = v; });' +
+    ' var cols = rows.map(function (r, i) { var isT = i === rows.length - 1; var title = pd(r.day) + " — " + (mode === "u" ? r.uniques + " users (" + r.newUsers + " new, " + r.returningUsers + " returning)" : r.opens + " opens");' +
+    '  if (mode === "u") { var one = function (v, cls) { var val = v > 0 && (isT || v === mx) ? "<div class=\\"bval\\">" + v + "</div>" : "<div class=\\"bval\\"></div>"; return "<div class=\\"col\\">" + val + "<div class=\\"colbar\\"><div class=\\"" + cls + "\\" style=\\"height:" + sh(v, mx) + "%\\"></div></div></div>"; }; return "<div class=\\"colpair\\" title=\\"" + title + "\\">" + one(r.newUsers, "segN") + one(r.returningUsers, "segR") + "</div>"; }' +
+    '  var total = r.opens; var val = total > 0 && (isT || total === mx) ? "<div class=\\"bval\\">" + total + "</div>" : "<div class=\\"bval\\"></div>";' +
+    '  return "<div class=\\"col\\" title=\\"" + title + "\\">" + val + "<div class=\\"colbar\\"><div class=\\"segO\\" style=\\"height:" + sh(r.opens, mx) + "%\\"></div></div></div>"; }).join("");' +
     ' var step = rows.length <= 10 ? 1 : rows.length <= 20 ? 2 : 5; var labels = rows.map(function (r, i) { return "<span>" + ((i % step === 0 || i === rows.length - 1) ? String(parseInt(r.day.slice(8, 10), 10)) : "") + "</span>"; }).join("");' +
     ' var ax = yaxh(mx, mode); return "<div class=\\"chartflex\\">" + ax.yax + "<div class=\\"plot\\"><div class=\\"cols" + (mode === "o" ? " short" : "") + "\\">" + ax.gl + cols + "</div><div class=\\"xrow\\">" + labels + "</div></div></div>"; }' +
     'var RANGE = 30;' +
