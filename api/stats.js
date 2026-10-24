@@ -194,6 +194,8 @@ function bar30Html(daysDesc, mode) {
   return '<div class="cols' + (mode === 'o' ? ' short' : '') + '">' + cols + '</div><div class="xrow">' + labels + '</div>';
 }
 
+const kvRow = (k, v) => '<div class="kv"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>';
+
 function renderHtml(data) {
   const days = data.last30Days;
   const sum = (rows, k) => rows.reduce((a, r) => a + r[k], 0);
@@ -213,9 +215,11 @@ function renderHtml(data) {
     const devs = devOrderD.filter(k => (r.devices || {})[k]).map(k => k + ' ' + r.devices[k]).join(' · ');
     const feats = (r.features || []).slice(0, 5).map(f => f.label + ' ' + f.opens).join(' · ');
     return '<div class="dday"><div class="dhead">' + (i === 0 ? 'Today' : prettyDay(r.day)) + '</div>' +
-      '<div class="dline">' + r.opens + ' opens · ' + r.uniques + ' users (' + r.newUsers + ' new, ' + r.returningUsers + ' returning) · ' +
-      r.sessions + ' timed sessions · ' + fmtTime(r.timeSeconds) + ' total · avg ' + fmtTime(r.avgTimePerSession || 0) + ' per session</div>' +
-      '<div class="dline dim">Devices: ' + (devs || 'no visits recorded') + '</div>' +
+      kvRow('Opens', r.opens) + kvRow('Users', r.uniques) +
+      kvRow('New users', '<span class="newn">' + r.newUsers + '</span>') + kvRow('Returning users', r.returningUsers) +
+      kvRow('Time in app', fmtTime(r.timeSeconds)) + kvRow('Avg per session', fmtTime(r.avgTimePerSession || 0)) +
+      kvRow('Sessions reporting time', r.sessions) +
+      '<div class="dline dim" style="margin-top:6px">Devices: ' + (devs || 'no visits recorded') + '</div>' +
       '<div class="dline dim">Top features: ' + (feats || 'none opened') + '</div></div>';
   }).join('\n');
 
@@ -249,9 +253,10 @@ function renderHtml(data) {
   const t0 = days[0];
   const topToday = [...data.features].sort((a, b) => b.today - a.today).find(f => f.today > 0);
   const todayInner = '<div class="dhead">Today so far</div>' +
-    '<div class="dline">' + t0.opens + ' opens · ' + t0.uniques + ' users (' + t0.newUsers + ' new, ' + t0.returningUsers + ' returning) · ' +
-    t0.sessions + ' timed sessions · ' + fmtTime(t0.timeSeconds) + ' total · avg ' + fmtTime(t0.avgTimePerSession || 0) + ' per session</div>' +
-    '<div class="dline dim">Top feature today: ' + (topToday ? topToday.label + ' (' + topToday.today + ')' : 'none yet') + '</div>';
+    kvRow('Opens', t0.opens) + kvRow('Users', t0.uniques) +
+    kvRow('New users', '<span class="newn">' + t0.newUsers + '</span>') + kvRow('Returning users', t0.returningUsers) +
+    kvRow('Time in app', fmtTime(t0.timeSeconds)) + kvRow('Avg per session', fmtTime(t0.avgTimePerSession || 0)) +
+    kvRow('Top feature today', topToday ? topToday.label + ' (' + topToday.today + ' opens)' : 'none yet');
   return '<!DOCTYPE html>\n<html lang="en"><head><meta charset="UTF-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
     '<title>PestPass Usage</title><style>' +
@@ -275,13 +280,14 @@ function renderHtml(data) {
     '.chead{display:flex;gap:14px;align-items:center;margin-bottom:8px;font-size:12px;color:var(--tx2)}' +
     '.chead .lg{display:flex;align-items:center;gap:5px}.chead .sw{display:inline-block;width:10px;height:10px;border-radius:3px}' +
     '.chead .lgdim{margin-left:auto;font-size:11px}' +
-    '.cols{display:flex;gap:2px;height:118px;border-bottom:1px solid var(--line)}' +
-    '.cols.short{height:84px}' +
+    '.cols{display:flex;gap:2px;height:176px;border-bottom:1px solid var(--line)}' +
+    '.cols.short{height:128px}' +
     '.col{flex:1;display:flex;flex-direction:column;min-width:3px}' +
-    '.bval{height:14px;text-align:center;font-size:10px;font-weight:800;line-height:14px}' +
+    '.bval{height:18px;text-align:center;font-size:12px;font-weight:800;line-height:18px}' +
     '.colbar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;border-radius:3px 3px 0 0;overflow:hidden}' +
     '.segN{background:var(--gn)}.segR{background:var(--ac);opacity:.55}.segO{background:var(--ac)}' +
-    '.xrow{display:flex;gap:2px;margin-top:4px}.xrow span{flex:1;text-align:center;font-size:9px;color:var(--tx2);min-width:3px}' +
+    '.xrow{display:flex;gap:2px;margin-top:4px}.xrow span{flex:1;text-align:center;font-size:10.5px;color:var(--tx2);min-width:3px}' +
+    '.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}.kv:last-child{border-bottom:none}.kv .k{color:var(--tx2)}.kv .v{font-weight:700;text-align:right}.kv .newn{color:var(--gn)}' +
     '.frow{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px 12px;margin-bottom:8px}' +
     '.frow-top{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:7px}' +
     '.ftrack{height:8px;border-radius:4px;background:rgba(127,140,170,.18);overflow:hidden}' +
@@ -298,8 +304,12 @@ function renderHtml(data) {
     '<div class="card"><div class="n" id="st-opens">' + data.totalOpens + '</div><div class="l">total app opens</div></div>' +
     '<div class="card"><div class="n" id="st-time">' + fmtTime(data.totalTimeSeconds) + '</div><div class="l">total time in app</div></div>' +
     '<div class="card"><div class="n" id="st-avgvisit">' + fmtTime(data.totalSessions ? data.totalTimeSeconds / data.totalSessions : 0) + '</div><div class="l">avg time per session</div></div>' +
-    '<div class="sub" style="margin:2px 0 4px"><span id="st-sessions">' + data.totalSessions + '</span> sessions reported time · <span id="st-opens7">' + opens7 + '</span> opens and <span id="st-new7">' + new7 + '</span> brand-new users in the last 7 days · <span id="st-avgopens">' + avg + '</span> avg opens per user</div>' +
     '</div>' +
+    '<div class="dday" style="margin-bottom:2px"><div class="dhead">More totals</div>' +
+    kvRow('Sessions that reported time', '<span id="st-sessions">' + data.totalSessions + '</span>') +
+    kvRow('Opens — last 7 days', '<span id="st-opens7">' + opens7 + '</span>') +
+    kvRow('Brand-new users — last 7 days', '<span id="st-new7">' + new7 + '</span>') +
+    kvRow('Avg opens per user', '<span id="st-avgopens">' + avg + '</span>') + '</div>' +
     '<h2>Users per day — new vs returning</h2><div class="chart" id="chart-users">' + legend + usersChart + '</div>' +
     '<h2>Opens per day</h2><div class="chart" id="chart-opens">' + opensChart + '</div>' +
     '<h2>Daily detail — last 7 days</h2><div id="daily-detail">' + detailHtml + '</div>' +
@@ -316,6 +326,7 @@ function renderHtml(data) {
     'var KEY = new URLSearchParams(location.search).get("key") || "";' +
     'function fd(sec) { sec = Math.round(sec || 0); if (sec < 60) return sec + "s"; var m = Math.floor(sec / 60); if (m < 60) return m + "m"; var h = Math.floor(m / 60); var rm = m % 60; return rm ? h + "h " + rm + "m" : h + "h"; }' +
     'function pd(iso) { return new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }); }' +
+    'function kv(k, v) { return "<div class=\"kv\"><span class=\"k\">" + k + "</span><span class=\"v\">" + v + "</span></div>"; }' +
     'function sh(v, mx) { return v <= 0 ? 0 : Math.max(4, Math.round(v / mx * 100)); }' +
     'function b30(days, mode) {' +
     ' var rows = days.slice().reverse(); var mx = 1; rows.forEach(function (r) { var v = mode === "u" ? r.uniques : r.opens; if (v > mx) mx = v; });' +
@@ -340,11 +351,11 @@ function renderHtml(data) {
     ' document.getElementById("st-sessions").textContent = d.totalSessions;' +
     ' document.getElementById("chart-users").innerHTML = LEGEND + b30(days, "u");' +
     ' document.getElementById("chart-opens").innerHTML = b30(days, "o");' +
-    ' var tt = days[0]; var tf = (d.features || []).slice().sort(function (a, b) { return b.today - a.today; }).filter(function (f) { return f.today > 0; })[0]; document.getElementById("today-box").innerHTML = "<div class=\\"dhead\\">Today so far</div><div class=\\"dline\\">" + tt.opens + " opens · " + tt.uniques + " users (" + tt.newUsers + " new, " + tt.returningUsers + " returning) · " + tt.sessions + " timed sessions · " + fd(tt.timeSeconds) + " total · avg " + fd(tt.avgTimePerSession || 0) + " per session</div><div class=\\"dline dim\\">Top feature today: " + (tf ? tf.label + " (" + tf.today + ")" : "none yet") + "</div>";' +
+    ' var tt = days[0]; var tf = (d.features || []).slice().sort(function (a, b) { return b.today - a.today; }).filter(function (f) { return f.today > 0; })[0]; document.getElementById("today-box").innerHTML = "<div class=\"dhead\">Today so far</div>" + kv("Opens", tt.opens) + kv("Users", tt.uniques) + kv("New users", "<span class=\"newn\">" + tt.newUsers + "</span>") + kv("Returning users", tt.returningUsers) + kv("Time in app", fd(tt.timeSeconds)) + kv("Avg per session", fd(tt.avgTimePerSession || 0)) + kv("Top feature today", tf ? tf.label + " (" + tf.today + " opens)" : "none yet");' +
     ' var order = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; var dt = 0; order.forEach(function (k) { dt += (d.devices.totals[k] || 0); });' +
     ' document.getElementById("dev-rows").innerHTML = order.map(function (k) { var n = d.devices.totals[k] || 0; var t = d.devices.today[k] || 0; var pct = dt ? Math.round(n / dt * 100) : 0; return "<div class=\\"frow\\"><div class=\\"frow-top\\"><span>" + k + " — " + pct + "%</span><strong>" + n + " visits (" + t + " today)</strong></div><div class=\\"ftrack\\"><div class=\\"ffill dev\\" style=\\"width:" + pct + "%\\"></div></div></div>"; }).join("");' +
     ' document.getElementById("days-body").innerHTML = days.map(function (x, i) { return "<tr" + (i === 0 ? " class=\\"today\\"" : "") + "><td>" + (i === 0 ? "Today" : pd(x.day)) + "</td><td class=\\"num\\">" + x.opens + "</td><td class=\\"num\\">" + x.uniques + "</td><td class=\\"num newn\\">" + x.newUsers + "</td><td class=\\"num\\">" + fd(x.timeSeconds) + "</td></tr>"; }).join("");' +
-    ' var dord = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; document.getElementById("daily-detail").innerHTML = days.slice(0, 7).map(function (x, i) { var devs = dord.filter(function (k) { return (x.devices || {})[k]; }).map(function (k) { return k + " " + x.devices[k]; }).join(" · "); var feats = (x.features || []).slice(0, 5).map(function (f) { return f.label + " " + f.opens; }).join(" · "); return "<div class=\\"dday\\"><div class=\\"dhead\\">" + (i === 0 ? "Today" : pd(x.day)) + "</div><div class=\\"dline\\">" + x.opens + " opens · " + x.uniques + " users (" + x.newUsers + " new, " + x.returningUsers + " returning) · " + x.sessions + " timed sessions · " + fd(x.timeSeconds) + " total · avg " + fd(x.avgTimePerSession || 0) + " per session</div><div class=\\"dline dim\\">Devices: " + (devs || "no visits recorded") + "</div><div class=\\"dline dim\\">Top features: " + (feats || "none opened") + "</div></div>"; }).join("");' +
+    ' var dord = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; document.getElementById("daily-detail").innerHTML = days.slice(0, 7).map(function (x, i) { var devs = dord.filter(function (k) { return (x.devices || {})[k]; }).map(function (k) { return k + " " + x.devices[k]; }).join(" · "); var feats = (x.features || []).slice(0, 5).map(function (f) { return f.label + " " + f.opens; }).join(" · "); return "<div class=\"dday\"><div class=\"dhead\">" + (i === 0 ? "Today" : pd(x.day)) + "</div>" + kv("Opens", x.opens) + kv("Users", x.uniques) + kv("New users", "<span class=\"newn\">" + x.newUsers + "</span>") + kv("Returning users", x.returningUsers) + kv("Time in app", fd(x.timeSeconds)) + kv("Avg per session", fd(x.avgTimePerSession || 0)) + kv("Sessions reporting time", x.sessions) + "<div class=\"dline dim\" style=\"margin-top:6px\">Devices: " + (devs || "no visits recorded") + "</div><div class=\"dline dim\">Top features: " + (feats || "none opened") + "</div></div>"; }).join("");' +
     ' var fr = (d.features || []).filter(function (f) { return f.opens > 0; }); var mf = 1; fr.forEach(function (f) { if (f.opens > mf) mf = f.opens; }); document.getElementById("feat-rows").innerHTML = fr.length ? fr.map(function (f) { return "<div class=\\"frow\\"><div class=\\"frow-top\\"><span>" + f.label + "</span><strong>" + f.opens + " opens · " + f.users + " users (" + f.today + " today)</strong></div><div class=\\"ftrack\\"><div class=\\"ffill\\" style=\\"width:" + Math.max(2, Math.round(f.opens / mf * 100)) + "%\\"></div></div></div>"; }).join("") : "<div class=\\"verrow\\"><span>No feature data yet — counting starts with the current app version</span></div>";' +
     ' var vk = Object.keys(d.opensByVersion).sort(); document.getElementById("ver-rows").innerHTML = vk.length ? vk.map(function (v) { return "<div class=\\"verrow\\"><span>Version " + v + "</span><strong>" + d.opensByVersion[v] + " opens</strong></div>"; }).join("") : "<div class=\\"verrow\\"><span>No version data yet</span></div>";' +
     ' document.getElementById("upd-t").textContent = new Date().toLocaleTimeString();' +
