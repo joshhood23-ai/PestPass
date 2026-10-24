@@ -2107,6 +2107,8 @@ body.track-dnr .track-co-only, body.track-mosq .track-co-only{ display:none !imp
 .bm-btn{background:none;border:none;cursor:pointer;padding:4px 5px;border-radius:7px;transition:all .14s;display:flex;align-items:center;justify-content:center;color:var(--text);font-size:17px;line-height:1;}
 .bm-btn:active{transform:scale(0.85);}
 .bm-btn.active{color:var(--gold);}
+.bm-btn.active svg path{fill:currentColor;}
+.fc-bm-btn.active svg path{fill:currentColor;}
 /* ── Support: feedback / report / backup ── */
 .pp-link-btn{background:none;border:none;color:var(--text3);font-size:11px;text-decoration:underline;cursor:pointer;padding:8px 10px;font-family:inherit;}
 .pp-link-btn:active{opacity:.6;}
@@ -4842,7 +4844,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <div class="swipe-nope">NOPE ✗</div>
         <div class="card-3d" id="card3d">
           <div class="card-face card-front" style="position:relative;">
-            <button class="fc-bm-btn" id="fc-bm-btn" onclick="toggleFCBookmark(event)">☆</button>
+            <button class="fc-bm-btn" id="fc-bm-btn" onclick="toggleFCBookmark(event)" title="Bookmark this card" aria-label="Bookmark this card"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             <div class="card-face-inner">
               <div class="card-pill" id="fc-cat">Category</div>
               <div class="card-q" id="fc-q">Loading…</div>
@@ -4933,8 +4935,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
             <div style="display:flex;align-items:center;gap:6px;">
               <div id="q-mastery-tag" style="font-family:var(--mono);font-size:8px;letter-spacing:1px;opacity:0;transition:opacity .3s;"></div>
               <button class="qz-calc-toggle hidden" id="q-calc-toggle" onclick="qzToggleCalc()" title="Open calculator" aria-label="Open calculator">🧮 Calc</button>
-              <button class="bm-btn" id="q-report-btn" onclick="ppReportQuiz()" title="Report a problem with this question" aria-label="Report a problem with this question" style="color:var(--text3);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4"/><path d="M4 4h12l-2 4 2 4H4"/></svg></button>
-              <button class="bm-btn" id="q-bm-btn" onclick="toggleQuizBookmark()" title="Bookmark this question">☆</button>
+              <button class="bm-btn" id="q-bm-btn" onclick="toggleQuizBookmark()" title="Bookmark this question" aria-label="Bookmark this question"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             </div>
           </div>
           <div class="q-mastery-bar"><div class="q-mastery-fill" id="q-mastery-fill" style="width:0%;background:var(--green);"></div></div>
@@ -5128,7 +5129,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     <div id="screen-bookmarks" class="screen">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div style="font-family:var(--head);font-size:20px;font-weight:800;letter-spacing:-.5px;">Saved <em style="color:#ffd166;">Questions</em></div>
-        <div class="bm-count-badge">⭐ <span id="bm-total-count">0</span></div>
+        <div class="bm-count-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> <span id="bm-total-count">0</span></div>
       </div>
       <button type="button" role="button" tabindex="0" class="cathub-action ch-sr" id="bm-sr-banner" onclick="openSRFromSaved()" style="margin-bottom:12px;text-align:left;width:100%;">
         <div class="cathub-action-icon"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
@@ -5153,7 +5154,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
       </div>
       <div id="bm-list-wrap">
         <div class="bm-screen-empty">
-          <div style="font-size:36px;margin-bottom:8px;">☆</div>
+          <div style="margin-bottom:8px;opacity:.45;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
           Bookmark questions during quizzes and flashcards.<br>They'll all appear here.
         </div>
       </div>
@@ -8066,7 +8067,7 @@ const QS = [
 {"id":"qs-1771","cat":"Visual ID","q":"The damage shown in the photograph was caused by:","img":"img/img-d1669752c160.webp","credit":"© PestPass","opts":["Old house borer","Carpenter bee adult","Powderpost beetle","Drywood termite"],"ans":0,"exp":"Old house borer \u2014 the large oval exit holes (6-10 mm) packed with coarse, gritty frass are classic old-house-borer work in softwood. Why not the others: powderpost beetles leave tiny round holes (1-2 mm) with fine, flour-like powder; carpenter bees bore perfectly round half-inch entrance holes; drywood termites push out pellet piles, not powder or frass."},
 {"id":"qs-1772","cat":"Visual ID","q":"Identify the beetle shown in the photograph:","img":"img/img-21fa59023c75.webp","credit":"© PestPass","opts":["Powderpost beetle","Click beetle","Sawyer beetle","Old house borer"],"ans":3,"exp":"Old house borer — note the flattened, mottled gray-black longhorn beetle, roughly an inch long. Why not the others: powderpost beetles are tiny and cylindrical; click beetles are narrower with a clicking mechanism; sawyer beetles are larger with very long antennae."},
 {"id":"qs-1773","cat":"Visual ID","q":"Identify the pest shown in the photograph:","img":"img/img-1da929971130.webp","credit":"© PestPass","opts":["Cat flea", "Bed bug nymph", "Human flea", "Booklouse"],"ans":0,"exp":"Cat flea — note the laterally flattened (side-to-side thin) body with powerful jumping hind legs and combs on the head. Why not the others: bed bug nymphs are flat and oval, not laterally compressed; human fleas lack the genal and pronotal combs; booklice are tiny and soft-bodied without the powerful jumping hind legs."},
-{"id":"qs-1774","cat":"Visual ID","q":"Identify the tick shown in the photograph:","img":"img/img-15dff75b6fb7.webp","credit":"Photo: CDC PHIL #8683, public domain, via Wikimedia Commons","opts":["Lone star tick (Amblyomma)", "Black-legged (deer) tick", "American dog tick (Dermacentor) with white scutum markings on its back", "Brown dog tick (Rhipicephalus)"],"ans":1,"exp":"Black-legged tick — note the dark legs, dark shield (scutum), and orange-red abdomen with no white markings. Why not the others: lone star females have a single white spot; American dog ticks have white scutum markings; brown dog ticks are uniformly reddish-brown."},
+{"id":"qs-1774","cat":"Visual ID","q":"Identify the tick shown in the photograph:","img":"img/img-15dff75b6fb7.webp","credit":"Photo: CDC PHIL #8683, public domain, via Wikimedia Commons","opts":["Lone star tick (Amblyomma)", "Black-legged (deer) tick", "American dog tick (Dermacentor)", "Brown dog tick (Rhipicephalus)"],"ans":1,"exp":"Black-legged tick — note the dark legs, dark shield (scutum), and orange-red abdomen with no white markings. Why not the others: lone star females have a single white spot; American dog ticks have white scutum markings; brown dog ticks are uniformly reddish-brown."},
 {"id":"qs-1775","cat":"Visual ID","q":"Identify the tick shown in the photograph:","img":"img/img-3951fba9418b.webp","credit":"© PestPass","opts":["Black-legged (deer) tick","Lone star tick","American dog tick","Brown dog tick"],"ans":2,"exp":"American dog tick — note the white-to-silvery ornate markings on the shield (scutum). Why not the others: black-legged ticks have dark legs and no white markings; lone star females show one white spot; brown dog ticks lack the ornate patterning."},
 {"id":"qs-1776","cat":"Visual ID","q":"Identify the spider shown in the photograph:","img":"img/img-7f3cfaaa124a.webp","credit":"© PestPass","opts":["Wolf spider adult", "Big house spider", "Hobo spider (grass spider)", "Brown recluse"],"ans":3,"exp":"Brown recluse — note the dark violin-shaped marking on the cephalothorax (the body section the legs attach to). Why not the others: wolf spiders are robust hunters with a different eye pattern; house spiders and grass spiders build webs and lack the violin marking — confirm any suspect recluse by the 6-eyes-in-3-pairs pattern."},
 {"id":"qs-1777","cat":"Visual ID","q":"Identify the spider shown in the photograph:","img":"img/img-c934e98c0148.webp","credit":"© PestPass","opts":["Black widow","Brown widow","False widow","Orb weaver"],"ans":0,"exp":"Black widow — note the glossy black body with the red hourglass marking on the underside of the abdomen. Why not the others: brown widows are mottled tan; false widows lack the vivid hourglass; orb weavers are patterned web-builders."},
@@ -8109,7 +8110,7 @@ const QS = [
 {"id":"qs-1817","cat":"Visual ID","q":"Identify the pest nymph shown in the photograph (late instar):","img":"img/img-867b88750aeb.webp","credit":"© PestPass","opts":["Bed bug","Bat bug","Carpet beetle larva","Booklouse"],"ans":0,"exp":"Bed bug — note the wingless, oval late-instar nymph, shown feeding, with its dark engorged abdomen full of blood; much larger than early instars. Why not the others: bat bugs are near-twins but have distinctly longer fringe hairs on the pronotum; carpet beetle larvae are hairy and tapered; booklice are tiny, pale, soft-bodied, and lack the segmented oval blood-feeder shape."},
 {"id":"qs-1818","cat":"Visual ID","q":"Identify the termite caste shown in the photograph:","img":"img/img-48b2fa8b73d9.webp","credit":"© PestPass","opts":["Soldier","Worker","Alate","Nymph"],"ans":1,"exp":"Eastern subterranean termite — note the pale cream, soft-bodied, wingless workers with small heads; the most numerous caste in the colony and the one usually seen in damaged wood. Why not the others: soldiers have enlarged amber heads with mandibles; alates are dark-bodied with two pairs of equal membranous wings; nymphs are the immature forms that can still develop into workers, soldiers, or reproductives."},
 {"id":"qs-1819","cat":"Visual ID","q":"Which termite species’ soldier is shown in the photograph:","img":"img/img-1a92220fa579.webp","credit":"Photo: USDA ARS K8085-6, public domain, via Wikimedia Commons","opts":["Formosan subterranean termite","Drywood termite","Eastern subterranean termite","Dampwood termite"],"ans":2,"exp":"Eastern subterranean termite — note the soldier's rectangular, square-sided amber head capsule with dark curved mandibles; the pale workers beside it have only small heads. Why not the others: Formosan termite soldiers have oval, teardrop-shaped heads with a fontanelle pore; drywood soldiers have large dark plug-shaped (phragmotic) heads for blocking galleries; dampwood soldiers are far larger overall."},
-{"id":"qs-1820","cat":"Visual ID","q":"Which termite species’ soldier is shown in the photograph:","img":"img/img-cdae5cdfb332.webp","credit":"© PestPass","opts":["Eastern subterranean termite soldier", "Drywood termite soldier with a dark plug-shaped head for blocking galleries", "Dampwood termite (Zootermopsis) soldier", "Formosan subterranean termite"],"ans":3,"exp":"Formosan termite — note the soldiers' oval, teardrop-shaped amber head capsules, narrowing toward the front, with dark mandibles; this head shape is the key feature separating them from Eastern subterranean soldiers. Why not the others: Eastern subterranean soldiers have rectangular, square-sided heads; drywood soldiers have dark plug-shaped heads for blocking galleries; dampwood soldiers are much larger."},
+{"id":"qs-1820","cat":"Visual ID","q":"Which termite species’ soldier is shown in the photograph:","img":"img/img-cdae5cdfb332.webp","credit":"© PestPass","opts":["Eastern subterranean termite soldier", "Drywood termite soldier", "Dampwood termite (Zootermopsis) soldier", "Formosan subterranean termite"],"ans":3,"exp":"Formosan termite — note the soldiers' oval, teardrop-shaped amber head capsules, narrowing toward the front, with dark mandibles; this head shape is the key feature separating them from Eastern subterranean soldiers. Why not the others: Eastern subterranean soldiers have rectangular, square-sided heads; drywood soldiers have dark plug-shaped heads for blocking galleries; dampwood soldiers are much larger."},
 
 
 
@@ -15394,12 +15395,12 @@ function renderFCHome() {
     'Regulations & Permits': { color:'#5ec98c', forms:[
       { name:'Raccoon Scout', img:'img/boss-43ebfa992dc0.webp' },
       { name:'Raccoon Raider', img:'img/boss-43ebfa992dc0.webp' },
-      { name:'The Raccoon King', img:'img/boss-43ebfa992dc0.webp' }
+      { name:'The Raccoon King', img:'img/boss-raccoon-king.webp' }
     ]},
     'Procedures & Damage ID': { color:'#e0b23e', forms:[
       { name:'Beaver Scout', img:'img/boss-48a8cc00b26a.webp' },
-      { name:'Beaver Builder', img:'img/boss-48a8cc00b26a.webp' },
-      { name:'The Dam Lord', img:'img/boss-48a8cc00b26a.webp' }
+      { name:'Beaver Builder', img:'img/boss-beaver-builder.webp' },
+      { name:'The Dam Lord', img:'img/boss-dam-lord.webp' }
     ]}
   ,
 'Mosquito Biology': { color:'#c8e64a', forms:[
@@ -17452,7 +17453,7 @@ window.addEventListener('load', function(){
 
   function updateBMButton(el, bookmarked){
     if(!el) return;
-    el.textContent = bookmarked ? '★' : '☆';
+    /* icon is a bookmark SVG in the markup; saved state = gold fill via .active */
     if(bookmarked){ el.classList.add('active'); }
     else { el.classList.remove('active'); }
   }
@@ -17528,7 +17529,7 @@ window.addEventListener('load', function(){
     if(!wrap) return;
 
     if(filtered.length===0){
-      wrap.innerHTML='<div class="bm-screen-empty"><div style="font-size:36px;margin-bottom:8px;">☆</div>'
+      wrap.innerHTML='<div class="bm-screen-empty"><div style="margin-bottom:8px;opacity:.45;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>'
         +(bms.length>0 ? 'No bookmarks in this category.' : 'Bookmark questions during quizzes and flashcards.<br>They\'ll all appear here.')+'</div>';
       return;
     }
