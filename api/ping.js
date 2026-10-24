@@ -8,6 +8,9 @@
 // counts), per-version open counts, session seconds, per-feature open counts, and
 // per-device-type visit counts bucketed from the request's user-agent (the
 // user-agent itself is never stored).
+// Bot/automated user-agents are counted in opens and in their device bucket, but
+// their IDs NEVER enter the user sets — bots are not users, new or otherwise
+// (directive 2026-10-24). The same applies to per-feature user sets.
 // No IP addresses, no personal data, no study data.
 // Backing store: Upstash Redis via its REST API (env: UPSTASH_REDIS_REST_URL/TOKEN,
 // or the Vercel KV aliases KV_REST_API_URL/TOKEN).
@@ -97,19 +100,25 @@ module.exports = async (req, res) => {
     if (FEATURES.indexOf(e) < 0) {
       res.status(400).json({ error: 'bad feature' }); return;
     }
+    const evBucket = deviceBucket(req.headers && req.headers['user-agent']);
     pipeline = [
       ['INCR', 'pp:feat:' + e + ':total'],
       ['INCR', 'pp:feat:' + e + ':day:' + day],
-      ['SADD', 'pp:feat:' + e + ':users', hash]
+      ...(evBucket === 'Bot / automated' ? [] : [['SADD', 'pp:feat:' + e + ':users', hash]])
     ];
   } else {
     // Open ping (no t) and resume ping (t: 'resume') both count as one visit.
+    // Bots still count as visits (opens + device bucket) but their IDs are kept
+    // out of the user sets, so they never appear as users — new or returning.
     const bucket = deviceBucket(req.headers && req.headers['user-agent']);
+    const userAdds = bucket === 'Bot / automated' ? [] : [
+      ['SADD', 'pp:users:all', hash],
+      ['SADD', 'pp:users:day:' + day, hash]
+    ];
     pipeline = [
       ['INCR', 'pp:opens:total'],
       ['INCR', 'pp:opens:day:' + day],
-      ['SADD', 'pp:users:all', hash],
-      ['SADD', 'pp:users:day:' + day, hash],
+      ...userAdds,
       ['HINCRBY', 'pp:versions', v, 1],
       ['HINCRBY', 'pp:devices:all', bucket, 1],
       ['HINCRBY', 'pp:devices:day:' + day, bucket, 1]
