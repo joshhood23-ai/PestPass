@@ -26,6 +26,15 @@ function redisConfig() {
   return url && token ? { url: url.replace(/\/$/, ''), token } : null;
 }
 
+// Counter days run midnight to midnight Eastern (the owner's timezone), not UTC
+// (directive 2026-10-24).
+function easternDay(date) {
+  const p = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(date || new Date()).forEach(x => { p[x.type] = x.value; });
+  return p.year + '-' + p.month + '-' + p.day;
+}
+
 function parseBodyValue(b) {
   if (b == null) return null;
   if (typeof b === 'object' && !Buffer.isBuffer(b)) return b;
@@ -79,7 +88,7 @@ module.exports = async (req, res) => {
     'visual-id', 'insect-id', 'photo-frenzy', 'bug-blitz', 'survival', 'beat-the-clock',
     'math-drill', 'boss-battle', 'mock-exam'];
 
-  const day = new Date().toISOString().slice(0, 10); // UTC day
+  const day = easternDay();
   const hash = crypto.createHash('sha256').update(id).digest('hex');
   let pipeline;
   if (body.t === 'end') {
