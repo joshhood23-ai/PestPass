@@ -1,9 +1,14 @@
 // PestPass anonymous usage counter — receive endpoint.
 // Receives one ping per app visit: { id: <random on-device install ID>, v: <app version> },
 // where a visit is a fresh open or a return after 30+ minutes in the background
-// (t: 'resume'), plus a session-end ping carrying foreground seconds (t: 'end'),
-// and a feature-open ping (t: 'ev', e: <feature name>) fired when a user opens a
-// feature — only the feature's name, counted in aggregate.
+// (t: 'resume'), plus time pings carrying foreground seconds since the last
+// flush (t: 'tick' every 20s while the app is visible and on hide; t: 'end'
+// as the final flush on pagehide), and a feature-open ping (t: 'ev',
+// e: <feature name>) fired when a user opens a feature — only the feature's
+// name, counted in aggregate.
+// A session is counted at visit start (open/resume, non-bot only): counting
+// it on the end ping lost every session whose browser never delivered a
+// hide/close event, which mobile browsers routinely skip (fix 2026-10-30).
 // Stores ONLY: daily + total open counts, the set of SHA-256-hashed IDs (for unique
 // counts), per-version open counts, session seconds, per-feature open counts, and
 // per-device-type visit counts bucketed from the request's user-agent (the
@@ -91,17 +96,20 @@ module.exports = async (req, res) => {
   const day = easternDay();
   const hash = crypto.createHash('sha256').update(id).digest('hex');
   let pipeline;
-  if (body.t === 'end') {
-    // Session-end ping: foreground seconds accumulated since the last flush.
+  if (body.t === 'end' || body.t === 'tick') {
+    // Time ping: foreground seconds accumulated since the last flush. Adds
+    // time only — the session itself was already counted at visit start.
+    // Bot/automated agents never add time (they are not users).
     const secs = Math.floor(Number(body.secs));
     if (!Number.isFinite(secs) || secs < 1 || secs > 43200) {
       res.status(400).json({ error: 'bad secs' }); return;
     }
+    if (deviceBucket(req.headers && req.headers['user-agent']) === 'Bot / automated') {
+      res.status(204).end(); return;
+    }
     pipeline = [
       ['INCRBY', 'pp:time:total', secs],
-      ['INCRBY', 'pp:time:day:' + day, secs],
-      ['INCR', 'pp:sessions:total'],
-      ['INCR', 'pp:sessions:day:' + day]
+      ['INCRBY', 'pp:time:day:' + day, secs]
     ];
   } else if (body.t === 'ev') {
     // Feature-open ping: aggregate counts per feature name (allowlisted).
@@ -122,7 +130,11 @@ module.exports = async (req, res) => {
     const bucket = deviceBucket(req.headers && req.headers['user-agent']);
     const userAdds = bucket === 'Bot / automated' ? [] : [
       ['SADD', 'pp:users:all', hash],
-      ['SADD', 'pp:users:day:' + day, hash]
+      ['SADD', 'pp:users:day:' + day, hash],
+      // A session is one visit; it is counted here, at visit start, so a
+      // session is never lost when the browser drops the closing events.
+      ['INCR', 'pp:sessions:total'],
+      ['INCR', 'pp:sessions:day:' + day]
     ];
     pipeline = [
       ['INCR', 'pp:opens:total'],
