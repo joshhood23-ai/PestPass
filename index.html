@@ -8800,7 +8800,12 @@ function getExamTrack(){
 // each get their own suffixed keys.
 function trackKey(base){
   var t = getExamTrack();
-  return t==='co' ? base : base+'_'+t;
+  var k = t==='co' ? base : base+'_'+t;
+  // Quiz performance data (history, missed questions, best scores, resume,
+  // last activity) is kept separate per state: Florida gets its own stores,
+  // Georgia keeps the original keys so existing GA progress is untouched.
+  if(getExamState()==='fl') k += '_fl';
+  return k;
 }
 // Persistent missed-questions set: every question the user gets wrong in a
 // quiz is saved here (track-scoped like mastery/history), and cleared the
@@ -17403,7 +17408,7 @@ window.tutorialReplay = function(){ // menu button — leaves the seen flag alon
 function tutorialHasProgress(){
   // bestScores/activity are namespaced per track (trackKey appends _rt/_dnr/_mosq;
   // CO keeps the bare key), so check every variant. sr_cards is shared.
-  var suffixes = ['', '_rt', '_dnr', '_mosq'];
+  var suffixes = ['', '_rt', '_dnr', '_mosq', '_fl', '_rt_fl'];
   var bases = ['bestScores', 'activity'];
   for(var i=0;i<suffixes.length;i++){
     for(var j=0;j<bases.length;j++){
