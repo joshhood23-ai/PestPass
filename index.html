@@ -1795,6 +1795,8 @@ body.menu-open #menu-drawer{transform:translateX(0);visibility:visible;}
    visible on one screen. Also hidden for DNR (not an SPCC category at all). */
 body.track-rt .track-fum-only, body.track-dnr .track-fum-only, body.track-mosq .track-fum-only{ display:none !important; }
 body.track-dnr #state-switch, body.track-mosq #state-switch{ display:none !important; }
+body.state-fl #track-btn-dnr{ display:none !important; }
+body.state-fl #track-btn-mosq{ display:none !important; }
 /* Fumigation HUB hidden on every track (2026-10-20, Josh's call: nobody in
    Georgia does structural fumigation). This hides ONLY the home hub tile;
    all Fumigation content (questions, flashcards, filters) stays in the app
@@ -8925,6 +8927,10 @@ function setExamTrack(track){
   applyExamTrack();
 }
 function applyExamTrack(){
+  // Florida has no DNR nuisance-wildlife program (FWC does not license trappers),
+  // and its mosquito program (Ch. 388) is not built yet, so a persisted
+  // FL + DNR/Mosquito combination self-heals to Certified Operator.
+  if(getExamState()==='fl' && (getExamTrack()==='dnr' || getExamTrack()==='mosq')){ safeLS.setItem(EXAM_TRACK_KEY, 'co'); }
   var track = getExamTrack();
   document.body.classList.toggle('track-rt', track==='rt');
   document.body.classList.toggle('track-co', track==='co');
