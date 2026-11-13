@@ -13406,14 +13406,14 @@ function filterFC(cat) {
     if((cat==='All'&&t==='All')||(cat!=='All'&&t===cat.split(' ')[0])||(cat==='General Knowledge'&&t==='GEN')||(cat==='Fumigation'&&t==='FUM')) c.classList.add('active');
     if(cat==='All'&&t==='All') c.classList.add('active');
   });
-  cards=cat==='All'?[...FC].filter(c=>trackAllowsCategory(c.cat) && stateAllowsQ(c)):FC.filter(c=>c.cat===cat && categoryIsReachable(c.cat));
+  cards=cat==='All'?[...FC].filter(c=>trackAllowsCategory(c.cat) && stateAllowsQ(c)):FC.filter(c=>c.cat===cat && categoryIsReachable(c.cat) && stateAllowsQ(c));
   cardIdx=0; flipped=false; renderCard();
 }
 function renderCard(){
   var emptyState = document.getElementById('fc-empty-state');
   var cardScene = document.getElementById('card-scene');
   var btnsRow = document.getElementById('fc-btns-row');
-  if(cards.length && !categoryIsReachable(cards[0].cat)){
+  if(cards.length && (!categoryIsReachable(cards[0].cat) || cards.some(function(c){ return !stateAllowsQ(c); }))){
     cards = FC.filter(function(c){ return trackAllowsCategory(c.cat) && stateAllowsQ(c); });
     cardIdx = 0;
   }
@@ -15262,7 +15262,7 @@ function resumeFlashcardPosition(act){
     // Find the matching block across all categories by title
     for(var key in FC_BLOCKS){
       var catData = FC_BLOCKS[key];
-      var catCards = FC.filter(function(c){ return c.cat === catData.cat; });
+      var catCards = FC.filter(function(c){ return c.cat === catData.cat && stateAllowsQ(c); });
       for(var bi=0; bi<catData.blocks.length; bi++){
         var block = catData.blocks[bi];
         if(block.title === act.block){
@@ -15290,7 +15290,7 @@ function resumeFlashcardPosition(act){
   }
 
   if(act.cat && act.cat !== 'All'){
-    cards = FC.filter(function(c){ return c.cat === act.cat && categoryIsReachable(c.cat); });
+    cards = FC.filter(function(c){ return c.cat === act.cat && categoryIsReachable(c.cat) && stateAllowsQ(c); });
     window._fcCurrentCat = act.cat;
     window._fcCurrentBlock = null;
   } else {
@@ -15308,7 +15308,7 @@ function resumeFlashcardPosition(act){
 function renderFCHome() {
   Object.keys(FC_BLOCKS).forEach(function(key) {
     var catData = FC_BLOCKS[key];
-    var catCards = FC.filter(function(c){ return c.cat === catData.cat; });
+    var catCards = FC.filter(function(c){ return c.cat === catData.cat && stateAllowsQ(c); });
     var container = document.getElementById('fc-blocks-' + key);
     if(!container) return;
     container.innerHTML = '';
