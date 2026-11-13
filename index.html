@@ -8807,6 +8807,13 @@ function trackKey(base){
   if(getExamState()==='fl') k += '_fl';
   return k;
 }
+function stateKey(base){
+  // Per-state storage for progress stores that are not track-scoped
+  // (flashcard mastery, spaced repetition, bookmarks, trophies, game
+  // scores, study time, lifetime counters). Georgia keeps the original
+  // keys; Florida gets '_fl' variants. Settings and streaks stay global.
+  return getExamState()==='fl' ? base+'_fl' : base;
+}
 // Persistent missed-questions set: every question the user gets wrong in a
 // quiz is saved here (track-scoped like mastery/history), and cleared the
 // next time they answer it correctly anywhere. Powers the Missed Questions
@@ -12352,8 +12359,8 @@ var mdCurrent = null;
 var mdAnswered = false;
 var mdQuestionStartTime = 0;
 
-function mdSaveCalcTypeStats(){ safeLS.setItem('md_calctype_stats', JSON.stringify(mdCalcTypeStats)); }
-function mdSaveBestStreak(){ safeLS.setItem('md_best_streak', JSON.stringify(mdBestStreak)); }
+function mdSaveCalcTypeStats(){ safeLS.setItem(stateKey('md_calctype_stats'), JSON.stringify(mdCalcTypeStats)); }
+function mdSaveBestStreak(){ safeLS.setItem(stateKey('md_best_streak'), JSON.stringify(mdBestStreak)); }
 
 function mdRandInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
 function mdRound(n, d){ var m = Math.pow(10, d||2); return Math.round(n*m)/m; }
@@ -12972,8 +12979,8 @@ function mdGenerateProblem(){
 }
 
 function mdInit(){
-  mdCalcTypeStats = safeJSON('md_calctype_stats', {});
-  mdBestStreak = safeJSON('md_best_streak', 0);
+  mdCalcTypeStats = safeJSON(stateKey('md_calctype_stats'), {});
+  mdBestStreak = safeJSON(stateKey('md_best_streak'), 0);
   mdCurrentStreak = 0;
   mdCalcReset();
   var panel = document.getElementById('md-calc-panel');
@@ -13251,14 +13258,14 @@ function mdShowRecap(){
 
 // ── High scores ────────────────────────────────────────────
 function mdLoadHighScores(){
-  return safeJSON('md_high_scores', []);
+  return safeJSON(stateKey('md_high_scores'), []);
 }
 function mdSaveHighScore(xp, correct, total, accuracy){
   var scores = mdLoadHighScores();
   scores.push({ xp: xp, correct: correct, total: total, accuracy: accuracy, date: Date.now() });
   scores.sort(function(a,b){ return b.xp - a.xp; });
   scores = scores.slice(0, 5);
-  safeLS.setItem('md_high_scores', JSON.stringify(scores));
+  safeLS.setItem(stateKey('md_high_scores'), JSON.stringify(scores));
   if(typeof mdRenderHighScores === 'function') mdRenderHighScores();
   // Log to the home screen's recent-quizzes list
   if(typeof saveQuizHistory==='function' && total>0){
@@ -13697,13 +13704,13 @@ function gradeCard(knew){
   var cur = cards[cardIdx];
   if(cur && cur.q) {
     var mk = cur.q.trim().slice(0,80);
-    var fcm = (function(){ try{ return JSON.parse(safeLS.getItem('fc_mastery')||'{}'); }catch(e){ return {}; } })();
+    var fcm = (function(){ try{ return JSON.parse(safeLS.getItem(stateKey('fc_mastery'))||'{}'); }catch(e){ return {}; } })();
     if(knew) {
       fcm[mk] = (fcm[mk]||0) + 1;
     } else {
       fcm[mk] = 0;
     }
-    safeLS.setItem('fc_mastery', JSON.stringify(fcm));
+    safeLS.setItem(stateKey('fc_mastery'), JSON.stringify(fcm));
   }
   nextCard(true);
   const gb=document.getElementById('fc-grade-btns');
@@ -15550,7 +15557,7 @@ function renderFCHome() {
       var total = blockCards.length;
 
       // Mastery = FC "Got It" grades (fc_mastery is the only store that actually tracks flashcard grading)
-      var fcMastDB = (function(){ try{ return JSON.parse(safeLS.getItem('fc_mastery')||'{}'); }catch(e){ return {}; } })();
+      var fcMastDB = (function(){ try{ return JSON.parse(safeLS.getItem(stateKey('fc_mastery'))||'{}'); }catch(e){ return {}; } })();
       var fcGotIt = 0;
       blockCards.forEach(function(bc) {
         var mk = bc.q ? bc.q.trim().slice(0,80) : '';
@@ -16807,8 +16814,8 @@ document.addEventListener('keydown', e => {
 (function(){
 
 // ── Persistent stats ──
-let answered = Number(safeLS.getItem('answered') || 0);
-let correct   = Number(safeLS.getItem('correct')   || 0);
+let answered = Number(safeLS.getItem(stateKey('answered')) || 0);
+let correct   = Number(safeLS.getItem(stateKey('correct'))   || 0);
 
 
 // bestScores: { "GEN": 82, "HPC": 75, ... } — stores best % per category key
@@ -16942,7 +16949,7 @@ function deriveInsights(){
   var tfbBest = (function(){ try{ return JSON.parse(safeLS.getItem(trackKey('tfbBest'))||'{}'); }catch(e){ return {}; }})();
   var bs      = safeJSON(trackKey('bestScores'), {});
   var srDB    = (function(){ try{ return safeJSON('sr_cards', {}); }catch(e){ return {}; }})();
-  var fcm     = (function(){ try{ return JSON.parse(safeLS.getItem('fc_mastery')||'{}'); }catch(e){ return {}; }})();
+  var fcm     = (function(){ try{ return JSON.parse(safeLS.getItem(stateKey('fc_mastery'))||'{}'); }catch(e){ return {}; }})();
 
   // ── Mode usage counts ─────────────────────────────────────
   var usage = ss.usage || {};
@@ -17416,6 +17423,7 @@ function tutorialHasProgress(){
     }
   }
   try{ if(Object.keys(JSON.parse(safeLS.getItem('sr_cards')||'{}')).length) return true; }catch(e){}
+  try{ if(Object.keys(JSON.parse(safeLS.getItem('sr_cards_fl')||'{}')).length) return true; }catch(e){}
   return false;
 }
 function maybeShowTutorial(){
@@ -17627,7 +17635,7 @@ var TROPHIES = [
   {id:'early-bird',  icon:'\uD83C\uDF05', name:'Early Bird',   desc:'Finish a quiz before 7 AM',             test:function(c){ return c._hour<7; }}
 ];
 function loadTrophies(){ try{
-  var g = JSON.parse(safeLS.getItem('trophies')||'[]')||[];
+  var g = JSON.parse(safeLS.getItem(stateKey('trophies'))||'[]')||[];
   if(g.length) return g;
   var merged = {}, order = [];
   ['trophies','trophies_rt','trophies_dnr','trophies_mosq'].forEach(function(k){
@@ -17637,10 +17645,10 @@ function loadTrophies(){ try{
     }); }catch(e){}
   });
   var list = order.map(function(id){ return merged[id]; });
-  if(list.length){ try{ safeLS.setItem('trophies', JSON.stringify(list)); }catch(e){} }
+  if(list.length){ try{ safeLS.setItem(stateKey('trophies'), JSON.stringify(list)); }catch(e){} }
   return list;
 }catch(e){ return []; } }
-function saveTrophies(list){ try{ safeLS.setItem('trophies', JSON.stringify(list)); }catch(e){} }
+function saveTrophies(list){ try{ safeLS.setItem(stateKey('trophies'), JSON.stringify(list)); }catch(e){} }
 function checkTrophies(entry){
   var earned = loadTrophies(), changed = false, newly = [];
   var now = new Date();
@@ -17648,7 +17656,7 @@ function checkTrophies(entry){
     pct: entry.pct, total: entry.total, mode: entry.mode, pass: entry.pass,
     _hour: now.getHours(),
     _streak: (typeof getDailyStreak==='function') ? getDailyStreak() : 0,
-    _answered: Number(safeLS.getItem('answered')||0),
+    _answered: Number(safeLS.getItem(stateKey('answered'))||0),
     _todaySessions: 0
   };
   try{
@@ -17784,12 +17792,12 @@ function timeAgo(ts){
 document.addEventListener('click', function(e){
   const btn = e.target.closest('.opt');
   if(btn && !btn.disabled){
-    answered++;
-    safeLS.setItem('answered', answered);
+    answered = Number(safeLS.getItem(stateKey('answered'))||0) + 1;
+    safeLS.setItem(stateKey('answered'), answered);
     setTimeout(function(){
       if(btn.classList.contains('correct')){
-        correct++;
-        safeLS.setItem('correct', correct);
+        correct = Number(safeLS.getItem(stateKey('correct'))||0) + 1;
+        safeLS.setItem(stateKey('correct'), correct);
         playSound('correct'); haptic('correct');
       } else if(btn.classList.contains('wrong')){
         playSound('wrong'); haptic('wrong');
@@ -17844,8 +17852,8 @@ window.addEventListener('load', function(){
     'Regulations & Permits':  {color:'#5ec98c',bg:'rgba(94,201,140,0.12)',border:'rgba(94,201,140,0.28)'},
     'Procedures & Damage ID': {color:'#e0b23e',bg:'rgba(224,178,62,0.12)',border:'rgba(224,178,62,0.28)'}
   };
-  function loadSR(){ try{ return JSON.parse(safeLS.getItem(SR_KEY)||'{}'); }catch(e){ return {}; } }
-  function saveSR(db){ safeLS.setItem(SR_KEY, JSON.stringify(db)); }
+  function loadSR(){ try{ return JSON.parse(safeLS.getItem(stateKey(SR_KEY))||'{}'); }catch(e){ return {}; } }
+  function saveSR(db){ safeLS.setItem(stateKey(SR_KEY), JSON.stringify(db)); }
   function getCard(db,qid){ return db[qid] || {state:0,interval:1,due:0,ef:2.5,reps:0}; }
 
   // Stable, content-based key — survives QS array insertions/reorders/deletions.
@@ -18248,8 +18256,8 @@ window.addEventListener('load', function(){
   var BM_KEY = 'bookmarks';
   var _bmFilter = 'All';
 
-  function loadBM(){ var v = safeJSON(BM_KEY, []); return Array.isArray(v) ? v : []; }
-  function saveBM(arr){ safeLS.setItem(BM_KEY, JSON.stringify(arr)); }
+  function loadBM(){ var v = safeJSON(stateKey(BM_KEY), []); return Array.isArray(v) ? v : []; }
+  function saveBM(arr){ safeLS.setItem(stateKey(BM_KEY), JSON.stringify(arr)); }
 
   function getBMKey(qText){ return qText.trim(); }
 
@@ -18500,8 +18508,8 @@ window.addEventListener('load', function(){
   var ST_KEY = 'studyTime';
   var _sessionStart = null;
   function today(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-  function loadST(){ try{ return JSON.parse(safeLS.getItem(ST_KEY)||'null'); }catch(e){ return null; } }
-  function saveST(obj){ safeLS.setItem(ST_KEY, JSON.stringify(obj)); }
+  function loadST(){ try{ return JSON.parse(safeLS.getItem(stateKey(ST_KEY))||'null'); }catch(e){ return null; } }
+  function saveST(obj){ safeLS.setItem(stateKey(ST_KEY), JSON.stringify(obj)); }
 
   window.studyTimerStart = function(){
     _sessionStart = Date.now(); window._studyTimerRunning=true;
@@ -18614,18 +18622,18 @@ function fcDismissQuiz(){
 // re-escaping here would never match a bookmarked question containing a quote.
 window.bmRemoveByKey = function(btn){
   var key = btn.dataset.key;
-  var bms; try{ bms=JSON.parse(safeLS.getItem('bookmarks')||'[]'); }catch(e){ bms=[]; }
+  var bms; try{ bms=JSON.parse(safeLS.getItem(stateKey('bookmarks'))||'[]'); }catch(e){ bms=[]; }
   bms = bms.filter(function(b){ return b.q.trim() !== key; });
-  safeLS.setItem('bookmarks', JSON.stringify(bms));
+  safeLS.setItem(stateKey('bookmarks'), JSON.stringify(bms));
   if(typeof renderBookmarksScreen==='function') renderBookmarksScreen();
 };
 window.bmSaveNote = function(textarea){
   var key = textarea.dataset.key;
-  var bms; try{ bms=JSON.parse(safeLS.getItem('bookmarks')||'[]'); }catch(e){ bms=[]; }
+  var bms; try{ bms=JSON.parse(safeLS.getItem(stateKey('bookmarks'))||'[]'); }catch(e){ bms=[]; }
   var found = bms.find(function(b){ return b.q.trim()===key; });
   if(found){
     found.note = textarea.value;
-    safeLS.setItem('bookmarks', JSON.stringify(bms));
+    safeLS.setItem(stateKey('bookmarks'), JSON.stringify(bms));
     var saved = textarea.parentNode ? textarea.parentNode.querySelector('.bm-note-saved') : null;
     if(saved){ saved.classList.add('show'); setTimeout(function(){ saved.classList.remove('show'); },1500); }
   }
