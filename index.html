@@ -5297,7 +5297,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
       </div>
     </button>
     <div style="font-size:11px;line-height:1.6;color:var(--text3);padding:12px 0;">
-      PestPass is an independent, unofficial study tool and is not affiliated with, endorsed by, or sponsored by the Georgia Department of Agriculture, the Georgia Structural Pest Control Commission, or the Georgia Department of Natural Resources. Content is prepared for exam-preparation purposes and may not reflect the most current rules — always verify current requirements with the official issuing agency before relying on this app for licensure or compliance decisions.
+      PestPass is an independent, unofficial study tool and is not affiliated with, endorsed by, or sponsored by the Georgia Department of Agriculture, the Georgia Structural Pest Control Commission, the Georgia Department of Natural Resources, or the Florida Department of Agriculture and Consumer Services. Content is prepared for exam-preparation purposes and may not reflect the most current rules — always verify current requirements with the official issuing agency before relying on this app for licensure or compliance decisions.
     </div>
   </div>
   <div style="padding:20px 18px;text-align:center;">
@@ -9137,7 +9137,8 @@ function clearQuizProgress(){
 // leaves nothing changed) if there's no valid save to resume.
 function resumeQuizProgress(qp){
   if(!qp || !qp.ids || !qp.ids.length) return false;
-  var pool = qp.ids.map(function(id){ return QS.find(function(q){ return q && q.id===id; }); }).filter(Boolean);
+  if(qp.catParam && qp.catParam!=='all' && !stateAllowsCat(qp.catParam)) return false;
+  var pool = qp.ids.map(function(id){ return QS.find(function(q){ return q && q.id===id; }); }).filter(function(q){ return q && stateAllowsQ(q); });
   if(!pool.length) return false;
   var idx = Math.min(qp.qIdx||0, pool.length-1);
   if(idx >= pool.length) return false; // already finished
@@ -9541,7 +9542,7 @@ function openCatHub(cat){
 
   // Inspection Drill — WDO hub only (technician inspection scenarios)
   var inspectBtn = document.getElementById('cathub-btn-inspect');
-  if(inspectBtn) inspectBtn.style.display = (cat === 'WDO') ? 'flex' : 'none';
+  if(inspectBtn) inspectBtn.style.display = (cat === 'WDO' && getExamState()==='ga') ? 'flex' : 'none';
 
   // Visual ID Drill — HPC and WDO hubs (photo-based pest identification)
   var visualidBtn = document.getElementById('cathub-btn-visualid');
@@ -9710,7 +9711,7 @@ function cathubGoInsectID(){
   // wdo:1-flagged wood-destroying insects (termites, wood-boring beetles,
   // carpenter ants/bees, frass/exit-hole ID); HPC hub gets the rest.
   var wdoHub = _catHubCurrent === 'WDO';
-  var pool = QS.filter(function(q){ return q.cat === 'Insect ID' && (wdoHub ? !!q.wdo : !q.wdo); });
+  var pool = QS.filter(function(q){ return q.cat === 'Insect ID' && (wdoHub ? !!q.wdo : !q.wdo) && stateAllowsQ(q); });
   startQuiz('Insect ID', 20, pool);
 }
 
@@ -9735,10 +9736,10 @@ function cathubGoVisualID(){
   window._bonusReturnHub = _catHubCurrent;
   var poolOverride = null;
   if(_catHubCurrent==='WDO'){
-    poolOverride = QS.filter(function(q){ return q && q.cat==='Visual ID' && q.img && WDO_VISUAL_IDS.indexOf(q.id)!==-1; });
+    poolOverride = QS.filter(function(q){ return q && q.cat==='Visual ID' && q.img && WDO_VISUAL_IDS.indexOf(q.id)!==-1 && stateAllowsQ(q); });
   } else if(_catHubCurrent==='HPC'){
     // Hub scoping: WDO hub gets the WDO visual IDs; HPC hub gets everything else.
-    poolOverride = QS.filter(function(q){ return q && q.cat==='Visual ID' && q.img && WDO_VISUAL_IDS.indexOf(q.id)===-1; });
+    poolOverride = QS.filter(function(q){ return q && q.cat==='Visual ID' && q.img && WDO_VISUAL_IDS.indexOf(q.id)===-1 && stateAllowsQ(q); });
   }
   startQuiz('Visual ID', 20, poolOverride);
 }
@@ -10632,7 +10633,7 @@ var STUDY_GUIDE_BOOKS = [
       {
         title: "Bird Management: Exclusion, Sanitation, and the Migratory Bird Treaty Act",
         icon: '<path d="M4 14c2-4 6-7 10-7 3 0 5 1.5 6 3-1.5 0-3 .5-4 1.5 2 .3 3.5 1.3 4.5 3-2-.5-3.5-.3-5 .5-3 1.5-7 1.5-9-1"/><circle cx="16" cy="9" r="0.8" fill="currentColor" stroke="none"/><path d="M6 17c-1 1-1.5 2-1.5 3M9 17.5c-.7 1-1 2-1 2.8"/>',
-        quick: "Household Pest Control in Georgia explicitly includes birds \u2014 pigeons, sparrows, and starlings are the usual offenders. The job is almost always exclusion and sanitation, not chemical control, and native species are federally protected: you can\u2019t legally kill, trap, or even disturb the nest of most native birds without a permit.",
+        quick: "Household pest control explicitly includes birds \u2014 pigeons, sparrows, and starlings are the usual offenders. The job is almost always exclusion and sanitation, not chemical control, and native species are federally protected: you can\u2019t legally kill, trap, or even disturb the nest of most native birds without a permit.",
         deep: [
           "Bird work on the HPC side of the exam is about exclusion, not extermination. Netting keeps birds out of eaves, warehouse rafters, and parking structures. Spikes and coil products prevent roosting on ledges, signs, and beams. Sloped or slick ledge covers stop birds from gaining a foothold in the first place. Gel repellents create an uncomfortable, sticky texture on landing surfaces. Sanitation \u2014 removing food sources, standing water, and old nesting material \u2014 closes the loop so a site doesn't just get re-colonized after exclusion work is finished.",
           "The Migratory Bird Treaty Act (MBTA) is the single most important legal fact in this topic area: it's a federal crime to kill, capture, or disturb the active nest of almost any native North American bird species without a special permit, even if that bird is causing property damage. This is why licensed operators lean so heavily on exclusion and habitat modification rather than lethal control \u2014 there usually isn't a legal chemical or trapping option available for the species causing the problem.",
@@ -10900,6 +10901,7 @@ var STUDY_GUIDE_BOOKS = [
   },
   {
     id: 'gaspcc',
+    states: ['ga'],
     tracks: ['co','rt'],
     title: "Georgia SPCC & UGA Extension Category Guides",
     short: "GA SPCC / UGA Guides",
@@ -11428,6 +11430,7 @@ var STUDY_GUIDE_BOOKS = [
         ]
       },
       {
+        states: ['ga'],
         title: "Georgia's Fumigation Notification Rules — Exact Numbers",
         icon: '<path d="M4 21h16M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>',
         quick: "48 hours' notice to the state Enforcement Agency, 3 hours' notice to local fire/police and to the occupant, and a minimum 2-person crew with one Operator-in-Charge \u2014 these are fixed numbers, not general guidance.",
@@ -11600,6 +11603,7 @@ var STUDY_GUIDE_BOOKS = [
         ]
       },
       {
+        states: ['ga'],
         title: "Borate Treatments and Vapor Barriers: Prevention Built Into the Structure",
         icon: '<rect x="4" y="10" width="16" height="9" rx="1"/><path d="M8 10V6a4 4 0 0 1 8 0v4" /><circle cx="12" cy="14.5" r="1.3" fill="currentColor" stroke="none"/>',
         quick: "Borate wood treatments penetrate unfinished lumber and kill wood-destroying organisms on contact when they feed on treated wood, while vapor barriers reduce crawlspace moisture — two very different preventive tools that both show up in Georgia's minimum construction standards.",
@@ -11611,6 +11615,7 @@ var STUDY_GUIDE_BOOKS = [
         ]
       },
       {
+        states: ['ga'],
         title: "Reading the Georgia WIIR: What Each Box Means and Why It's Legally Binding",
         icon: '<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/><path d="M15.5 15l1 1 2-2" opacity="0.85"/>',
         quick: "Georgia is one of a handful of states with its own state-mandated wood-infestation report — the Official Georgia Wood Infestation Inspection Report (Georgia WIIR) — used instead of the national NPMA-33 form. Its diagram section is a visual record of exactly what was inspected and found, which is why sloppy completion is a legal problem, not just a paperwork one.",
@@ -12026,8 +12031,9 @@ function sgJumpToTopic(bookId, topicIndex){
 // PPE & safety, drift/runoff/groundwater, IPM) plus core pest ID. The
 // Certified Operator track always sees the full library.
 function sgTopicsForTrack(book){
-  if(getExamTrack()==='rt') return book.topics.filter(function(t){ return t.rt; });
-  return book.topics;
+  var topics = book.topics.filter(function(t){ return !t.states || t.states.indexOf(getExamState()) !== -1; });
+  if(getExamTrack()==='rt') return topics.filter(function(t){ return t.rt; });
+  return topics;
 }
 
 function renderStudyGuide(){
@@ -12741,8 +12747,10 @@ var MD_TEMPLATES = [
 // Combines two things: quietly favoring calculation types the user has struggled
 // with historically, and a base practice emphasis toward the most commonly
 // tested categories (see MD_BASE_WEIGHT above).
+var MD_GA_TEMPLATES = [0,4,5,6,7,8,9,10,13,14,15,17,18];
 function mdPickTemplateIndex(){
-  var weights = MD_CALC_TYPES.map(function(type){
+  var weights = MD_CALC_TYPES.map(function(type, ti){
+    if(getExamState()==='fl' && MD_GA_TEMPLATES.indexOf(ti)!==-1) return 0;
     var base = MD_BASE_WEIGHT[type] || 1;
     var stat = mdCalcTypeStats[type];
     if(!stat || stat.total < 3) return base;
@@ -13609,6 +13617,12 @@ function backToStep1(){
 }
 
 function startQuiz(category,count,poolOverride){
+  // State guard: a state-gated category (Georgia/Florida Regulations,
+  // Inspection Procedures) must never serve in the other state, whichever
+  // caller asked for it. Swap to the closest in-state equivalent.
+  if(category && category!=='all' && !stateAllowsCat(category)){
+    category = (category==='Inspection Procedures') ? 'WDO' : stateRegsCat();
+  }
   selectedQCat=category; // keep in sync for showResults()'s bestScore/modal save — some callers (e.g. cathub drills) invoke startQuiz directly without going through selectQCat first
   window._quizIsTimed=false;
   window._quizIsMock=false;
@@ -14165,13 +14179,13 @@ var TFB_BANK = {
   {s:'IPM stands for Integrated Pest Management.',t:true},
   {s:'The first priority when a pesticide container is leaking is to contain the spill while wearing appropriate PPE.',t:true},
   {s:'Category I pesticides carry the signal word DANGER and have an oral LD50 of 50 mg/kg or less.',t:true},
-  {s:'The Georgia Structural Pest Control Commission is responsible for licensing pest control operators in Georgia.',t:true},
+  {s:'The Georgia Structural Pest Control Commission is responsible for licensing pest control operators in Georgia.',t:true,st:'ga'},
   {s:'Pesticide labels must list the EPA registration number.',t:true},
   {s:'Pesticide toxicity Category II requires the signal word WARNING on the label.',t:true},
   {s:'The re-entry interval is established by the EPA under the Worker Protection Standard.',t:true},
   {s:'A pesticide must be applied in strict accordance with its label directions.',t:true},
   {s:'Pest resistance develops faster when the same mode of action is used exclusively over time.',t:true},
-  {s:'In Georgia, a Certified Operator license is required to supervise structural pest control operations.',t:true},
+  {s:'In Georgia, a Certified Operator license is required to supervise structural pest control operations.',t:true,st:'ga'},
   {s:'Fine droplets increase off-target pesticide drift compared to coarse droplets.',t:true},
   {s:'Applying a pesticide indoors when it is only labeled for outdoor use is a FIFRA violation.',t:true},
   {s:'Workers must be notified of the REI and treated area before re-entry is allowed.',t:true},
@@ -14179,7 +14193,7 @@ var TFB_BANK = {
   {s:'FIFRA was originally passed in 1947 and significantly amended in 1972 to require EPA oversight.',t:true},
   {s:'Exceeding the maximum labeled application rate is a federal violation regardless of infestation severity.',t:true},
   {s:'Pesticide drift can result in legal liability if it damages neighboring crops or property.',t:true},
-  {s:'In Georgia, pest control companies must maintain pesticide application records for at least 2 years.',t:true},
+  {s:'In Georgia, pest control companies must maintain pesticide application records for at least 2 years.',t:true,st:'ga'},
   {s:'The Worker Protection Standard applies to agricultural pesticide use on farms, forests, nurseries, and greenhouses.',t:true},
   {s:'DANGER is the signal word used for pesticides in toxicity Category I.',t:true},
   // FALSE (30)
@@ -14190,7 +14204,7 @@ var TFB_BANK = {
   {s:'A customer can legally authorize a technician to apply a pesticide in a manner not listed on the label.',t:false},
   {s:'An SDS is required to be provided to customers before every routine pesticide application.',t:false},
   {s:'Applying a pesticide below the labeled rate is always legal as long as it is effective.',t:false},
-  {s:'A registered employee in Georgia can sign an official WDO inspection report.',t:false},
+  {s:'A registered employee in Georgia can sign an official WDO inspection report.',t:false,st:'ga'},
   {s:'Under FIFRA, it is legal to use a pesticide for a purpose not listed on its label if the applicator has professional experience.',t:false},
   {s:'Tank mixing two pesticides is always legal as long as both products are labeled for the target pest.',t:false},
   {s:'The SDS is the same document as the pesticide label.',t:false},
@@ -14207,7 +14221,7 @@ var TFB_BANK = {
   {s:'Under the WPS, the REI begins when the applicator finishes applying the pesticide and removes their PPE.',t:false},
   {s:'An applicator may deviate from label directions if they have more than 10 years of field experience.',t:false},
   {s:'Pesticide drift is only a concern when applying products in enclosed spaces.',t:false},
-  {s:'The Georgia SPCC exam tests knowledge of federal law only — Georgia-specific regulations are not covered.',t:false},
+  {s:'The Georgia SPCC exam tests knowledge of federal law only — Georgia-specific regulations are not covered.',t:false,st:'ga'},
   {s:'A pesticide with a low LD50 value is less toxic than one with a high LD50 value.',t:false},
   {s:'Category I toxicity means the pesticide is safe for use around children and pets without restriction.',t:false},
   {s:'IPM thresholds are fixed numbers set by the EPA that apply uniformly to all pest situations.',t:false},
@@ -14303,10 +14317,10 @@ var TFB_BANK = {
   {s:'Brown rot leaves dark brown, crumbly wood with characteristic cubical cracking.',t:true},
   {s:'White rot destroys both lignin and cellulose, leaving pale, spongy, stringy wood.',t:true},
   {s:'Wood stain fungi indicate elevated moisture conditions approaching the threshold for decay fungi.',t:true},
-  {s:'In Georgia, WDO inspection reports must be signed by a Certified Operator with active WDO certification.',t:true},
-  {s:'The Georgia WIIR is the standard WDO inspection report form used in real estate transactions.',t:true},
+  {s:'In Georgia, WDO inspection reports must be signed by a Certified Operator with active WDO certification.',t:true,st:'ga'},
+  {s:'The Georgia WIIR is the standard WDO inspection report form used in real estate transactions.',t:true,st:'ga'},
   {s:'A WDO inspection covers only visible and accessible areas at the time of inspection.',t:true},
-  {s:'Georgia WDO inspection and treatment records must be retained for 2 years from the date the record is created.',t:true},
+  {s:'Georgia WDO inspection and treatment records must be retained for 2 years from the date the record is created.',t:true,st:'ga'},
   {s:'A moisture meter reading above 19% in wood indicates conditions conducive to decay fungi.',t:true},
   {s:'Termite bait stations have active bait added only after termites are confirmed feeding in the station.',t:true},
   {s:'Rodding involves injecting termiticide into soil via a hollow probe at specified depth and spacing.',t:true},
@@ -14330,17 +14344,17 @@ var TFB_BANK = {
   {s:'Lyctid powderpost beetle frass feels sandy and gritty between the fingers.',t:false},
   {s:'Anobiid beetles only infest freshly milled green lumber and cannot re-infest seasoned wood.',t:false},
   {s:'Drywood termite frass is soft, powdery, and indistinguishable from sawdust.',t:false},
-  {s:'The Georgia WIIR is a Georgia-specific inspection form created under the GSPCC\'s rules, used instead of the national NPMA-33 form.',t:true},
+  {s:'The Georgia WIIR is a Georgia-specific inspection form created under the GSPCC\'s rules, used instead of the national NPMA-33 form.',t:true,st:'ga'},
   {s:'Conducive conditions on a WDO report document where active WDO damage was found.',t:false},
-  {s:'In Georgia, WDO records must be kept for 5 years from the date of the inspection.',t:false},
+  {s:'In Georgia, WDO records must be kept for 5 years from the date of the inspection.',t:false,st:'ga'},
   {s:'Mud tubes on a foundation wall are a definitive sign of drywood termite activity.',t:false},
   {s:'Formosan termites swarm in early morning during February and March.',t:false},
   {s:'Bait station monitors are replaced with active bait on a fixed calendar schedule regardless of termite activity.',t:false},
   {s:'Masonry voids do not need to be treated because termites cannot travel through solid concrete block.',t:false},
   {s:'Wood with moisture content below 19% can still support active fungal decay in humid climates.',t:false},
   {s:'The old house borer infests only freshly cut hardwood lumber and cannot attack softwood.',t:false},
-  {s:'A WDO inspection in Georgia can be signed by any licensed employee who performed the inspection.',t:false},
-  {s:'Dampwood termites are common in Georgia structures and do not indicate a moisture problem.',t:false},
+  {s:'A WDO inspection in Georgia can be signed by any licensed employee who performed the inspection.',t:false,st:'ga'},
+  {s:'Dampwood termites are common in Georgia structures and do not indicate a moisture problem.',t:false,st:'ga'},
   {s:'Subterranean termite workers can forage effectively without building mud tubes in exposed areas.',t:false},
   {s:'Termite swarmers losing their wings is a sign the colony is dying.',t:false}
 ],
@@ -14406,7 +14420,7 @@ var TFB_BANK = {
   {s:'Sulfuryl fluoride is heavier than air and settles at floor level, requiring special application techniques.',t:false},
   {s:'Fumigant dosage is the same for all structures regardless of temperature or volume.',t:false},
   {s:'Tenting is not required for phosphine fumigation of grain storage facilities.',t:false},
-  {s:'A licensed fumigator can delegate on-site supervision to a registered employee during exposure.',t:false},
+  {s:'A licensed fumigator can delegate on-site supervision to an uncertified employee during exposure.',t:false},
   {s:'Chloropicrin serves as the primary active ingredient in fumigation, with sulfuryl fluoride as the warning agent.',t:false}
 ],
 
@@ -14771,7 +14785,7 @@ var TFB_BANK = {
 ],}; // end TFB_BANK
 
 function makeStatements(cat){
-  var bank = TFB_BANK[cat];
+  var bank = (TFB_BANK[cat]||[]).filter(function(item){ return !item.st || item.st===getExamState(); });
   if(!bank || bank.length === 0) return [];
   // Shuffle a copy
   var arr = bank.slice();
@@ -15440,7 +15454,7 @@ function renderFCHome() {
 
   window.frzStart = function(){
     // HPC hub only (photo bank is household pests, not WDO): exclude WDO visual IDs.
-    var pool = QS.filter(function(q){ return q && q.cat==='Visual ID' && q.img && WDO_VISUAL_IDS.indexOf(q.id)===-1; });
+    var pool = QS.filter(function(q){ return q && q.cat==='Visual ID' && q.img && WDO_VISUAL_IDS.indexOf(q.id)===-1 && stateAllowsQ(q); });
     if(pool.length < 4) return;
     shuffleInPlace(pool);
     frzPool = pool.slice(0, Math.min(FRZ_COUNT, pool.length));
