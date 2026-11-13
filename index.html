@@ -8870,6 +8870,9 @@ function stateAllowsQ(q){
   if(!q || !q.st) return true;
   return q.st===getExamState();
 }
+function stateRegsCat(){
+  return getExamState()==='fl' ? 'Florida Regulations' : 'Georgia Regulations';
+}
 function applyExamState(){
   var st = getExamState();
   document.body.classList.toggle('state-fl', st==='fl');
@@ -13406,7 +13409,7 @@ function filterFC(cat) {
     if((cat==='All'&&t==='All')||(cat!=='All'&&t===cat.split(' ')[0])||(cat==='General Knowledge'&&t==='GEN')||(cat==='Fumigation'&&t==='FUM')) c.classList.add('active');
     if(cat==='All'&&t==='All') c.classList.add('active');
   });
-  cards=cat==='All'?[...FC].filter(c=>trackAllowsCategory(c.cat) && stateAllowsQ(c)):FC.filter(c=>c.cat===cat && categoryIsReachable(c.cat) && stateAllowsQ(c));
+  cards=cat==='All'?[...FC].filter(c=>(trackAllowsCategory(c.cat) || c.cat===stateRegsCat()) && stateAllowsQ(c)):FC.filter(c=>(c.cat===cat || (cat==='General Knowledge' && c.cat===stateRegsCat())) && categoryIsReachable(c.cat) && stateAllowsQ(c));
   cardIdx=0; flipped=false; renderCard();
 }
 function renderCard(){
@@ -15290,11 +15293,11 @@ function resumeFlashcardPosition(act){
   }
 
   if(act.cat && act.cat !== 'All'){
-    cards = FC.filter(function(c){ return c.cat === act.cat && categoryIsReachable(c.cat) && stateAllowsQ(c); });
+    cards = FC.filter(function(c){ return (c.cat === act.cat || (act.cat==='General Knowledge' && c.cat===stateRegsCat())) && categoryIsReachable(c.cat) && stateAllowsQ(c); });
     window._fcCurrentCat = act.cat;
     window._fcCurrentBlock = null;
   } else {
-    cards = FC.filter(function(c){ return trackAllowsCategory(c.cat) && stateAllowsQ(c); });
+    cards = FC.filter(function(c){ return (trackAllowsCategory(c.cat) || c.cat===stateRegsCat()) && stateAllowsQ(c); });
     window._fcCurrentCat = 'All';
     window._fcCurrentBlock = null;
   }
