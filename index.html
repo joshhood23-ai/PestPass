@@ -1839,6 +1839,11 @@ body.state-fl.track-co .cat-tile.track-lim-only, body.state-fl.track-rt .cat-til
 .chip.track-lim-only, .sr-chip.track-lim-only{ display:none !important; }
 body.state-fl.track-co .chip.track-lim-only, body.state-fl.track-rt .chip.track-lim-only, body.state-fl.track-co .sr-chip.track-lim-only, body.state-fl.track-rt .sr-chip.track-lim-only{ display:inline-block !important; }
 body:not(.state-fl) .fc-lim-section{ display:none !important; }
+/* Florida home grid order (2026-11-13, Josh's call): in FL mode the Lawn &
+   Ornamental and Limited Certification tiles sit at the TOP of the
+   categories grid, ahead of General Knowledge. GA order unchanged. */
+body.state-fl .cat-tile.track-lno-only{ order:-2; }
+body.state-fl .cat-tile.track-lim-only{ order:-1; }
 /* DNR Trapping is a wholly separate credential (GA DNR Law Enforcement, not
    the Dept of Agriculture) with its own category set — so every SPCC
    category entry point hides under it, and a parallel set of DNR-only
@@ -15577,6 +15582,7 @@ var TFB_BANK = {
   {s:'The Limited Governmental or Private Applicator examination fee is $50 per category.',t:false,st:'fl'}
 ]
 }; // end TFB_BANK
+window.TFB_BANK = TFB_BANK; // openCatHub (outside this IIFE) reads the bank to size the Blitz button — without this export that read throws and every category tile dies (bug found 2026-11-13)
 
 function makeStatements(cat){
   var bank = (TFB_BANK[cat]||[]).filter(function(item){ return !item.st || item.st===getExamState(); });
