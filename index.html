@@ -1819,6 +1819,14 @@ body.state-fl .sb-ga{ display:none; }
 body.track-rt .track-fum-only, body.track-dnr .track-fum-only, body.track-mosq .track-fum-only{ display:none !important; }
 body.track-dnr #state-switch{ display:none !important; }
 body.state-fl #track-btn-dnr{ display:none !important; }
+/* L&O + Limited Certification live in the top track row (2026-11-13, Josh's
+   call: they sit with the exam tracks, not down in Categories). These two
+   buttons are hub shortcuts, not track toggles — they show on the CO and
+   Reg. Employee / ID Cardholder tracks where their content lives (L&O in
+   both states; Limited is Florida-only content). */
+#track-btn-lno, #track-btn-lim{ display:none !important; }
+body.track-co #track-btn-lno, body.track-rt #track-btn-lno{ display:block !important; }
+body.state-fl.track-co #track-btn-lim, body.state-fl.track-rt #track-btn-lim{ display:block !important; }
 /* Fumigation HUB hidden on every track (2026-10-20, Josh's call: nobody in
    Georgia does structural fumigation). This hides ONLY the home hub tile;
    all Fumigation content (questions, flashcards, filters) stays in the app
@@ -1840,11 +1848,13 @@ body.state-fl.track-co .cat-tile.track-lim-only, body.state-fl.track-rt .cat-til
 .chip.track-lim-only, .sr-chip.track-lim-only{ display:none !important; }
 body.state-fl.track-co .chip.track-lim-only, body.state-fl.track-rt .chip.track-lim-only, body.state-fl.track-co .sr-chip.track-lim-only, body.state-fl.track-rt .sr-chip.track-lim-only{ display:inline-block !important; }
 body:not(.state-fl) .fc-lim-section{ display:none !important; }
-/* Florida home grid order (2026-11-13, Josh's call): in FL mode the Lawn &
-   Ornamental and Limited Certification tiles sit at the TOP of the
-   categories grid, ahead of General Knowledge. GA order unchanged. */
-body.state-fl .cat-tile.track-lno-only{ order:-2; }
-body.state-fl .cat-tile.track-lim-only{ order:-1; }
+/* L&O + Limited Certification tiles are OUT of the Categories grid
+   (2026-11-13, Josh's call) — they live in the top track row instead (see
+   #track-btn-lno / #track-btn-lim above). These selectors mirror the tile
+   show rules at equal specificity and come later, so they win. */
+body.state-fl.track-co .cat-tile.track-lno-only, body.state-fl.track-rt .cat-tile.track-lno-only,
+body.state-ga.track-co .cat-tile.track-lno-only, body.state-ga.track-rt .cat-tile.track-lno-only,
+body.state-fl.track-co .cat-tile.track-lim-only, body.state-fl.track-rt .cat-tile.track-lim-only{ display:none !important; }
 /* DNR Trapping is a wholly separate credential (GA DNR Law Enforcement, not
    the Dept of Agriculture) with its own category set — so every SPCC
    category entry point hides under it, and a parallel set of DNR-only
@@ -3709,6 +3719,8 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <button type="button" role="button" tabindex="0" class="track-switch-btn" id="track-btn-co" onclick="setExamTrack('co')">Cert. Operator</button>
         <button type="button" role="button" tabindex="0" class="track-switch-btn" id="track-btn-dnr" onclick="setExamTrack('dnr')">DNR Trapping</button>
         <button type="button" role="button" tabindex="0" class="track-switch-btn" id="track-btn-mosq" onclick="setExamTrack('mosq')">Mosquito</button>
+        <button type="button" role="button" tabindex="0" class="track-switch-btn" id="track-btn-lno" onclick="openCatHub('Lawn & Ornamental')">L&amp;O</button>
+        <button type="button" role="button" tabindex="0" class="track-switch-btn" id="track-btn-lim" onclick="openCatHub('Limited Certification')">Limited</button>
       </div>
 
       <!-- ── STATE SWITCHER (Georgia / Florida exam rules) ── -->
