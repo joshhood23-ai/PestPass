@@ -1828,31 +1828,41 @@ body.state-fl #track-btn-lno{ display:none !important; }
    part of the CO license), so it gets a button in the top track row
    (2026-11-13, Josh's rule: part of the CO track → category; own test →
    top button). The button is a hub shortcut, not a track toggle; it shows
-   on the FL CO and ID Cardholder tracks where its content lives. L&O is a
+   on the FL CO track where its content lives (2026-11-19: removed from the
+   ID Cardholder track — Limited is its own credential, not a spray tech's). L&O is a
    CO category, so it stays a normal category tile — no track-row button. */
 #track-btn-lim{ display:none !important; }
-body.state-fl.track-co #track-btn-lim, body.state-fl.track-rt #track-btn-lim{ display:block !important; }
+body.state-fl.track-co #track-btn-lim{ display:block !important; }
 /* Fumigation HUB hidden on every track (2026-10-20, Josh's call: nobody in
-   Georgia does structural fumigation). This hides ONLY the home hub tile;
-   all Fumigation content (questions, flashcards, filters) stays in the app
-   untouched. Delete this one rule to bring the hub back. */
+   Georgia does structural fumigation). 2026-11-19: ALL Fumigation content
+   (questions, flashcards, Blitz) is Florida-scoped in the bank itself, and
+   the Fumigation filter chips follow the same rule as the tile — hidden
+   everywhere except Florida CO, the only place the content lives. */
 .cat-tile.track-fum-only{ display:none !important; }
 /* Florida Phase 2 (2026-11-12): Florida DOES structural fumigation and the
    FL fumigation bank now exists, so in Florida mode the Fumigation hub tile
    comes back (CO track; the track rules above still hide it on RT/DNR/Mosq).
    Georgia mode is unchanged — tile stays hidden there. */
 body.state-fl.track-co .cat-tile.track-fum-only{ display:block !important; }
+.chip.track-fum-only, .sr-chip.track-fum-only{ display:none !important; }
+body.state-fl.track-co .chip.track-fum-only, body.state-fl.track-co .sr-chip.track-fum-only{ display:inline-block !important; }
+.fc-home-cat-section.track-fum-only{ display:none !important; }
+body.state-fl.track-co .fc-home-cat-section.track-fum-only{ display:block !important; }
 .cat-tile.track-lno-only{ display:none !important; }
-body.state-fl.track-co .cat-tile.track-lno-only, body.state-fl.track-rt .cat-tile.track-lno-only{ display:block !important; }
+body.state-fl.track-co .cat-tile.track-lno-only{ display:block !important; }
 body.state-ga.track-lno .cat-tile.track-lno-only{ display:block !important; }
 .chip.track-lno-only, .sr-chip.track-lno-only{ display:none !important; }
-body.state-fl.track-co .chip.track-lno-only, body.state-fl.track-rt .chip.track-lno-only, body.state-fl.track-co .sr-chip.track-lno-only, body.state-fl.track-rt .sr-chip.track-lno-only{ display:inline-block !important; }
+body.state-fl.track-co .chip.track-lno-only, body.state-fl.track-co .sr-chip.track-lno-only{ display:inline-block !important; }
 body.state-ga.track-lno .chip.track-lno-only, body.state-ga.track-lno .sr-chip.track-lno-only{ display:inline-block !important; }
 .cat-tile.track-lim-only{ display:none !important; }
 body.state-fl.track-co .cat-tile.track-lim-only, body.state-fl.track-rt .cat-tile.track-lim-only{ display:block !important; }
 .chip.track-lim-only, .sr-chip.track-lim-only{ display:none !important; }
-body.state-fl.track-co .chip.track-lim-only, body.state-fl.track-rt .chip.track-lim-only, body.state-fl.track-co .sr-chip.track-lim-only, body.state-fl.track-rt .sr-chip.track-lim-only{ display:inline-block !important; }
+body.state-fl.track-co .chip.track-lim-only, body.state-fl.track-co .sr-chip.track-lim-only{ display:inline-block !important; }
 body:not(.state-fl) .fc-lim-section{ display:none !important; }
+body.state-fl.track-rt .fc-lim-section{ display:none !important; }
+/* WDO entry points (tile, filter chips, flashcard-home section) hide on
+   the Florida ID Cardholder track — WDO is operator-level there. */
+body.state-fl.track-rt .wdo-entry{ display:none !important; }
 /* The Limited Certification TILE is out of the Categories grid
    (2026-11-13, Josh's rule) — its entry point is the top track-row button
    (#track-btn-lim above), because it has its own test. These selectors
@@ -1864,7 +1874,7 @@ body.state-fl.track-co .cat-tile.track-lim-only, body.state-fl.track-rt .cat-til
    CO category there); Georgia shows it ONLY on the L&O track (Category 24
    is a separate exam there). DNR / Mosquito never see it. */
 body.track-dnr .fc-lno-section, body.track-mosq .fc-lno-section,
-body.state-ga.track-co .fc-lno-section, body.state-ga.track-rt .fc-lno-section{ display:none !important; }
+body.state-ga.track-co .fc-lno-section, body.state-ga.track-rt .fc-lno-section, body.state-fl.track-rt .fc-lno-section{ display:none !important; }
 /* DNR Trapping is a wholly separate credential (GA DNR Law Enforcement, not
    the Dept of Agriculture) with its own category set — so every SPCC
    category entry point hides under it, and a parallel set of DNR-only
@@ -3846,7 +3856,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
           <div class="ct-bar-wrap"><div class="ct-bar-fill" id="bar-HPC" style="background:#a98eff;"></div></div>
           <div class="ct-stats"><span class="ct-cov" id="cov-HPC">0% answered</span><span class="ct-best" id="cbest-HPC">Best —</span></div>
         </button>
-        <button type="button" role="button" tabindex="0" class="cat-tile track-spcc-only" style="--tc:#f5a040;" onclick="openCatHub('WDO')">
+        <button type="button" role="button" tabindex="0" class="cat-tile track-spcc-only wdo-entry" style="--tc:#f5a040;" onclick="openCatHub('WDO')">
           <div class="ct-top">
             <div class="ct-icon" style="background:rgba(245,160,64,0.12);color:#f5a040;">
               <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
@@ -4828,7 +4838,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
       </div>
 
       <!-- WDO -->
-      <div class="fc-home-cat-section track-spcc-only">
+      <div class="fc-home-cat-section track-spcc-only wdo-entry">
         <div class="fc-home-cat-header" style="--fchc:var(--c-wdo);">
           <div class="fc-home-cat-icon" style="background:rgba(245,160,64,0.1);color:var(--c-wdo);">
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -4842,7 +4852,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
       </div>
 
       <!-- FUM -->
-      <div class="fc-home-cat-section track-spcc-only">
+      <div class="fc-home-cat-section track-spcc-only track-fum-only">
         <div class="fc-home-cat-header" style="--fchc:var(--c-fum);">
           <div class="fc-home-cat-icon" style="background:rgba(244,114,168,0.1);color:var(--c-fum);">
             <svg viewBox="0 0 24 24"><path d="M8.56 2.9A7 7 0 0 1 19 9v4"/><path d="M19 9A7 7 0 0 1 5 9"/><path d="M11 21v-9"/><path d="M8 21h6"/><circle cx="11" cy="9" r="1"/></svg>
@@ -4986,7 +4996,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <button type="button" role="button" tabindex="0" class="chip active" style="--cc:#eef0f8" onclick="filterFC('All')">All</button>
         <button type="button" role="button" tabindex="0" class="chip track-co-only" style="--cc:var(--c-gen)" onclick="filterFC('General Knowledge')">GEN</button>
         <button type="button" role="button" tabindex="0" class="chip track-spcc-only" style="--cc:var(--c-hpc)" onclick="filterFC('HPC')">HPC</button>
-        <button type="button" role="button" tabindex="0" class="chip track-spcc-only" style="--cc:var(--c-wdo)" onclick="filterFC('WDO')">WDO</button>
+        <button type="button" role="button" tabindex="0" class="chip track-spcc-only wdo-entry" style="--cc:var(--c-wdo)" onclick="filterFC('WDO')">WDO</button>
         <button type="button" role="button" tabindex="0" class="chip track-fum-only" style="--cc:var(--c-fum)" onclick="filterFC('Fumigation')">FUM</button>
         <button type="button" role="button" tabindex="0" class="chip track-lno-only" style="--cc:var(--c-lno)" onclick="filterFC('Lawn & Ornamental')">L&amp;O</button>
         <button type="button" role="button" tabindex="0" class="chip track-lim-only" style="--cc:var(--c-lim)" onclick="filterFC('Limited Certification')">LTD</button>
@@ -5196,7 +5206,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
           <button type="button" role="button" tabindex="0" class="sr-chip active" data-cat="All" onclick="srSetFilter(this)" style="--cc:#eef0f8;">All</button>
           <button type="button" role="button" tabindex="0" class="sr-chip track-co-only" data-cat="General Knowledge" onclick="srSetFilter(this)">GEN</button>
           <button type="button" role="button" tabindex="0" class="sr-chip track-spcc-only" data-cat="HPC" onclick="srSetFilter(this)">HPC</button>
-          <button type="button" role="button" tabindex="0" class="sr-chip track-spcc-only" data-cat="WDO" onclick="srSetFilter(this)">WDO</button>
+          <button type="button" role="button" tabindex="0" class="sr-chip track-spcc-only wdo-entry" data-cat="WDO" onclick="srSetFilter(this)">WDO</button>
           <button type="button" role="button" tabindex="0" class="sr-chip track-fum-only" data-cat="Fumigation" onclick="srSetFilter(this)">FUM</button>
           <button type="button" role="button" tabindex="0" class="sr-chip track-lno-only" data-cat="Lawn & Ornamental" onclick="srSetFilter(this)">L&amp;O</button>
           <button type="button" role="button" tabindex="0" class="sr-chip track-lim-only" data-cat="Limited Certification" onclick="srSetFilter(this)">LTD</button>
@@ -5318,7 +5328,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <button type="button" role="button" tabindex="0" class="sr-chip active" data-bcat="All" onclick="bmSetFilter(this)" style="--cc:#eef0f8;">All</button>
         <button type="button" role="button" tabindex="0" class="sr-chip track-co-only" data-bcat="General Knowledge" onclick="bmSetFilter(this)">GEN</button>
         <button type="button" role="button" tabindex="0" class="sr-chip track-spcc-only" data-bcat="HPC" onclick="bmSetFilter(this)">HPC</button>
-        <button type="button" role="button" tabindex="0" class="sr-chip track-spcc-only" data-bcat="WDO" onclick="bmSetFilter(this)">WDO</button>
+        <button type="button" role="button" tabindex="0" class="sr-chip track-spcc-only wdo-entry" data-bcat="WDO" onclick="bmSetFilter(this)">WDO</button>
         <button type="button" role="button" tabindex="0" class="sr-chip track-fum-only" data-bcat="Fumigation" onclick="bmSetFilter(this)">FUM</button>
         <button type="button" role="button" tabindex="0" class="sr-chip track-lno-only" data-bcat="Lawn & Ornamental" onclick="bmSetFilter(this)">L&amp;O</button>
         <button type="button" role="button" tabindex="0" class="sr-chip track-lim-only" data-bcat="Limited Certification" onclick="bmSetFilter(this)">LTD</button>
@@ -9313,6 +9323,16 @@ var TRACK_CATEGORIES = {
   lno: ['Lawn & Ornamental']
 };
 function trackAllowsCategory(cat){
+  // Florida ID Cardholders take no state exam (s.482.091 — the card is
+  // training-based), so the FL cardholder track is the spray-tech core
+  // only: General Knowledge + HPC. WDO, L&O and Limited Certification are
+  // operator-level or separate credentials (Josh, 2026-11-19). Bonus
+  // categories (Florida Regulations etc.) gate separately, as before.
+  if(getExamState()==='fl' && getExamTrack()==='rt') return cat==='General Knowledge' || cat==='HPC';
+  // Fumigation content lives on the Florida CO track only; Limited
+  // Certification is a Florida-only credential with its own exam.
+  if(cat==='Fumigation') return getExamState()==='fl' && getExamTrack()==='co';
+  if(cat==='Limited Certification') return getExamState()==='fl' && getExamTrack()==='co';
   // Georgia L&O (Category 24 Ornamental & Turf) is a SEPARATE applicator
   // exam, not part of the SPCC operator/employee tests (Josh, 2026-11-13):
   // in GA it belongs only to its own 'lno' track. In Florida it IS a
@@ -9407,8 +9427,11 @@ function trackCategoryKeys(){
   if(t==='dnr') return ['DNRREG','DNRPROC'];
   if(t==='mosq') return ['MOSBIO','LARV','ADULT','MOSLAW'];
   if(t==='lno') return ['LNO'];
-  var keys = ['GEN','HPC','WDO','FUM'];
-  if(getExamState()==='fl'){ keys.push('LNO'); keys.push('LIM'); }
+  var keys = ['GEN','HPC','WDO'];
+  if(getExamState()==='fl'){
+    if(t==='rt') return ['GEN','HPC'];
+    keys.push('FUM'); keys.push('LNO'); keys.push('LIM');
+  }
   return keys;
 }
 // Pass threshold differs by track: DNR's real exam requires 80%, vs 70% for
@@ -16970,7 +16993,7 @@ function renderFCHome() {
   // categories, so all 4 slots are relabeled like CO/RT.
   var SURV_PIP_SLOTS = ['GEN','HPC','WDO','FUM','LNO','LIM'];
   function survCatMap(){ var t=getExamTrack(); return t==='dnr' ? SURV_CAT_MAP_DNR : t==='mosq' ? SURV_CAT_MAP_MOSQ : SURV_CAT_MAP_CO; }
-  function survPipKeys(){ var t=getExamTrack(); return t==='dnr' ? ['DNRREG','DNRPROC'] : t==='mosq' ? ['MOSBIO','LARV','ADULT','MOSLAW'] : t==='lno' ? ['LNO'] : (getExamState()==='fl' ? ['GEN','HPC','WDO','FUM','LNO','LIM'] : ['GEN','HPC','WDO','FUM']); }
+  function survPipKeys(){ var t=getExamTrack(); return t==='dnr' ? ['DNRREG','DNRPROC'] : t==='mosq' ? ['MOSBIO','LARV','ADULT','MOSLAW'] : t==='lno' ? ['LNO'] : (getExamState()==='fl' ? (t==='rt' ? ['GEN','HPC'] : ['GEN','HPC','WDO','FUM','LNO','LIM']) : ['GEN','HPC','WDO']); }
   function survPipLabel(key){ return key==='LIM'?'LTD' : key==='LNO'?'L&O' : key==='DNRREG'?'REGS' : key==='DNRPROC'?'PROC' : key==='MOSBIO'?'BIO' : key==='ADULT'?'ADULT' : key==='MOSLAW'?'LAW' : key; }
   var survAnswered=false;
 
@@ -18173,7 +18196,7 @@ function categoryTrend(key){
 
 function renderMasteryCards(){
   var track = getExamTrack();
-  var CAT_ORDER = track==='dnr' ? ['DNRREG','DNRPROC'] : track==='mosq' ? ['MOSBIO','LARV','ADULT','MOSLAW'] : (getExamState()==='fl' ? ['GEN','HPC','WDO','FUM','LNO','LIM'] : ['GEN','HPC','WDO','FUM']);
+  var CAT_ORDER = track==='dnr' ? ['DNRREG','DNRPROC'] : track==='mosq' ? ['MOSBIO','LARV','ADULT','MOSLAW'] : (getExamState()==='fl' ? (track==='rt' ? ['GEN','HPC'] : ['GEN','HPC','WDO','FUM','LNO','LIM']) : ['GEN','HPC','WDO']);
   var COL = track==='dnr' ? {
     DNRREG:'#5ec98c', DNRPROC:'#e0b23e'
   } : track==='mosq' ? {
