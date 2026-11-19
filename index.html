@@ -1855,7 +1855,6 @@ body.state-ga.track-lno .cat-tile.track-lno-only{ display:block !important; }
 body.state-fl.track-co .chip.track-lno-only, body.state-fl.track-co .sr-chip.track-lno-only{ display:inline-block !important; }
 body.state-ga.track-lno .chip.track-lno-only, body.state-ga.track-lno .sr-chip.track-lno-only{ display:inline-block !important; }
 .cat-tile.track-lim-only{ display:none !important; }
-body.state-fl.track-co .cat-tile.track-lim-only, body.state-fl.track-rt .cat-tile.track-lim-only{ display:block !important; }
 .chip.track-lim-only, .sr-chip.track-lim-only{ display:none !important; }
 body.state-fl.track-co .chip.track-lim-only, body.state-fl.track-co .sr-chip.track-lim-only{ display:inline-block !important; }
 body:not(.state-fl) .fc-lim-section{ display:none !important; }
@@ -1870,9 +1869,10 @@ body.state-fl.track-rt .wdo-entry{ display:none !important; }
    win. The L&O tile is NOT hidden — L&O is a CO category and its tile
    belongs in the grid. */
 body.state-fl.track-co .cat-tile.track-lim-only, body.state-fl.track-rt .cat-tile.track-lim-only{ display:none !important; }
-/* L&O flashcard section: Florida shows it on CO / ID Cardholder (L&O is a
-   CO category there); Georgia shows it ONLY on the L&O track (Category 24
-   is a separate exam there). DNR / Mosquito never see it. */
+/* L&O flashcard section: Florida shows it on CO only (L&O is a CO
+   category there; the ID Cardholder track is GK/HPC only); Georgia shows
+   it ONLY on the L&O track (Category 24 is a separate exam there).
+   DNR / Mosquito never see it. */
 body.track-dnr .fc-lno-section, body.track-mosq .fc-lno-section,
 body.state-ga.track-co .fc-lno-section, body.state-ga.track-rt .fc-lno-section, body.state-fl.track-rt .fc-lno-section{ display:none !important; }
 /* DNR Trapping is a wholly separate credential (GA DNR Law Enforcement, not
@@ -1882,7 +1882,7 @@ body.state-ga.track-co .fc-lno-section, body.state-ga.track-rt .fc-lno-section, 
    The Mosquito track (GDA Category 41) is likewise separate from SPCC. */
 body.track-dnr .track-spcc-only, body.track-mosq .track-spcc-only, body.track-lno .track-spcc-only{ display:none !important; }
 .track-dnr-only{ display:none !important; }
-body.track-dnr .track-dnr-only{ display:block !important; }
+body.state-ga.track-dnr .track-dnr-only{ display:block !important; }
 .track-mosq-only{ display:none !important; }
 body.track-mosq .track-mosq-only{ display:block !important; }
 /* General Knowledge IS part of the Registered Employee exam (the official Employee
@@ -5000,6 +5000,8 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <button type="button" role="button" tabindex="0" class="chip track-fum-only" style="--cc:var(--c-fum)" onclick="filterFC('Fumigation')">FUM</button>
         <button type="button" role="button" tabindex="0" class="chip track-lno-only" style="--cc:var(--c-lno)" onclick="filterFC('Lawn & Ornamental')">L&amp;O</button>
         <button type="button" role="button" tabindex="0" class="chip track-lim-only" style="--cc:var(--c-lim)" onclick="filterFC('Limited Certification')">LTD</button>
+        <button type="button" role="button" tabindex="0" class="chip track-dnr-only" onclick="filterFC('Regulations & Permits')">REGS</button>
+        <button type="button" role="button" tabindex="0" class="chip track-dnr-only" onclick="filterFC('Procedures & Damage ID')">PROC</button>
         <button type="button" role="button" tabindex="0" class="chip track-mosq-only" style="--cc:#7fe0a8" onclick="filterFC('Mosquito Biology')">BIO</button>
         <button type="button" role="button" tabindex="0" class="chip track-mosq-only" style="--cc:#5eb8e8" onclick="filterFC('Larvicides')">LARV</button>
         <button type="button" role="button" tabindex="0" class="chip track-mosq-only" style="--cc:#e88f5e" onclick="filterFC('Adulticides & ULV')">ADULT</button>
@@ -9336,8 +9338,8 @@ function trackAllowsCategory(cat){
   // Georgia L&O (Category 24 Ornamental & Turf) is a SEPARATE applicator
   // exam, not part of the SPCC operator/employee tests (Josh, 2026-11-13):
   // in GA it belongs only to its own 'lno' track. In Florida it IS a
-  // Certified Operator category, so FL co/rt keep it (the static map above
-  // lists it for co/rt, which the FL branch relies on).
+  // Certified Operator category, so FL co keeps it (FL rt never reaches
+  // this branch — the cardholder early return above gives it GK/HPC only).
   if(cat==='Lawn & Ornamental'){
     if(getExamTrack()==='lno') return true;
     return getExamState()==='fl' && (getExamTrack()==='co' || getExamTrack()==='rt');
@@ -9401,12 +9403,19 @@ function applyExamState(){
     ? 'FL Chapter 482 & Rule 5E-14 \u2014 licensing, WDO reports & fees'
     : 'GA rules, licensing, insurance & mock pesticide labels';
   var track = getExamTrack();
+  var btnRTLabel = document.getElementById('track-btn-rt');
+  if(btnRTLabel) btnRTLabel.textContent = (st==='fl' && track==='rt') ? 'ID Cardholder' : 'Reg. Employee';
   if(st==='fl' && track==='rt'){
     var heroName = document.getElementById('hero-track-name');
     if(heroName) heroName.textContent = 'ID Cardholder';
     document.title = 'PestPass \u2014 Florida ID Cardholder Prep';
   } else if(st==='fl' && track==='co'){
     document.title = 'PestPass \u2014 Florida Certified Operator Prep';
+  }
+  if(st==='fl' && track==='mosq'){
+    var heroEye = document.getElementById('hero-eye');
+    if(heroEye) heroEye.textContent = 'PHPC \u00b7 Mosquito Control';
+    document.title = 'PestPass \u2014 Florida PHPC Mosquito Control Prep';
   }
 }
 function categoryIsReachable(cat){
@@ -13094,7 +13103,7 @@ function sgSearch(query){
   var lowerTerms = terms.map(function(t){ return t.toLowerCase(); });
   var results = [];
   var track = getExamTrack();
-  var searchableBooks = STUDY_GUIDE_BOOKS.filter(function(b){ return b.tracks.indexOf(track) !== -1 && (!b.states || b.states.indexOf(getExamState()) !== -1); });
+  var searchableBooks = STUDY_GUIDE_BOOKS.filter(function(b){ return sgBookAllowed(b); });
 
   searchableBooks.forEach(function(book){
     sgTopicsForTrack(book).forEach(function(topic, ti){
@@ -13143,6 +13152,15 @@ function sgJumpToTopic(bookId, topicIndex){
 // (laws, label reading, emergencies/spills, storage/mixing/applying/disposal,
 // PPE & safety, drift/runoff/groundwater, IPM) plus core pest ID. The
 // Certified Operator track always sees the full library.
+// Book visibility: tracks + states, plus the one combination the book data
+// cannot express — the FL ID Cardholder track is GK/HPC only (Audit #8 J-4),
+// so the WDO field guide and the FL L&O book stay off its shelf and search.
+function sgBookAllowed(b){
+  if(b.tracks.indexOf(getExamTrack()) === -1) return false;
+  if(b.states && b.states.indexOf(getExamState()) === -1) return false;
+  if(getExamState()==='fl' && getExamTrack()==='rt' && (b.id==='flturf' || b.id==='wdofield')) return false;
+  return true;
+}
 function sgTopicsForTrack(book){
   var topics = book.topics.filter(function(t){ return !t.states || t.states.indexOf(getExamState()) !== -1; });
   if(getExamTrack()==='rt') return topics.filter(function(t){ return t.rt; });
@@ -13157,7 +13175,7 @@ function renderStudyGuide(){
   var searchInput = document.getElementById('sg-search-input');
   var emptyState = document.getElementById('sg-empty-state');
   var track = getExamTrack();
-  var booksForTrack = STUDY_GUIDE_BOOKS.filter(function(b){ return b.tracks.indexOf(track) !== -1 && (!b.states || b.states.indexOf(getExamState()) !== -1) && sgTopicsForTrack(b).length > 0; });
+  var booksForTrack = STUDY_GUIDE_BOOKS.filter(function(b){ return sgBookAllowed(b) && sgTopicsForTrack(b).length > 0; });
   var noBooks = booksForTrack.length === 0;
   if(emptyState) emptyState.style.display = noBooks ? 'block' : 'none';
   if(searchInput) searchInput.closest('div').style.display = noBooks ? 'none' : '';
@@ -15028,7 +15046,7 @@ function startMissedDrill(){
   if(typeof _pausedExamSeconds!=='undefined') _pausedExamSeconds=null;
   var qById = {};
   QS.forEach(function(q){ if(q && q.id) qById[q.id]=q; });
-  var pool = ids.map(function(id){ return qById[id]; }).filter(Boolean);
+  var pool = ids.map(function(id){ return qById[id]; }).filter(function(q){ return q && stateAllowsQ(q) && categoryIsReachable(q.cat); });
   if(!pool.length) return;
   isDrillMode = true;
   window._quizIsTimed = false;
@@ -15082,7 +15100,10 @@ function renderActivity(){
 function renderMissedSection(){
   var btn = document.getElementById('missed-drill-btn');
   if(!btn) return;
-  var n = (typeof loadMissed==='function') ? Object.keys(loadMissed()).length : 0;
+  var missedDb = (typeof loadMissed==='function') ? loadMissed() : {};
+  var missedById = {};
+  QS.forEach(function(q){ if(q && q.id) missedById[q.id]=q; });
+  var n = Object.keys(missedDb).filter(function(id){ var q = missedById[id]; return q && stateAllowsQ(q) && categoryIsReachable(q.cat); }).length;
   var title = document.getElementById('missed-drill-title');
   var sub = document.getElementById('missed-drill-sub');
   if(n>0){
@@ -16535,6 +16556,7 @@ function resumeFlashcardPosition(act){
     // Find the matching block across all categories by title
     for(var key in FC_BLOCKS){
       var catData = FC_BLOCKS[key];
+      if(!categoryIsReachable(catData.cat)) continue;
       var catCards = FC.filter(function(c){ return c.cat === catData.cat && stateAllowsQ(c); });
       for(var bi=0; bi<catData.blocks.length; bi++){
         var block = catData.blocks[bi];
@@ -16581,10 +16603,13 @@ function resumeFlashcardPosition(act){
 function renderFCHome() {
   Object.keys(FC_BLOCKS).forEach(function(key) {
     var catData = FC_BLOCKS[key];
-    var catCards = FC.filter(function(c){ return c.cat === catData.cat && stateAllowsQ(c); });
     var container = document.getElementById('fc-blocks-' + key);
     if(!container) return;
     container.innerHTML = '';
+    // JS gate, not CSS alone (Audit #8 J-5): out-of-scope categories render
+    // no blocks at all for this state/track.
+    if(!categoryIsReachable(catData.cat)) return;
+    var catCards = FC.filter(function(c){ return c.cat === catData.cat && stateAllowsQ(c); });
 
     catData.blocks.forEach(function(block, bi) {
       var blockCards;
@@ -16629,8 +16654,8 @@ function renderFCHome() {
           centerContent +
         '</div>' +
         '<div class="fc-block-body">' +
-          '<div class="fc-block-title">' + block.title + '</div>' +
-          '<div class="fc-block-meta">' + block.sub + ' · ' + total + ' cards</div>' +
+          '<div class="fc-block-title">' + ((key==='GEN' && block.key==='law' && getExamState()==='fl') ? 'Florida Licensing & Law' : block.title) + '</div>' +
+          '<div class="fc-block-meta">' + ((key==='GEN' && block.key==='law' && getExamState()==='fl') ? 'FIFRA · FDACS · CEU' : block.sub) + ' · ' + total + ' cards</div>' +
         '</div>' +
         '<div class="fc-block-arrow">›</div>';
 
@@ -16659,7 +16684,7 @@ function renderFCHome() {
         var cr = document.getElementById('chip-row');
         if(cr) cr.style.display = 'none';
         var bl = document.getElementById('fc-block-label');
-        if(bl) bl.textContent = block.title;
+        if(bl) bl.textContent = (key==='GEN' && block.key==='law' && getExamState()==='fl') ? 'Florida Licensing & Law' : block.title;
       });
 
       container.appendChild(el);
@@ -17899,7 +17924,7 @@ function updateHomeCTA(){
     // First visit — push toward flashcards
     label.textContent = 'Get Started';
     title.textContent = 'Begin with Flashcards';
-    sub.textContent = 'Browse all ' + (TRACK_CATEGORIES[getExamTrack()] || TRACK_CATEGORIES.co).length + ' categories';
+    sub.textContent = 'Browse all ' + (trackCategoryKeys().length + Object.keys(BONUS_CATEGORIES).filter(function(c){ return categoryIsReachable(c); }).length) + ' categories';
     if(icon){ icon.className='home-cta-icon cta-flash';
       icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="18" rx="2"/><path d="M8 2h12a2 2 0 0 1 2 2v14"/></svg>'; }
     return;
@@ -18196,7 +18221,7 @@ function categoryTrend(key){
 
 function renderMasteryCards(){
   var track = getExamTrack();
-  var CAT_ORDER = track==='dnr' ? ['DNRREG','DNRPROC'] : track==='mosq' ? ['MOSBIO','LARV','ADULT','MOSLAW'] : (getExamState()==='fl' ? (track==='rt' ? ['GEN','HPC'] : ['GEN','HPC','WDO','FUM','LNO','LIM']) : ['GEN','HPC','WDO']);
+  var CAT_ORDER = track==='dnr' ? ['DNRREG','DNRPROC'] : track==='mosq' ? ['MOSBIO','LARV','ADULT','MOSLAW'] : track==='lno' ? ['LNO'] : (getExamState()==='fl' ? (track==='rt' ? ['GEN','HPC'] : ['GEN','HPC','WDO','FUM','LNO','LIM']) : ['GEN','HPC','WDO']);
   var COL = track==='dnr' ? {
     DNRREG:'#5ec98c', DNRPROC:'#e0b23e'
   } : track==='mosq' ? {
