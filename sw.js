@@ -1,3 +1,35 @@
+// ── Origin migration handover (added 2026-11-20) ─────────────────────
+// This file is served from two origins during the hosting move. On the
+// retired origin (pest-pass.vercel.app) it is a one-way handover: an
+// installed copy there never sees the domain redirect — its update check
+// follows the redirect off-origin and fails, and the old worker keeps
+// serving its stored copy without touching the network. So on that
+// origin this worker activates immediately, wipes the stored copy, and
+// forwards every page load to the new home. On pestpass.app none of
+// this runs and the worker behaves exactly as before.
+const MIGRATING = self.location.hostname === 'pest-pass.vercel.app';
+if (MIGRATING) {
+  self.addEventListener('install', () => self.skipWaiting());
+  self.addEventListener('activate', e => {
+    e.waitUntil(
+      caches.keys()
+        .then(ks => Promise.all(ks.map(k => caches.delete(k))))
+        .then(() => self.clients.claim())
+        .then(() => self.clients.matchAll({ type: 'window' }))
+        .then(cs => Promise.all(cs.map(c => {
+          try { return c.navigate('https://pestpass.app/').catch(() => {}); } catch (err) { return null; }
+        })))
+        .catch(() => {})
+    );
+  });
+  self.addEventListener('fetch', e => {
+    if (e.request.mode === 'navigate') {
+      const u = new URL(e.request.url);
+      e.respondWith(Response.redirect('https://pestpass.app' + u.pathname + u.search, 302));
+    }
+  });
+}
+
 // PestPass service worker — must be served as its own file, same directory as index.html.
 // (Service worker registration cannot use a blob: URL — that's disallowed by spec in
 // every browser, not just Safari, so this needs to be a real, network-fetchable file.)
