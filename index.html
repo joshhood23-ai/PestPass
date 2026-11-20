@@ -3804,7 +3804,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     </div>
     <div class="htext">
       <div class="htitle">Pest<span class="htitle-accent">Pass</span></div>
-      <div class="hsub" id="header-sub">Certified Operator Prep</div>
+      <div class="hsub" id="header-sub">Exam Prep</div>
     </div>
     <div class="top-actions">
       <button class="icon-btn" id="hamburger-btn" onclick="openMenu()" title="Settings" aria-label="Open settings menu">
@@ -9708,14 +9708,14 @@ function applyExamState(){
   if(st==='fl' && track==='rt'){
     var heroName = document.getElementById('hero-track-name');
     if(heroName) heroName.textContent = 'ID Cardholder';
-    document.title = 'PestPass \u2014 Florida ID Cardholder Prep';
+    document.title = 'PestPass \u2014 Pest Control Exam Prep';
   } else if(st==='fl' && track==='co'){
-    document.title = 'PestPass \u2014 Florida Certified Operator Prep';
+    document.title = 'PestPass \u2014 Pest Control Exam Prep';
   }
   if(st==='fl' && track==='mosq'){
     var heroEye = document.getElementById('hero-eye');
     if(heroEye) heroEye.textContent = 'PHPC \u00b7 Mosquito Control';
-    document.title = 'PestPass \u2014 Florida PHPC Mosquito Control Prep';
+    document.title = 'PestPass \u2014 Pest Control Exam Prep';
   }
   var coreName = document.getElementById('core-tile-name');
   if(coreName) coreName.textContent = st==='fl' ? 'Core (General Standards)' : 'General Standards';
@@ -9789,7 +9789,7 @@ function applyExamTrack(){
   if(heroEye) heroEye.textContent = track==='dnr' ? 'DNR Nuisance Wildlife Control' : track==='mosq' ? 'Category 41 Mosquito Control' : track==='lno' ? 'Category 24 Ornamental & Turf' : 'Pest Control Exam Prep';
   var heroName = document.getElementById('hero-track-name');
   if(heroName) heroName.textContent = track==='rt' ? 'Registered Employee' : track==='dnr' ? 'Nuisance Wildlife Control' : track==='mosq' ? 'Mosquito Control' : track==='lno' ? 'Ornamental & Turf' : 'Certified Operator';
-  document.title = track==='rt' ? 'PestPass \u2014 Registered Employee Prep' : track==='dnr' ? 'PestPass \u2014 DNR Trapping Prep' : track==='mosq' ? 'PestPass \u2014 Category 41 Mosquito Control Prep' : track==='lno' ? 'PestPass \u2014 Ornamental & Turf Prep' : 'PestPass \u2014 Certified Operator Prep';
+  document.title = 'PestPass \u2014 Pest Control Exam Prep';
   // bestScores is a shared module-level variable read by many functions
   // without re-fetching it themselves — reload it here, right on switch,
   // so every consumer sees the new track's data immediately rather than
