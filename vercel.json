@@ -1,0 +1,1 @@
+{"redirects": [{"source": "/(.*)", "destination": "https://pestpass.app/$1", "permanent": true}]}
