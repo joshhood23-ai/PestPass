@@ -175,7 +175,7 @@ function prettyDay(iso) {
 function chartSegH(v, max) { return v <= 0 ? 0 : Math.max(4, Math.round((v / max) * 100)); }
 
 function yaxHtml(max, mode) {
-  const colbarH = mode === 'o' ? 156 : 220;
+  const colbarH = mode === 'o' ? 144 : 208;
   const gl = [0.25, 0.5, 0.75].map(f => '<div class="gl" style="bottom:' + Math.round(f * colbarH) + 'px"></div>').join('');
   const mid = Math.round(max / 2);
   return { gl, yax: '<div class="yax"><div class="yax-sp"></div><div class="yax-labs">' +
@@ -187,20 +187,39 @@ function yaxHtml(max, mode) {
 function bar30Html(daysDesc, mode) {
   const rows = daysDesc.slice().reverse(); // oldest first, today last
   const max = Math.max(1, ...rows.map(r => (mode === 'u' ? Math.max(r.newUsers, r.returningUsers) : r.opens)));
+  let prevTop = false;
   const cols = rows.map((r, i) => {
     const isToday = i === rows.length - 1;
     const title = prettyDay(r.day) + ' — ' + (mode === 'u'
       ? r.uniques + ' users (' + r.newUsers + ' new, ' + r.returningUsers + ' returning)'
       : r.opens + ' opens');
     if (mode === 'u') {
-      const one = (v, cls) => {
-        const val = v > 0 && (isToday || v === max) ? '<div class="bval">' + v + '</div>' : '<div class="bval"></div>';
-        return '<div class="col">' + val + '<div class="colbar"><div class="' + cls + '" style="height:' + chartSegH(v, max) + '%"></div></div></div>';
-      };
-      return '<div class="colpair" title="' + title + '">' + one(r.newUsers, 'segN') + one(r.returningUsers, 'segR') + '</div>';
+      // Value labels sit in two lanes so neighbouring days never print on
+      // the same line: biggest day on the top lane, today on the bottom
+      // lane as one combined label over the pair (coloured like the bars).
+      let topLab = '';
+      if (!isToday && !prevTop) {
+        if (r.newUsers > 0 && r.newUsers === max) topLab = '<span class="n">' + r.newUsers + '</span>';
+        else if (r.returningUsers > 0 && r.returningUsers === max) topLab = '<span class="r">' + r.returningUsers + '</span>';
+      }
+      let botLab = '';
+      if (isToday) {
+        const parts = [];
+        if (r.newUsers > 0) parts.push('<span class="n">' + r.newUsers + '</span>');
+        if (r.returningUsers > 0) parts.push('<span class="r">' + r.returningUsers + '</span>');
+        botLab = parts.join(' ');
+      }
+      prevTop = !!topLab;
+      const lab = '<div class="bvalp">' + (topLab ? '<span class="bl lt">' + topLab + '</span>' : '') + (botLab ? '<span class="bl lb">' + botLab + '</span>' : '') + '</div>';
+      const seg = (v, cls) => '<div class="col"><div class="colbar"><div class="' + cls + '" style="height:' + chartSegH(v, max) + '%"></div></div></div>';
+      return '<div class="colpair" title="' + title + '">' + lab + '<div class="pairrow">' + seg(r.newUsers, 'segN') + seg(r.returningUsers, 'segR') + '</div></div>';
     }
     const total = r.opens;
-    const val = total > 0 && (isToday || total === max) ? '<div class="bval">' + total + '</div>' : '<div class="bval"></div>';
+    let topLab = '';
+    if (!isToday && total > 0 && total === max && !prevTop) topLab = total;
+    const botLab = isToday && total > 0 ? total : '';
+    prevTop = !!topLab;
+    const val = '<div class="bval"><div class="bl">' + topLab + '</div><div class="bl">' + botLab + '</div></div>';
     return '<div class="col" title="' + title + '">' + val + '<div class="colbar"><div class="segO" style="height:' + chartSegH(r.opens, max) + '%"></div></div></div>';
   }).join('');
   const step = rows.length <= 10 ? 1 : rows.length <= 20 ? 2 : 5;
@@ -301,12 +320,17 @@ function renderHtml(data) {
     '.chead{display:flex;gap:14px;align-items:center;margin-bottom:8px;font-size:12px;color:var(--tx2)}' +
     '.chead .lg{display:flex;align-items:center;gap:5px}.chead .sw{display:inline-block;width:10px;height:10px;border-radius:3px}' +
     '.chead .lgdim{margin-left:auto;font-size:11px}' +
-    '.colpair{flex:1;display:flex;gap:3px;min-width:0}#chart-users .cols{gap:7px}' +
-    '.chartflex{display:flex;gap:6px}.yax{width:24px;display:flex;flex-direction:column;flex:none}.yax-sp{height:20px}.yax-labs{flex:1;position:relative}.yt{position:absolute;right:0;font-size:10.5px;color:var(--tx2);font-weight:700}.yt.ym{transform:translateY(-50%)}.yt.yb{transform:translateY(50%)}.plot{flex:1;min-width:0}.gl{position:absolute;left:0;right:0;border-top:1px dashed rgba(127,140,170,.28);pointer-events:none}' +
+    '.colpair{flex:1;display:flex;flex-direction:column;min-width:0}#chart-users .cols{gap:7px}' +
+    '.chartflex{display:flex;gap:6px}.yax{width:24px;display:flex;flex-direction:column;flex:none}.yax-sp{height:32px}.yax-labs{flex:1;position:relative}.yt{position:absolute;right:0;font-size:10.5px;color:var(--tx2);font-weight:700}.yt.ym{transform:translateY(-50%)}.yt.yb{transform:translateY(50%)}.plot{flex:1;min-width:0}.gl{position:absolute;left:0;right:0;border-top:1px dashed rgba(127,140,170,.28);pointer-events:none}' +
     '.cols{position:relative;display:flex;gap:1px;height:240px;border-bottom:1px solid var(--line)}' +
     '.cols.short{height:176px}' +
     '.col{flex:1;display:flex;flex-direction:column;min-width:4px}' +
-    '.bval{height:20px;text-align:center;font-size:13px;font-weight:800;line-height:20px}' +
+    '.bval{height:32px;display:flex;flex-direction:column}' +
+    '.bl{height:16px;line-height:16px;text-align:center;font-size:12.5px;font-weight:800;white-space:nowrap}' +
+    '.bvalp{height:32px;position:relative;flex:none}' +
+    '.bvalp .bl{position:absolute;left:50%;transform:translateX(-50%)}' +
+    '.bvalp .lt{top:0}.bvalp .lb{bottom:0}.bvalp .n{color:var(--gn)}.bvalp .r{color:var(--ac)}' +
+    '.pairrow{flex:1;display:flex;gap:3px;min-width:0}' +
     '.colbar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;border-radius:3px 3px 0 0;overflow:hidden}' +
     '.segN{background:var(--gn)}.segR{background:var(--ac);opacity:.55}.segO{background:var(--ac)}' +
     '.xrow{display:flex;gap:1px;margin-top:4px}.xrow span{flex:1;text-align:center;font-size:11.5px;color:var(--tx2);min-width:3px}' +
@@ -351,12 +375,12 @@ function renderHtml(data) {
     'function pd(iso) { return new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }); }' +
     'function kv(k, v) { return "<div class=\\"kv\\"><span class=\\"k\\">" + k + "</span><span class=\\"v\\">" + v + "</span></div>"; }' +
     'function sh(v, mx) { return v <= 0 ? 0 : Math.max(4, Math.round(v / mx * 100)); }' +
-    'function yaxh(mx, mode) { var colbarH = mode === "o" ? 156 : 220; var gl = ""; [0.25, 0.5, 0.75].forEach(function (f) { gl += "<div class=\\"gl\\" style=\\"bottom:" + Math.round(f * colbarH) + "px\\"></div>"; }); var yax = "<div class=\\"yax\\"><div class=\\"yax-sp\\"></div><div class=\\"yax-labs\\"><span class=\\"yt\\" style=\\"top:0\\">" + mx + "</span><span class=\\"yt ym\\" style=\\"top:50%\\">" + Math.round(mx / 2) + "</span><span class=\\"yt yb\\" style=\\"bottom:0\\">0</span></div></div>"; return { gl: gl, yax: yax }; }' +
+    'function yaxh(mx, mode) { var colbarH = mode === "o" ? 144 : 208; var gl = ""; [0.25, 0.5, 0.75].forEach(function (f) { gl += "<div class=\\"gl\\" style=\\"bottom:" + Math.round(f * colbarH) + "px\\"></div>"; }); var yax = "<div class=\\"yax\\"><div class=\\"yax-sp\\"></div><div class=\\"yax-labs\\"><span class=\\"yt\\" style=\\"top:0\\">" + mx + "</span><span class=\\"yt ym\\" style=\\"top:50%\\">" + Math.round(mx / 2) + "</span><span class=\\"yt yb\\" style=\\"bottom:0\\">0</span></div></div>"; return { gl: gl, yax: yax }; }' +
     'function b30(days, mode) {' +
     ' var rows = days.slice().reverse(); var mx = 1; rows.forEach(function (r) { var v = mode === "u" ? Math.max(r.newUsers, r.returningUsers) : r.opens; if (v > mx) mx = v; });' +
-    ' var cols = rows.map(function (r, i) { var isT = i === rows.length - 1; var title = pd(r.day) + " — " + (mode === "u" ? r.uniques + " users (" + r.newUsers + " new, " + r.returningUsers + " returning)" : r.opens + " opens");' +
-    '  if (mode === "u") { var one = function (v, cls) { var val = v > 0 && (isT || v === mx) ? "<div class=\\"bval\\">" + v + "</div>" : "<div class=\\"bval\\"></div>"; return "<div class=\\"col\\">" + val + "<div class=\\"colbar\\"><div class=\\"" + cls + "\\" style=\\"height:" + sh(v, mx) + "%\\"></div></div></div>"; }; return "<div class=\\"colpair\\" title=\\"" + title + "\\">" + one(r.newUsers, "segN") + one(r.returningUsers, "segR") + "</div>"; }' +
-    '  var total = r.opens; var val = total > 0 && (isT || total === mx) ? "<div class=\\"bval\\">" + total + "</div>" : "<div class=\\"bval\\"></div>";' +
+    ' var prevTop = false; var cols = rows.map(function (r, i) { var isT = i === rows.length - 1; var title = pd(r.day) + " — " + (mode === "u" ? r.uniques + " users (" + r.newUsers + " new, " + r.returningUsers + " returning)" : r.opens + " opens");' +
+    '  if (mode === "u") { var topLab = ""; if (!isT && !prevTop) { if (r.newUsers > 0 && r.newUsers === mx) topLab = "<span class=\\"n\\">" + r.newUsers + "</span>"; else if (r.returningUsers > 0 && r.returningUsers === mx) topLab = "<span class=\\"r\\">" + r.returningUsers + "</span>"; } var botLab = ""; if (isT) { var parts = []; if (r.newUsers > 0) parts.push("<span class=\\"n\\">" + r.newUsers + "</span>"); if (r.returningUsers > 0) parts.push("<span class=\\"r\\">" + r.returningUsers + "</span>"); botLab = parts.join(" "); } prevTop = !!topLab; var lab = "<div class=\\"bvalp\\">" + (topLab ? "<span class=\\"bl lt\\">" + topLab + "</span>" : "") + (botLab ? "<span class=\\"bl lb\\">" + botLab + "</span>" : "") + "</div>"; var seg = function (v, cls) { return "<div class=\\"col\\"><div class=\\"colbar\\"><div class=\\"" + cls + "\\" style=\\"height:" + sh(v, mx) + "%\\"></div></div></div>"; }; return "<div class=\\"colpair\\" title=\\"" + title + "\\">" + lab + "<div class=\\"pairrow\\">" + seg(r.newUsers, "segN") + seg(r.returningUsers, "segR") + "</div></div>"; }' +
+    '  var total = r.opens; var topLab = ""; if (!isT && total > 0 && total === mx && !prevTop) topLab = total; var botLab = isT && total > 0 ? total : ""; prevTop = !!topLab; var val = "<div class=\\"bval\\"><div class=\\"bl\\">" + topLab + "</div><div class=\\"bl\\">" + botLab + "</div></div>";' +
     '  return "<div class=\\"col\\" title=\\"" + title + "\\">" + val + "<div class=\\"colbar\\"><div class=\\"segO\\" style=\\"height:" + sh(r.opens, mx) + "%\\"></div></div></div>"; }).join("");' +
     ' var step = rows.length <= 10 ? 1 : rows.length <= 20 ? 2 : 5; var labels = rows.map(function (r, i) { return "<span>" + ((i % step === 0 || i === rows.length - 1) ? String(parseInt(r.day.slice(8, 10), 10)) : "") + "</span>"; }).join("");' +
     ' var ax = yaxh(mx, mode); return "<div class=\\"chartflex\\">" + ax.yax + "<div class=\\"plot\\"><div class=\\"cols" + (mode === "o" ? " short" : "") + "\\">" + ax.gl + cols + "</div><div class=\\"xrow\\">" + labels + "</div></div></div>"; }' +
