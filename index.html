@@ -5671,7 +5671,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
   </div>
   <div style="padding:20px 18px;text-align:center;">
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;" data-pp-ver>PestPass · v4.17</div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">400 questions · 576 flashcards · offline</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">3,328 questions · 1,538 flashcards · offline</div>
   </div>
   </div>
 <!-- ── FIRST-RUN TUTORIAL ── -->
@@ -19385,7 +19385,7 @@ window.addEventListener('load', function(){
   // easy for a hardcoded count to silently go stale as content grows.
   var footerStats = document.getElementById('menu-footer-stats');
   if(footerStats && typeof QS !== 'undefined' && typeof FC !== 'undefined'){
-    footerStats.textContent = QS.length + ' questions · ' + FC.length + ' flashcards · offline';
+    footerStats.textContent = QS.filter(Boolean).length + ' questions · ' + FC.filter(Boolean).length + ' flashcards · offline';
   }
   maybeShowTutorial();
 });
