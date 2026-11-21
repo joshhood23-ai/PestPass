@@ -1,0 +1,17 @@
+{
+  "name": "PestPass — Pest Control Exam Prep",
+  "short_name": "PestPass",
+  "description": "Pest Control Exam Prep — Registered Technician and Certified Operator tracks, boss battles, flashcards, spaced repetition",
+  "start_url": "https://pestpass.app/",
+  "id": "https://pestpass.app/",
+  "scope": "https://pestpass.app/",
+  "display": "standalone",
+  "background_color": "#072a34",
+  "theme_color": "#f4f5f9",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
