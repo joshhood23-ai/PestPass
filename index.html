@@ -15826,6 +15826,13 @@ function dumpStratifiedPick(perCat, total){
 function dumpMockSpec(category){
   var contribs = mockDumpContribs();
   if(!contribs.length) return null;
+  // On the GA Certified Operator track the Mock Exam IS the exam: 100
+  // questions across General Knowledge, HPC and WDO (Josh, 2026-11-25 —
+  // he found the 50-question single-category mock on the General
+  // Knowledge picker and ruled 'the test is 100'). Every Mock Exam entry
+  // on this track runs the full exam, whichever picker screen it is
+  // launched from; single-category practice lives in the untimed sizes.
+  if(getExamState() === 'ga' && getExamTrack() === 'co') category = 'all';
   // Converted pool for one dump category, across every contributing set
   // that serves it (each set converts within itself — no borrowing).
   function poolFor(dc){
