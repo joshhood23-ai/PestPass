@@ -1978,6 +1978,7 @@ body.state-fl.track-rt .fc-lim-section{ display:none !important; }
 /* WDO entry points (tile, filter chips, flashcard-home section) hide on
    the Florida ID Cardholder track — WDO is operator-level there. */
 body.state-fl.track-rt .wdo-entry{ display:none !important; }
+body.track-rt .rt-drill-tile{ display:none !important; }
 /* The Limited Certification TILE is out of the Categories grid
    (2026-11-13, Josh's rule) — its entry point is the top track-row button
    (#track-btn-lim above), because it has its own test. These selectors
@@ -3968,7 +3969,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
           <div class="ct-bar-wrap"><div class="ct-bar-fill" id="bar-GEN" style="background:#4ec9e1;"></div></div>
           <div class="ct-stats"><span class="ct-cov" id="cov-GEN">0% answered</span><span class="ct-best" id="cbest-GEN">Best —</span></div>
         </button>
-        <button type="button" role="button" tabindex="0" class="cat-tile track-spcc-only" style="--tc:#a98eff;" onclick="openCatHub('HPC')">
+        <button type="button" role="button" tabindex="0" class="cat-tile track-spcc-only rt-drill-tile" style="--tc:#a98eff;" onclick="openCatHub('HPC')">
           <div class="ct-top">
             <div class="ct-icon" style="background:rgba(169,142,255,0.12);color:#a98eff;">
               <svg viewBox="0 0 24 24"><path d="M12 2c-1 2-4 3-4 7 0 2.5 1.5 4.5 4 5 2.5-.5 4-2.5 4-5 0-4-3-5-4-7z"/><path d="M8 9H5l-2 6h18l-2-6h-3"/><path d="M5 15v5h14v-5"/></svg>
@@ -3981,7 +3982,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
           <div class="ct-bar-wrap"><div class="ct-bar-fill" id="bar-HPC" style="background:#a98eff;"></div></div>
           <div class="ct-stats"><span class="ct-cov" id="cov-HPC">0% answered</span><span class="ct-best" id="cbest-HPC">Best —</span></div>
         </button>
-        <button type="button" role="button" tabindex="0" class="cat-tile track-spcc-only wdo-entry" style="--tc:#f5a040;" onclick="openCatHub('WDO')">
+        <button type="button" role="button" tabindex="0" class="cat-tile track-spcc-only wdo-entry rt-drill-tile" style="--tc:#f5a040;" onclick="openCatHub('WDO')">
           <div class="ct-top">
             <div class="ct-icon" style="background:rgba(245,160,64,0.12);color:#f5a040;">
               <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
@@ -4368,6 +4369,30 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
           <div class="cathub-action-body">
             <div class="cathub-action-title" id="garegs-title">Regs &amp; Label Reading</div>
             <div class="cathub-action-sub" id="garegs-sub">GA rules, licensing, insurance & mock pesticide labels</div>
+          </div>
+          <div class="cathub-action-arrow">›</div>
+        </button>
+        <button type="button" role="button" tabindex="0" class="cathub-action" id="cathub-btn-hpcdrill"
+             style="display:none;width:100%;border-color:rgba(169,142,255,0.25);background:rgba(169,142,255,0.05);animation-delay:.52s;"
+             onclick="cathubGoHPCDrill()">
+          <div class="cathub-action-icon" style="background:rgba(169,142,255,0.12);color:var(--c-hpc);">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div class="cathub-action-body">
+            <div class="cathub-action-title">HPC Drill</div>
+            <div class="cathub-action-sub" id="hpcdrill-sub">Household pest control questions</div>
+          </div>
+          <div class="cathub-action-arrow">›</div>
+        </button>
+        <button type="button" role="button" tabindex="0" class="cathub-action" id="cathub-btn-wdodrill"
+             style="display:none;width:100%;border-color:rgba(245,160,64,0.25);background:rgba(245,160,64,0.05);animation-delay:.54s;"
+             onclick="cathubGoWDODrill()">
+          <div class="cathub-action-icon" style="background:rgba(245,160,64,0.12);color:var(--c-wdo);">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div class="cathub-action-body">
+            <div class="cathub-action-title">WDO Drill</div>
+            <div class="cathub-action-sub" id="wdodrill-sub">Wood-destroying organism questions</div>
           </div>
           <div class="cathub-action-arrow">›</div>
         </button>
@@ -10641,6 +10666,25 @@ function openCatHub(cat){
   var spccTrack = getExamTrack()==='co' || getExamTrack()==='rt';
   if(garegsBtn) garegsBtn.style.display = spccTrack ? 'flex' : 'none';
 
+  // HPC / WDO Drills — RT track only, inside the General Knowledge hub.
+  // The Registered Employee / ID Cardholder credential has ONE test
+  // (General Knowledge); HPC and WDO are topic drills inside it, not
+  // category tiles (Josh's formula, 2026-11-25: one tile per real test).
+  // CO keeps its tiles — GA CO is three separate category exams and FL
+  // CO is a separate exam per category (Rule 5E-14.123(1)).
+  var hpcDrillBtn = document.getElementById('cathub-btn-hpcdrill');
+  if(hpcDrillBtn){
+    hpcDrillBtn.style.display = (cat === 'General Knowledge' && getExamTrack() === 'rt') ? 'flex' : 'none';
+    var hpcSub = document.getElementById('hpcdrill-sub');
+    if(hpcSub) hpcSub.textContent = 'Household pest control · ' + QS.filter(Boolean).filter(function(q){ return q.cat === 'HPC' && stateAllowsQ(q); }).length + ' questions';
+  }
+  var wdoDrillBtn = document.getElementById('cathub-btn-wdodrill');
+  if(wdoDrillBtn){
+    wdoDrillBtn.style.display = (cat === 'General Knowledge' && getExamTrack() === 'rt' && getExamState() === 'ga') ? 'flex' : 'none';
+    var wdoSub = document.getElementById('wdodrill-sub');
+    if(wdoSub) wdoSub.textContent = 'Wood-destroying organisms · ' + QS.filter(Boolean).filter(function(q){ return q.cat === 'WDO' && stateAllowsQ(q); }).length + ' questions';
+  }
+
   // Inspection Drill — WDO hub only (technician inspection scenarios)
   var inspectBtn = document.getElementById('cathub-btn-inspect');
   if(inspectBtn) inspectBtn.style.display = (cat === 'WDO' && getExamState()==='ga') ? 'flex' : 'none';
@@ -10706,7 +10750,7 @@ function openCatHub(cat){
   if(drillsSec && drillsList){
     // Note: do NOT clear with innerHTML — it destroys the buttons on second run.
     // appendChild moves them safely; already-placed buttons just re-order.
-    var drillIds = ['cathub-btn-visualid','cathub-btn-insectid','cathub-btn-garegs','cathub-btn-inspect','cathub-btn-mathdrill'];
+    var drillIds = ['cathub-btn-visualid','cathub-btn-insectid','cathub-btn-garegs','cathub-btn-hpcdrill','cathub-btn-wdodrill','cathub-btn-inspect','cathub-btn-mathdrill'];
     var anyDrill = false;
     drillIds.forEach(function(id){
       var b = document.getElementById(id);
@@ -10821,6 +10865,18 @@ function cathubGoGARegs(){
   if(!_catHubCurrent) return;
   window._bonusReturnHub = _catHubCurrent;
   startQuiz(getExamState()==='fl' ? 'Florida Regulations' : 'Georgia Regulations', 20);
+}
+
+function cathubGoHPCDrill(){
+  if(!_catHubCurrent) return;
+  window._bonusReturnHub = _catHubCurrent;
+  startQuiz('HPC', 20);
+}
+
+function cathubGoWDODrill(){
+  if(!_catHubCurrent) return;
+  window._bonusReturnHub = _catHubCurrent;
+  startQuiz('WDO', 20);
 }
 
 function cathubGoInspect(){
