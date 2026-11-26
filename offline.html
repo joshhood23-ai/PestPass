@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PestPass — connection required</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#0e1014;color:#f4f5f9;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;}
+  .card{max-width:340px;text-align:center;}
+  .logo{font-size:30px;font-weight:800;letter-spacing:.2px;}
+  .logo span{color:#4ec9e1;}
+  h1{font-size:19px;margin:18px 0 8px;}
+  p{font-size:14px;line-height:1.55;color:#b9bec9;margin:0 0 20px;}
+  button{background:#4ec9e1;color:#08222b;border:0;border-radius:10px;font-size:15px;font-weight:700;padding:12px 26px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+  <div class="logo">Pest<span>Pass</span></div>
+  <h1>You need an internet connection</h1>
+  <p>PestPass lives on your home screen, but it runs online. Check your connection and try again — your progress is saved on this device and will be right where you left it.</p>
+  <button onclick="location.reload()">Try again</button>
+</div></div>
+<script>
+  window.addEventListener('online', function(){ location.reload(); });
+</script>
+</body>
+</html>

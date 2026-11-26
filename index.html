@@ -3402,17 +3402,6 @@ if('serviceWorker' in navigator){
     function ppCheckUpdate(){ try{ reg.update().catch(function(){}); }catch(e){} }
     ppCheckUpdate();
     setInterval(ppCheckUpdate, 60*60*1000);
-    // Photos/boss art live in separate files (not inside index.html). Once the app has
-    // settled, ask the service worker to cache them all in the background so everything
-    // still works offline. Skipped on Data Saver; images are also cached as they're viewed.
-    function ppPrefetchImages(){
-      try{
-        var c = navigator.connection; if(c && c.saveData) return;
-        navigator.serviceWorker.ready.then(function(r){ if(r.active) r.active.postMessage({type:'PREFETCH_IMAGES'}); }).catch(function(){});
-      }catch(e){}
-    }
-    window.addEventListener('load', function(){ setTimeout(ppPrefetchImages, 6000); });
-    try{ navigator.serviceWorker.addEventListener('controllerchange', function(){ setTimeout(ppPrefetchImages, 2000); }); }catch(e){}
     // Also check when the app comes back to the foreground — the PWA often
     // stays alive in the background for days, so launch + hourly can miss
     // the moment the user actually returns.
@@ -3438,8 +3427,43 @@ if('serviceWorker' in navigator){
         ppHadControllerOnLoad = true;
       });
     }catch(e){}
-  }).catch(function(){ /* offline caching unavailable; app still works online */ });
+  }).catch(function(){ /* service worker unavailable; the app still works online in this tab */ });
 }
+
+// ── ONLINE-ONLY GATE (2026-11-25) ──
+// PestPass is online-only by design: the service worker never caches the
+// app, so a normal launch already fails without a connection and lands on
+// the cached connection-required page. This gate covers the one remaining
+// path — a copy of the page served from a platform cache the worker does
+// not control (some home-screen web-app containers keep their own). It
+// probes a live endpoint; only a network failure raises the gate (fetch
+// rejects only when no response arrives — any HTTP status at all proves
+// connectivity).
+(function(){
+  var gate = null, shown = false;
+  function build(){
+    if(gate) return gate;
+    gate = document.createElement('div');
+    gate.id = 'pp-online-gate';
+    gate.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0e1014;color:#f4f5f9;display:none;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;';
+    gate.innerHTML = '<div style="max-width:340px;text-align:center;">'
+      + '<div style="font-size:30px;font-weight:800;">Pest<span style="color:#4ec9e1;">Pass</span></div>'
+      + '<div style="font-size:19px;font-weight:700;margin:18px 0 8px;">You need an internet connection</div>'
+      + '<p style="font-size:14px;line-height:1.55;color:#b9bec9;margin:0 0 20px;">PestPass lives on your home screen, but it runs online. Check your connection and try again \u2014 your progress is saved on this device.</p>'
+      + '<button type="button" id="pp-gate-retry" style="background:#4ec9e1;color:#08222b;border:0;border-radius:10px;font-size:15px;font-weight:700;padding:12px 26px;cursor:pointer;">Try again</button></div>';
+    document.body.appendChild(gate);
+    gate.querySelector('#pp-gate-retry').addEventListener('click', function(){ window.location.reload(); });
+    return gate;
+  }
+  function show(){ shown = true; build().style.display = 'flex'; }
+  function probe(){
+    try{
+      fetch('./api/ping', { method:'GET', cache:'no-store' }).then(function(){}, function(){ show(); });
+    }catch(e){ /* fetch unsupported — leave the app alone */ }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', probe); else probe();
+  window.addEventListener('online', function(){ if(shown) window.location.reload(); });
+})();
 
 // ── MANUAL UPDATE CHECK (menu button) ──
 // The app already checks automatically on every launch and hourly while open;
@@ -3664,7 +3688,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
     </div>
   </div>
 <!-- Offline Banner -->
-  <div id="offline-banner">⚡ You're offline — quiz data still works, fonts may look different</div>
+  <div id="offline-banner">⚡ You're offline — PestPass needs an internet connection</div>
 <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="splash-logo-wrap">
@@ -3702,7 +3726,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
   <script>
   // Photos and boss art live in two lazily-loaded files (not inside index.html).
   // ppSetImg(el, path) shows the image as soon as its file has loaded; once the
-  // service worker has cached the files this is instant and fully offline.
+  // pack file has loaded over the network it renders instantly.
   (function(){
     var FILES = {"boss":"boss-187592eb8d.js"};
     var PHOTO_CHUNKS = ["photos-e138ab4101-p1.js","photos-e138ab4101-p2.js","photos-e138ab4101-p3.js","photos-e138ab4101-p4.js","photos-e138ab4101-p5.js","photos-e138ab4101-p6.js","photos-e138ab4101-p7.js","photos-e138ab4101-p8.js","photos-e138ab4101-p9.js","photos-e138ab4101-p10.js","photos-e138ab4101-p11.js","photos-e138ab4101-p12.js","photos-e138ab4101-p13.js","photos-e138ab4101-p14.js","photos-e138ab4101-p15.js","photos-e138ab4101-p16.js","photos-e138ab4101-p17.js","photos-e138ab4101-p18.js"];
@@ -3865,7 +3889,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <div class="pwa-icon">🛡️</div>
         <div class="pwa-body">
           <div class="pwa-title">Add PestPass to your Home Screen</div>
-          <div class="pwa-sub">Works offline. Feels like a real app. Free.</div>
+          <div class="pwa-sub">Feels like a real app. Free, no sign-up.</div>
           <div class="pwa-steps">
             <div class="pwa-step"><span class="pwa-step-num">1</span>Tap the <strong>Share</strong> button <strong>⬆</strong> in Safari</div>
             <div class="pwa-step"><span class="pwa-step-num">2</span>Scroll down and tap <strong>"Add to Home Screen"</strong></div>
@@ -5249,13 +5273,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
         <div class="entry-splash-title">Mock Exam</div>
         <div class="entry-splash-sub" id="mock-entry-splash-sub">50 questions &middot; 60 minutes &middot; 70% to pass</div>
       </div>
-      <div class="entry-splash hide" id="quiz-entry-splash">
-        <div class="entry-splash-icon" id="quiz-entry-splash-icon"><span class="entry-splash-ring"></span>
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="9"/></svg>
-        </div>
-        <div class="entry-splash-kicker">STUDY MODE</div><div class="entry-splash-title">Practice Quiz</div>
-        <div class="entry-splash-sub">Multiple choice, at your own pace</div>
-      </div>
+      
       <div id="quiz-picker">
 
         <!-- STEP 1: category select -->
@@ -5646,7 +5664,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
   
   <div style="padding:14px 18px 6px;">
   <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:12px 0 10px;">Data</div>
-    <button type="button" role="button" tabindex="0" onclick="closeMenu();resetStats();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+    <button type="button" role="button" tabindex="0" onclick="closeMenu();openResetConfirm();" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
       <div style="width:34px;height:34px;border-radius:9px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--red);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.59"/></svg>
       </div>
@@ -5713,7 +5731,7 @@ try{ if(safeLS.getItem('lightMode')!=='0'){ document.body.classList.add('light-m
   </div>
   <div style="padding:20px 18px;text-align:center;">
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;" data-pp-ver>PestPass · v4.19</div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">3,328 questions · 1,538 flashcards · offline</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;" id="menu-footer-stats">3,328 questions · 1,538 flashcards · free</div>
   </div>
   </div>
 <!-- ── FIRST-RUN TUTORIAL ── -->
@@ -10260,7 +10278,7 @@ function getSRDueCount(){
 window.ppShareApp = function(){
   var shareData = {
     title: 'PestPass — Pest Control Exam Prep',
-    text: 'Studying for your pest control license exam? PestPass is a free study app — 3,300+ practice questions, flashcards & photo ID drills, works offline:',
+    text: 'Studying for your pest control license exam? PestPass is a free study app — 3,300+ practice questions, flashcards & photo ID drills:',
     url: 'https://pestpass.app'
   };
   if(navigator.share){
@@ -10951,34 +10969,6 @@ function themeEntrySplashIcon(iconElId, catFullName){
 function mdShowEntrySplash(){ showEntrySplash('md-entry-splash', 950); }
 
 // Sets custom kicker/title/sub/icon on the quiz entry splash so each drill
-// mode gets its own branded splash instead of the generic "Practice Quiz".
-function setQuizSplash(kicker, title, sub, iconSVG){
-  var splash = document.getElementById('quiz-entry-splash');
-  if(!splash) return;
-  var k = splash.querySelector('.entry-splash-kicker');
-  var t = splash.querySelector('.entry-splash-title');
-  var s = splash.querySelector('.entry-splash-sub');
-  var icon = document.getElementById('quiz-entry-splash-icon');
-  if(k && kicker) k.textContent = kicker;
-  if(t && title) t.textContent = title;
-  if(s && sub) s.textContent = sub;
-  if(icon && iconSVG){
-    // Replace the svg inside the icon, keeping the ring span
-    var old = icon.querySelector('svg');
-    if(old) old.remove();
-    var tmp = document.createElement('div');
-    tmp.innerHTML = iconSVG;
-    var svg = tmp.querySelector('svg');
-    if(svg) icon.appendChild(svg);
-  }
-}
-var QUIZ_SPLASH_ICONS = {
-  quiz: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-  visual: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
-  insect: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="8" height="12" rx="4"/><path d="M12 8v12"/><path d="M8 10H4m4 4H3m5 4H4m12-8h4m-4 4h5m-5 4h4"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>',
-  regs: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
-  inspect: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
-};
 
 // ═══════════════════════════════════════════════════════════
 //  STUDY GUIDE (Cliffnotes) — original condensed explainers
@@ -19293,13 +19283,6 @@ window.toggleTheme = function(){
   menuSyncState();
 }
 
-window.resetStats = function(){
-  if(confirm('Reset all progress and scores?')){
-    safeLS.clear();
-    location.reload();
-  }
-}
-
 // ── Hamburger Menu ──
 // Visibility is stylesheet-driven via body.menu-open (see CSS). The drawer
 // and backdrop are direct children of <body> (outside #app) so no ancestor
@@ -19666,7 +19649,6 @@ function checkTrophies(entry){
   if(changed){ saveTrophies(earned); renderTrophyCase(); }
   newly.forEach(function(t, i){ setTimeout(function(){ showTrophyToast(t); }, 700 + i*900); });
 }
-function trophyById(id){ for(var i=0;i<TROPHIES.length;i++) if(TROPHIES[i].id===id) return TROPHIES[i]; return null; }
 function renderTrophyCase(){
   var earned = loadTrophies();
   var title = document.getElementById('trophy-case-title');
@@ -19860,7 +19842,7 @@ window.addEventListener('load', function(){
   // easy for a hardcoded count to silently go stale as content grows.
   var footerStats = document.getElementById('menu-footer-stats');
   if(footerStats && typeof QS !== 'undefined' && typeof FC !== 'undefined'){
-    footerStats.textContent = QS.filter(Boolean).length + ' questions · ' + FC.filter(Boolean).length + ' flashcards · offline';
+    footerStats.textContent = QS.filter(Boolean).length + ' questions · ' + FC.filter(Boolean).length + ' flashcards · free';
   }
   maybeShowTutorial();
 });
@@ -21199,7 +21181,7 @@ function confirmReset(){
   // above explicitly promising flashcard mastery would be cleared), and
   // wasted effort removing three keys ('dailyStreak', 'studyTime',
   // 'pwaDismissed') that were never real key names to begin with. Using
-  // the same namespace-based clear() that resetStats() already relies on
+  // the namespace-based clear()
   // removes every one of the current account's progress keys by prefix,
   // so it can't go stale the next time a new stats key gets added, and it
   // actually matches what the confirmation dialog promises.
