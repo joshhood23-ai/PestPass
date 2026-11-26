@@ -125,6 +125,22 @@ th{background:#eef4f0}
 .boxn .k{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
 .boxn .v{font-size:16.5px;font-weight:700}
 .boxn p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
+
+/* ===== v2 modern layer (2026-11-26) ===== */
+:root{--radius:20px;--shadow:0 2px 4px rgba(7,42,52,.05),0 16px 36px -14px rgba(7,42,52,.22);--shadow-lg:0 4px 8px rgba(7,42,52,.06),0 28px 56px -20px rgba(7,42,52,.30)}
+body{font-size:17px;line-height:1.65}
+main{padding-top:26px}
+h1{font-size:clamp(34px,5.4vw,50px)}
+h2{font-size:clamp(26px,3.8vw,33px);margin:44px 0 12px}
+.hero{background:radial-gradient(720px 340px at 88% -60px,rgba(242,181,68,.20),transparent 60%),radial-gradient(120% 160% at 85% -20%,#14655a 0%,transparent 55%),linear-gradient(160deg,var(--deep) 0%,var(--deep2) 100%)}
+.btn{box-shadow:0 6px 18px rgba(15,118,110,.25)}
+.cta{background:radial-gradient(500px 240px at 90% -40px,rgba(242,181,68,.28),transparent 60%),linear-gradient(150deg,var(--deep),var(--teald));padding:40px 28px}
+.cta a{background:var(--gold);color:#231a04}
+.cta a:hover{background:#ffc95e}
+.card,.rcard,.track,.sp{transition:transform .18s,box-shadow .18s}
+a.card:hover,.res a.rcard:hover,a.track:hover,a.sp:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+footer{background:var(--deep);color:#9db8ad;max-width:none;margin:26px 0 0;padding:36px max(20px,calc(50% - 440px)) 40px;text-align:center}
+footer a{color:var(--gold)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the fastest reliable way to solve pesticide dilution and rate problems?", "acceptedAnswer": {"@type": "Answer", "text": "Work ratio-first: find how much area one unit covers, then scale that ratio to the size of the job."}}, {"@type": "Question", "name": "Why do so many math answers go wrong even when the arithmetic is right?", "acceptedAnswer": {"@type": "Answer", "text": "Unit errors. Labels state rates per 1,000 sq ft and jobs come in other sizes, so convert the job into the label's units before comparing anything."}}, {"@type": "Question", "name": "How do I check whether an application stayed within the label?", "acceptedAnswer": {"@type": "Answer", "text": "Convert what was actually applied into a rate per 1,000 sq ft and compare it with the label maximum. If the converted rate is higher, the application was over the label rate."}}, {"@type": "Question", "name": "How do annual maximum problems work?", "acceptedAnswer": {"@type": "Answer", "text": "Add up what has already been applied at the labeled rate, in the label's units, and subtract from the annual maximum. The remainder is all that is still allowed."}}, {"@type": "Question", "name": "Does PestPass help with pesticide math?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Math questions appear on the operator exams, and in PestPass a calculator is available on math questions, with worked explanations written in the same step-by-step format as this page."}}]}</script>
 </head>

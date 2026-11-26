@@ -105,6 +105,22 @@ th{background:#eef4f0}
 .gchip b{display:block;font-size:17px;color:var(--deep)}
 .gbar{display:flex;height:38px;border-radius:10px;overflow:hidden;margin:4px 0 12px;font-size:13px;font-weight:700;color:#fff}
 .gbar div{display:flex;align-items:center;justify-content:center;padding:0 6px;text-align:center}
+
+/* ===== v2 modern layer (2026-11-26) ===== */
+:root{--radius:20px;--shadow:0 2px 4px rgba(7,42,52,.05),0 16px 36px -14px rgba(7,42,52,.22);--shadow-lg:0 4px 8px rgba(7,42,52,.06),0 28px 56px -20px rgba(7,42,52,.30)}
+body{font-size:17px;line-height:1.65}
+main{padding-top:26px}
+h1{font-size:clamp(34px,5.4vw,50px)}
+h2{font-size:clamp(26px,3.8vw,33px);margin:44px 0 12px}
+.hero{background:radial-gradient(720px 340px at 88% -60px,rgba(242,181,68,.20),transparent 60%),radial-gradient(120% 160% at 85% -20%,#14655a 0%,transparent 55%),linear-gradient(160deg,var(--deep) 0%,var(--deep2) 100%)}
+.btn{box-shadow:0 6px 18px rgba(15,118,110,.25)}
+.cta{background:radial-gradient(500px 240px at 90% -40px,rgba(242,181,68,.28),transparent 60%),linear-gradient(150deg,var(--deep),var(--teald));padding:40px 28px}
+.cta a{background:var(--gold);color:#231a04}
+.cta a:hover{background:#ffc95e}
+.card,.rcard,.track,.sp{transition:transform .18s,box-shadow .18s}
+a.card:hover,.res a.rcard:hover,a.track:hover,a.sp:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+footer{background:var(--deep);color:#9db8ad;max-width:none;margin:26px 0 0;padding:36px max(20px,calc(50% - 440px)) 40px;text-align:center}
+footer a{color:var(--gold)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What score do I need to pass the Florida certified operator exam?", "acceptedAnswer": {"@type": "Answer", "text": "75%, under Rule 5E-14.123. PestPass grades Florida practice at 75% (Florida mosquito control is the exception at 70%)."}}, {"@type": "Question", "name": "How much is the Florida certified operator exam?", "acceptedAnswer": {"@type": "Answer", "text": "The FDACS certified operator exam fee is $300. The fumigation Special ID exam is $200, and Limited Certification exams are $150."}}, {"@type": "Question", "name": "Does a Florida ID cardholder take an exam?", "acceptedAnswer": {"@type": "Answer", "text": "No. Under s.482.091, ID cardholders (Florida's registered technicians) complete training only &mdash; there is no exam. PestPass's Florida ID Cardholder track reflects that, covering general knowledge, household pest control and Florida regulations as training material."}}]}</script>
 </head>
