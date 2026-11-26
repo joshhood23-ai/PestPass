@@ -97,6 +97,22 @@ article li{margin:5px 0}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:15px}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
 th{background:#eef4f0}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.fig figcaption{color:var(--mut);font-size:13.5px;margin-top:12px}
+.fig h3{margin:0 0 12px;font-size:16px}
+.sigrow{display:flex;align-items:center;gap:14px;margin:8px 0}
+.sigword{flex:0 0 118px;text-align:center;font-weight:800;letter-spacing:.06em;padding:9px 0;border-radius:10px;color:#fff;font-size:15px}
+.sigword.danger{background:#b3352b}.sigword.warning{background:#cf7a12}.sigword.caution{background:#d9a514;color:#33270a}.sigword.none{background:#e7ece8;color:#5c6b64;border:1px solid var(--line)}
+.sigrow p{margin:0;font-size:15px}
+.ppe{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:12px;margin:6px 0}
+.ppe .pi{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 8px 10px;text-align:center}
+.ppe .pi svg{width:44px;height:44px}
+
+.labfig{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+.lablegend{margin:6px 0 0;padding-left:22px;flex:1;min-width:230px}
+.lablegend li{margin:0 0 13px;font-size:15px}
+.ppe .pi span{display:block;margin-top:8px;font-size:13.5px;font-weight:700;color:var(--ink)}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
@@ -108,10 +124,41 @@ th{background:#eef4f0}
 </script>
 </head>
 <body>
-<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
+<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="PestPass home">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
 <div class="hero"><div class="hin"><span class="eyebrow">Study guide</span><h1>How to Read a Pesticide Label: A Guide for Applicators</h1><p class="lede">A pesticide label is more than a product description. It communicates the conditions under which a pesticide may legally be used and the precautions needed to protect applicators, workers, the public, and the environment. Before mixing or applying any pesticide, read the entire label for the specific product and use site.</p><p class="lede" style="margin-top:10px;font-size:16.5px">This guide explains the major parts of a pesticide label and provides a practical review checklist for applicators and people preparing for a pesticide licensing exam.</p></div></div>
 <main>
 <article>
+<figure class="fig"><h3>The parts of a pesticide label</h3>
+<div class="labfig">
+<svg viewBox="0 0 320 360" role="img" aria-label="Illustrated pesticide label showing the product name, signal word, precautionary statements, directions for use, environmental hazards, and storage sections" style="width:100%;max-width:320px;height:auto;display:block">
+<rect x="10" y="10" width="300" height="340" rx="14" fill="#ffffff" stroke="#c9d4cc" stroke-width="2"/>
+<rect x="10" y="10" width="300" height="58" rx="14" fill="#0b5a54"/>
+<text x="160" y="38" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="800">PRODUCT NAME</text>
+<text x="160" y="58" text-anchor="middle" fill="#bfe3d8" font-size="11.5">Brand &middot; EPA Reg. No. &middot; active ingredients</text>
+<rect x="26" y="82" width="268" height="40" rx="8" fill="#b3352b"/>
+<text x="160" y="108" text-anchor="middle" fill="#ffffff" font-size="19" font-weight="800" letter-spacing="3">DANGER</text>
+<rect x="26" y="136" width="268" height="62" rx="8" fill="#eef4f0"/>
+<text x="38" y="158" font-size="13" font-weight="700" fill="#14231f">Precautionary statements</text>
+<text x="38" y="178" font-size="12" fill="#5c6b64">Required PPE &middot; first-aid instructions</text>
+<rect x="26" y="210" width="268" height="52" rx="8" fill="#eef4f0"/>
+<text x="38" y="232" font-size="13" font-weight="700" fill="#14231f">Directions for use</text>
+<text x="38" y="250" font-size="12" fill="#5c6b64">Where, how much, how often</text>
+<rect x="26" y="274" width="130" height="60" rx="8" fill="#eef4f0"/>
+<text x="36" y="296" font-size="12.5" font-weight="700" fill="#14231f">Environmental</text>
+<text x="36" y="313" font-size="12.5" font-weight="700" fill="#14231f">hazards</text>
+<rect x="164" y="274" width="130" height="60" rx="8" fill="#eef4f0"/>
+<text x="174" y="296" font-size="12.5" font-weight="700" fill="#14231f">Storage &amp;</text>
+<text x="174" y="313" font-size="12.5" font-weight="700" fill="#14231f">disposal</text>
+</svg>
+<ol class="lablegend">
+<li><b>Identify the product</b> — brand name, EPA registration number, active ingredients (§1)</li>
+<li><b>Signal word</b> — the product's acute toxicity (§2)</li>
+<li><b>Precautions</b> — required PPE (§3) and first aid (§4)</li>
+<li><b>Directions for use</b> — sites, rates and timing (§5)</li>
+<li><b>Hazards, storage &amp; disposal</b> — environmental hazards and how to store and dispose of the product (§6)</li>
+</ol>
+</div>
+<figcaption>Illustration of a typical label's layout — not a real product label. Always read the actual label on the product in your hand; it is the law.</figcaption></figure>
 <h2>1. Identify the product</h2>
 <p>Start by confirming that you have the correct product. Check the product name, active ingredient, formulation, EPA registration number, and intended use sites.</p>
 <p>The active ingredient is the component intended to control the target pest. The formulation describes how the product is prepared, such as a liquid concentrate, ready-to-use product, granule, dust, or bait.</p>
@@ -124,10 +171,23 @@ th{background:#eef4f0}
 <li><strong>CAUTION</strong> indicates a lower acute toxicity category among products that carry a signal word.</li>
 </ul>
 <p>Some pesticide products do not require a signal word. Never use the signal word by itself to decide whether a product is safe. Follow all label precautions, PPE requirements, and directions.</p>
+<div class="fig"><h3>Signal words at a glance</h3>
+<div class="sigrow"><div class="sigword danger">DANGER</div><p><b>Highest</b> acute toxicity. Some DANGER labels also carry POISON and a skull-and-crossbones.</p></div>
+<div class="sigrow"><div class="sigword warning">WARNING</div><p><b>Moderate</b> acute toxicity — a higher concern than CAUTION.</p></div>
+<div class="sigrow"><div class="sigword caution">CAUTION</div><p><b>Lower</b> acute toxicity among products that carry a signal word.</p></div>
+<div class="sigrow"><div class="sigword none">NONE</div><p>Some products require <b>no signal word</b> at all. No signal word never means no precautions — follow the label either way.</p></div>
+</div>
 <h2>3. Check personal protective equipment (PPE)</h2>
 <p>The label's precautionary statements identify required protective equipment. Depending on the product and task, this may include chemical-resistant gloves, protective eyewear, footwear, coveralls, or a respirator.</p>
 <p>Read the exact PPE wording. Do not substitute ordinary work clothing or equipment unless the label permits it. If respiratory protection is required, follow the label and applicable respiratory-protection requirements, including any required fit testing, medical evaluation, and training.</p>
 <p>Inspect PPE before use, put it on and remove it in a way that avoids contamination, and clean or dispose of it as directed.</p>
+<div class="fig"><h3>PPE the label may require</h3><div class="ppe">
+<div class="pi"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 22V12a4 4 0 0 1 8 0V10a4 4 0 0 1 8 0v2a4 4 0 0 1 8 0v12c0 10-6 18-14 18S14 34 14 24Z" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Chemical-resistant gloves</span></div>
+<div class="pi"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="18" width="16" height="12" rx="5" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="27" y="18" width="16" height="12" rx="5" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 22h6M5 22H2m44 0h-3" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Protective eyewear</span></div>
+<div class="pi"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 6v22l-6 12h14v-8h12V20L24 6Z" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Footwear</span></div>
+<div class="pi"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 8 8 14l5 8 3-2v20h16V20l3 2 5-8-8-6a8 8 0 0 1-16 0Z" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Coveralls</span></div>
+<div class="pi"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 10a12 9 0 0 1 24 0v8c0 4-2 6-4 8H16c-2-2-4-4-4-8Z" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="32" r="5" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="31" cy="32" r="5" fill="none" stroke="#0b5a54" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Respirator</span></div>
+</div><p style="margin:8px 0 0;color:var(--mut);font-size:13.5px">Icons are illustrations. The exact PPE for a job is whatever the product's label specifies — never substitute ordinary work clothing unless the label permits it.</p></div>
 <h2>4. Know the first-aid instructions</h2>
 <p>Locate the first-aid section before handling the product. It may provide different instructions for inhalation, skin or clothing contact, eye contact, and swallowing.</p>
 <p>In an exposure emergency, follow the product label's first-aid directions and contact the appropriate emergency or poison-control resource. Have the product container or label available when seeking medical advice. Do not improvise treatment or delay emergency care.</p>

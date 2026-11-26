@@ -96,11 +96,40 @@ article li{margin:5px 0}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:15px}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
 th{background:#eef4f0}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.fig figcaption{color:var(--mut);font-size:13.5px;margin-top:12px}
+.fig h3{margin:0 0 12px;font-size:16px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.step{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-weight:800;font-size:14px;margin-bottom:8px}
+.step b{display:block;font-size:15px;margin-bottom:4px}
+.step p{margin:0;font-size:13.5px;color:var(--mut)}
+.chipwrap{display:flex;flex-wrap:wrap;gap:10px}
+.wchip{background:#eef6f2;border:1.5px solid #bcd8cc;color:var(--deep);font-weight:700;font-size:14.5px;border-radius:999px;padding:9px 16px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.cmp{grid-template-columns:1fr}}
+.cmp .col{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fbfdfb}
+.cmp .col h4{margin:0 0 10px;font-size:15px;color:var(--deep)}
+.cmp .row{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.cmp .row svg{flex:0 0 54px}
+.cmp .row p{margin:0;font-size:14px}
+.cmp .row b{color:var(--ink)}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stage{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:center}
+.stage svg{width:84px;height:64px}
+.stage b{display:block;margin-top:8px;font-size:15px}
+.stage p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.boxn{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.boxn .k{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.boxn .v{font-size:16.5px;font-weight:700}
+.boxn p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much is the Florida Certified Operator exam and what score passes?", "acceptedAnswer": {"@type": "Answer", "text": "The exam fee is $300 and the pass mark is 75%. Certification is by category, including General Household Pest Control, Lawn & Ornamental, Termite/WDO and Fumigation."}}, {"@type": "Question", "name": "What is Florida's 45-job rule?", "acceptedAnswer": {"@type": "Answer", "text": "Under Rule 5E-14.117, applicants for GHP, Termite/WDO or L&O certification must first participate in at least 45 jobs in Florida under a certified operator's supervision in each category sought, documented on Form FDACS-13653."}}, {"@type": "Question", "name": "Do Florida ID Cardholders take an exam?", "acceptedAnswer": {"@type": "Answer", "text": "No. Under s.482.091, ID Cardholders work under a certified operator and the credential is training-based, with no exam."}}, {"@type": "Question", "name": "What does the fumigation Special ID cost?", "acceptedAnswer": {"@type": "Answer", "text": "The Special ID exam fee is $200, renewal is $100 and the late fee is $25."}}, {"@type": "Question", "name": "How long must Florida pest control records be kept?", "acceptedAnswer": {"@type": "Answer", "text": "Two years for general and fumigation work, and three years for new-construction pretreatments."}}]}</script>
 </head>
 <body>
-<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
+<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="PestPass home">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
 <div class="hero"><div class="hin"><span class="eyebrow">Study guide</span><h1>Florida Pest Control License Guide (Chapter 482)</h1>
 <p class="lede">Florida licenses pest control under Chapter 482, Florida Statutes, and Rule 5E-14, administered by FDACS. This guide explains the Certified Operator exam, the 45-job experience rule, ID Cardholders, fumigation Special ID and Limited Certification in plain English.</p></div></div>
 <main>
@@ -117,6 +146,7 @@ th{background:#eef4f0}
 </table>
 <h2>Certified Operator: $300 exam, 75% to pass</h2>
 <p>The Certified Operator is Florida's operator-level credential under Chapter 482. The exam fee is $300 and the pass mark is 75% — higher than Georgia's 70%, which is worth knowing if you have studied for another state's test and assume the bar is the same. Operator certification is by category, and the categories include General Household Pest Control, Lawn &amp; Ornamental, Termite/WDO and Fumigation. Each category you want has to be earned, and each one carries the experience requirement described next. The <a href="https://pestpass.app/florida-certified-operator-exam-prep/">Florida Certified Operator exam prep</a> page has sample questions for the operator categories.</p>
+<figure class="fig"><h3>The Florida credentials on one map</h3><div class="steps"><div class="step"><span class="n">1</span><b>ID Cardholder</b><p>Training-based — no exam. Works under a certified operator.</p></div><div class="step"><span class="n">2</span><b>Certified Operator</b><p>$300 exam per category, 75% to pass.</p></div><div class="step"><span class="n">3</span><b>Special ID — Fumigation</b><p>The extra credential fumigation work requires.</p></div><div class="step"><span class="n">4</span><b>Limited Certification</b><p>Narrow credentials under s.482.157, each with its own exam.</p></div></div></figure>
 <h2>The 45-job rule comes before the exam</h2>
 <p>Under Rule 5E-14.117, an applicant for General Household Pest Control, Termite/WDO or Lawn &amp; Ornamental certification must first participate in a minimum of 45 jobs in Florida under the supervision of a certified operator — in each category sought. Those jobs are documented on Form FDACS-13653. Read that again if you are planning a timeline: the 45 jobs are per category, not total. A technician who wants two categories needs 45 qualifying jobs in each one. This is the step that catches people out, because it means certification is not something you can decide on and test for in the same month. The experience has to be built on real jobs, under a certified operator, and documented as you go. If you are a technician aiming at certification, start the paperwork conversation with your operator early, keep your job documentation clean, and use the waiting time to study — the exam will be there when your 45 jobs are done.</p>
 <h2>ID Cardholders: training-based, no exam</h2>

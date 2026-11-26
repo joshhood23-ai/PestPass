@@ -96,11 +96,40 @@ article li{margin:5px 0}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:15px}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
 th{background:#eef4f0}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.fig figcaption{color:var(--mut);font-size:13.5px;margin-top:12px}
+.fig h3{margin:0 0 12px;font-size:16px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.step{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-weight:800;font-size:14px;margin-bottom:8px}
+.step b{display:block;font-size:15px;margin-bottom:4px}
+.step p{margin:0;font-size:13.5px;color:var(--mut)}
+.chipwrap{display:flex;flex-wrap:wrap;gap:10px}
+.wchip{background:#eef6f2;border:1.5px solid #bcd8cc;color:var(--deep);font-weight:700;font-size:14.5px;border-radius:999px;padding:9px 16px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.cmp{grid-template-columns:1fr}}
+.cmp .col{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fbfdfb}
+.cmp .col h4{margin:0 0 10px;font-size:15px;color:var(--deep)}
+.cmp .row{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.cmp .row svg{flex:0 0 54px}
+.cmp .row p{margin:0;font-size:14px}
+.cmp .row b{color:var(--ink)}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stage{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:center}
+.stage svg{width:84px;height:64px}
+.stage b{display:block;margin-top:8px;font-size:15px}
+.stage p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.boxn{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.boxn .k{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.boxn .v{font-size:16.5px;font-weight:700}
+.boxn p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I identify a German cockroach?", "acceptedAnswer": {"@type": "Answer", "text": "It is light brown or tan, about 1/2 to 5/8 inch long, with two dark parallel stripes running front to back on the pronotum \u2014 the shield behind the head. That pair of stripes is the key field mark."}}, {"@type": "Question", "name": "Why don't sprays work well on German cockroaches?", "acceptedAnswer": {"@type": "Answer", "text": "Two reasons. Repellent sprays scatter them deeper into walls and can spread the infestation between units, and their egg cases are protected from most sprays, so the next generation hatches after the treatment fades."}}, {"@type": "Question", "name": "Why does the female carrying the egg case matter?", "acceptedAnswer": {"@type": "Answer", "text": "Because she carries the ootheca until just before hatching and keeps it in a safe harborage. One female brought in with groceries or a used appliance imports a whole protected generation."}}, {"@type": "Question", "name": "Where should gel bait be placed?", "acceptedAnswer": {"@type": "Answer", "text": "In the cracks, hinges and harborages where the roaches actually feed \u2014 kitchen and bathroom cabinets, under sinks, behind refrigerators and stoves, and around appliance motors. And never spray repellent insecticide over or near the placements; it contaminates the bait and roaches avoid it."}}, {"@type": "Question", "name": "How do you know a German cockroach program is working?", "acceptedAnswer": {"@type": "Answer", "text": "Monitoring traps. Catch counts show whether the population is actually falling, instead of relying on how many roaches you happen to see."}}]}</script>
 </head>
 <body>
-<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
+<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="PestPass home">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
 <div class="hero"><div class="hin"><span class="eyebrow">Study guide</span><h1>German Cockroach Control: Why Baits Beat Sprays</h1>
 <p class="lede">The German cockroach is the most common roach call in the business — and the one most often made worse by the first treatment. Here is how to recognize it, where it hides, and why the professional standard is gel bait and patience instead of a sprayer.</p></div></div>
 <main>
@@ -109,6 +138,11 @@ th{background:#eef4f0}
 <h2>Know the insect first</h2>
 <p>The German cockroach is a small roach with an outsized reputation. Adults are light brown to tan and only about <strong>1/2 to 5/8 inch long</strong> — small enough to vanish into a cabinet hinge. The field mark that settles the identification is on the pronotum, the shield-like plate behind the head: <strong>two dark parallel stripes running front to back</strong>. Plenty of roaches are brown; that pair of stripes is the German cockroach's signature, and it is core Household Pest Control (HPC) material on the operator exams.</p>
 <p>Its reproductive habit explains why it is such a relentless indoor pest. The female carries her egg case — the ootheca — with her until just before it hatches. She is not leaving eggs glued in a corner for weeks; she is walking the next generation around in a protected case and depositing it at the last moment, in the safest place she can find. One female carried in with a grocery bag or a used appliance imports a whole generation, already sheltered.</p>
+<figure class="fig"><h3>German cockroach life cycle — incomplete metamorphosis</h3><div class="stages">
+<div class="stage"><svg viewBox="0 0 84 64" aria-hidden="true"><rect x="24" y="20" width="36" height="24" rx="12" fill="#c9a876"/><path d="M30 26v12M38 24v16M46 24v16M54 26v12" stroke="#a5824f" stroke-width="2.5"/></svg><b>Egg case (ootheca)</b><p>The female carries the case until just before it hatches — one case can produce dozens of nymphs.</p></div>
+<div class="stage"><svg viewBox="0 0 84 64" aria-hidden="true"><ellipse cx="42" cy="36" rx="13" ry="17" fill="#bcd8cc"/><circle cx="42" cy="15" r="6" fill="#8fc1ae"/><path d="M32 28 20 24M31 38 18 40M33 48 22 56M52 28 64 24M53 38 66 40M51 48 62 56" stroke="#0f766e" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg><b>Nymph</b><p>A small, wingless version of the adult. It molts several times as it grows.</p></div>
+<div class="stage"><svg viewBox="0 0 84 64" aria-hidden="true"><ellipse cx="42" cy="37" rx="14" ry="18" fill="#c9a876"/><path d="M36 22v30M48 22v30" stroke="#7a5c2e" stroke-width="3"/><circle cx="42" cy="15" r="6" fill="#a5824f"/><path d="M32 28 20 24M31 38 18 40M33 48 22 56M52 28 64 24M53 38 66 40M51 48 62 56" stroke="#7a5c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg><b>Adult</b><p>Only 1/2 to 5/8 inch — identified by the two dark parallel stripes on the shield behind the head.</p></div>
+</div><figcaption>Schematic illustrations, not photographs. No larva or pupa stage — nymphs look like small adults from the day they hatch.</figcaption></figure>
 <h2>Where they actually live</h2>
 <p>German cockroaches do not wander a structure at random. They crowd into tight cracks close to the three things they need — heat, moisture and food. Work the classic harborages in order:</p>
 <ul>

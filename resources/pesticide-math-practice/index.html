@@ -96,11 +96,40 @@ article li{margin:5px 0}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:15px}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
 th{background:#eef4f0}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.fig figcaption{color:var(--mut);font-size:13.5px;margin-top:12px}
+.fig h3{margin:0 0 12px;font-size:16px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.step{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-weight:800;font-size:14px;margin-bottom:8px}
+.step b{display:block;font-size:15px;margin-bottom:4px}
+.step p{margin:0;font-size:13.5px;color:var(--mut)}
+.chipwrap{display:flex;flex-wrap:wrap;gap:10px}
+.wchip{background:#eef6f2;border:1.5px solid #bcd8cc;color:var(--deep);font-weight:700;font-size:14.5px;border-radius:999px;padding:9px 16px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.cmp{grid-template-columns:1fr}}
+.cmp .col{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fbfdfb}
+.cmp .col h4{margin:0 0 10px;font-size:15px;color:var(--deep)}
+.cmp .row{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.cmp .row svg{flex:0 0 54px}
+.cmp .row p{margin:0;font-size:14px}
+.cmp .row b{color:var(--ink)}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stage{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:center}
+.stage svg{width:84px;height:64px}
+.stage b{display:block;margin-top:8px;font-size:15px}
+.stage p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.boxn{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.boxn .k{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.boxn .v{font-size:16.5px;font-weight:700}
+.boxn p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the fastest reliable way to solve pesticide dilution and rate problems?", "acceptedAnswer": {"@type": "Answer", "text": "Work ratio-first: find how much area one unit covers, then scale that ratio to the size of the job."}}, {"@type": "Question", "name": "Why do so many math answers go wrong even when the arithmetic is right?", "acceptedAnswer": {"@type": "Answer", "text": "Unit errors. Labels state rates per 1,000 sq ft and jobs come in other sizes, so convert the job into the label's units before comparing anything."}}, {"@type": "Question", "name": "How do I check whether an application stayed within the label?", "acceptedAnswer": {"@type": "Answer", "text": "Convert what was actually applied into a rate per 1,000 sq ft and compare it with the label maximum. If the converted rate is higher, the application was over the label rate."}}, {"@type": "Question", "name": "How do annual maximum problems work?", "acceptedAnswer": {"@type": "Answer", "text": "Add up what has already been applied at the labeled rate, in the label's units, and subtract from the annual maximum. The remainder is all that is still allowed."}}, {"@type": "Question", "name": "Does PestPass help with pesticide math?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Math questions appear on the operator exams, and in PestPass a calculator is available on math questions, with worked explanations written in the same step-by-step format as this page."}}]}</script>
 </head>
 <body>
-<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
+<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="PestPass home">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
 <div class="hero"><div class="hin"><span class="eyebrow">Study guide</span><h1>Pesticide Math Practice: Dilutions, Rates and Area, Worked Step by Step</h1>
 <p class="lede">Pesticide math on the operator exams is not advanced math — it is the same few moves repeated: work ratio-first, convert the job into the label&#x27;s units, and check the answer against the label maximum. This page works five standard problems step by step so you can copy the method.</p></div></div>
 <main>
@@ -118,6 +147,11 @@ th{background:#eef4f0}
 <li>Answer: 0.2 gallons.</li>
 </ul>
 <p>This is the base move for every area problem: measure the area, then divide by the label's stated area unit to get how many label-units the job contains.</p>
+<figure class="fig"><h3>Worked example 1, drawn out</h3><div class="boxes">
+<div class="boxn"><div class="k">Step 1 · Measure</div><div class="v">10 ft × 20 ft = 200 sq ft</div><p>The room's area, in the label's unit family.</p></div>
+<div class="boxn"><div class="k">Step 2 · Divide by the label unit</div><div class="v">200 ÷ 1,000 = 0.2</div><p>The label rate is 1 gallon per 1,000 sq ft — so the job holds 0.2 label-units.</p></div>
+<div class="boxn"><div class="k">Answer</div><div class="v">0.2 gallons</div><p>Measure the area, then divide by the label's stated area unit. That is the base move for every area problem.</p></div>
+</div></figure>
 <h2>Worked example 2: sprayer output and coverage speed</h2>
 <p>A compressed air sprayer outputs 0.5 gallons per minute. The label rate is 1 gallon per 1,000 sq ft. How much area do you cover per minute?</p>
 <ul>

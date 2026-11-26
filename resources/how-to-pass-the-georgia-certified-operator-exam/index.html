@@ -96,11 +96,40 @@ article li{margin:5px 0}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:15px}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
 th{background:#eef4f0}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.fig figcaption{color:var(--mut);font-size:13.5px;margin-top:12px}
+.fig h3{margin:0 0 12px;font-size:16px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.step{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-weight:800;font-size:14px;margin-bottom:8px}
+.step b{display:block;font-size:15px;margin-bottom:4px}
+.step p{margin:0;font-size:13.5px;color:var(--mut)}
+.chipwrap{display:flex;flex-wrap:wrap;gap:10px}
+.wchip{background:#eef6f2;border:1.5px solid #bcd8cc;color:var(--deep);font-weight:700;font-size:14.5px;border-radius:999px;padding:9px 16px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.cmp{grid-template-columns:1fr}}
+.cmp .col{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fbfdfb}
+.cmp .col h4{margin:0 0 10px;font-size:15px;color:var(--deep)}
+.cmp .row{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.cmp .row svg{flex:0 0 54px}
+.cmp .row p{margin:0;font-size:14px}
+.cmp .row b{color:var(--ink)}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stage{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:center}
+.stage svg{width:84px;height:64px}
+.stage b{display:block;margin-top:8px;font-size:15px}
+.stage p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.boxn{background:#f4f8f5;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.boxn .k{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.boxn .v{font-size:16.5px;font-weight:700}
+.boxn p{margin:4px 0 0;font-size:13.5px;color:var(--mut)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does the Georgia Certified Operator exam cost, and what score passes?", "acceptedAnswer": {"@type": "Answer", "text": "The exam fee is $45, and the pass mark is 70%."}}, {"@type": "Question", "name": "What categories are on the Georgia Certified Operator exam?", "acceptedAnswer": {"@type": "Answer", "text": "Four: General Knowledge, Household Pest Control (HPC), Wood-Destroying Organisms (WDO) and Georgia Regulations."}}, {"@type": "Question", "name": "Does the operator exam really test label reading and math?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The exam includes label excerpts with questions, and pesticide math covering dilutions, rates and area \u2014 practice both, not just pest facts."}}, {"@type": "Question", "name": "What happens if I fail the certification exam twice?", "acceptedAnswer": {"@type": "Answer", "text": "Under Rule 620-3-.01 (amended effective April 8, 2026), two failures within 12 months means six months must elapse since the last exam before you can test again."}}, {"@type": "Question", "name": "What study text is recommended for the Georgia operator exam?", "acceptedAnswer": {"@type": "Answer", "text": "Truman's 7th edition is the officially recommended study text. Pair it with category-by-category practice questions, a missed-questions list you re-drill, and full timed mock exams before test day."}}]}</script>
 </head>
 <body>
-<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
+<header class="site"><a class="logo" href="https://pestpass.app/"><img src="https://pestpass.app/icon-192.png" alt="PestPass home">PestPass</a><a class="btn" href="https://pestpass.app/">Open the free app</a></header>
 <div class="hero"><div class="hin"><span class="eyebrow">Study guide</span><h1>How to Pass the Georgia Certified Operator Exam</h1>
 <p class="lede">The Georgia Certified Operator exam is the top structural pest control credential in the state, and it is passable with a steady, category-by-category study plan. This guide covers what is on the test, the two skills candidates most often under-prepare for, and how to study around a working route.</p></div></div>
 <main>
@@ -108,6 +137,7 @@ th{background:#eef4f0}
 <article>
 <h2>What the exam covers</h2>
 <p>The Certified Operator exam tests four categories: General Knowledge, Household Pest Control (HPC), Wood-Destroying Organisms (WDO) and Georgia Regulations. General Knowledge covers the foundations every operator needs — pest biology and identification, pesticide safety, labels and application principles. HPC goes deeper into the pests and treatments of homes and businesses. WDO covers wood-destroying organisms and the inspections and reports that go with them. Georgia Regulations covers the state rules an operator is legally responsible for following. You need 70% to pass, and the exam fee is $45. Truman's 7th edition is the officially recommended study text, so it is the right reference to keep beside whatever practice material you use.</p>
+<figure class="fig"><h3>The study plan that works</h3><div class="steps"><div class="step"><span class="n">1</span><b>Study category by category</b><p>General Knowledge, HPC and WDO are separate exams — prepare for each on its own.</p></div><div class="step"><span class="n">2</span><b>Keep a missed-questions list</b><p>Every miss goes on the list, and the list gets re-drilled until it shrinks.</p></div><div class="step"><span class="n">3</span><b>Spend extra time on WDO and Regulations</b><p>The two areas candidates most often under-prepare for.</p></div><div class="step"><span class="n">4</span><b>Take full timed mock exams</b><p>Full-length, timed, no pausing — so test day feels familiar.</p></div></div></figure>
 <h2>The two skills candidates under-prepare for</h2>
 <p>The operator exam does test label reading. Expect label excerpts with questions attached, where the answer has to come from what the excerpt actually says — the labeled rate, the use sites, the precautions — not from habit or from what a similar product allows. Practice reading a label section, then answering questions from it without looking back at your own assumptions. The exam also tests pesticide math: dilutions, application rates and area calculations. Work those problems the same way every time — find how much area one unit covers, scale to the job, and convert everything into the label's units before you compare. Candidates who only study pest facts and skip the label and math practice are leaving two whole question types unprepared.</p>
 <h2>Study category by category</h2>
