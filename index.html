@@ -15939,6 +15939,11 @@ function dumpMockSpec(category){
   // picker screen it is launched from; single-category practice lives
   // in the untimed sizes.
   if(getExamState() === 'ga' && (getExamTrack() === 'co' || getExamTrack() === 'rt')) category = 'all';
+  var isFlCo = getExamState() === 'fl' && getExamTrack() === 'co';
+  // Minutes per question on the real exam: Florida's Public Health
+  // sittings allow 2 hours for 50 questions (Rule 5E-13.040 / UF-IFAS
+  // PI292); every other mirrored exam runs 1.2 minutes per question.
+  var pace = (getExamState() === 'fl' && getExamTrack() === 'mosq') ? 2.4 : 1.2;
   // Converted pool for one dump category, across every contributing set
   // that serves it (each set converts within itself — no borrowing).
   function poolFor(dc){
@@ -15955,9 +15960,21 @@ function dumpMockSpec(category){
     if(!dc) return null;
     var pool = poolFor(dc);
     if(pool.length < 10) return null;
+    // Florida operator categories are each their own 200-question,
+    // 4-hour exam (Rule 5E-14.123; UF/IFAS PI292) — the mock mirrors the
+    // sitting: as much of the category's pool as there is, up to the
+    // full 200, on the exam's own 4-hour clock (Josh, 2026-11-25:
+    // 'Mirror it'). Florida Regulations is a bonus category, not an
+    // exam, and keeps the practice size.
+    if(isFlCo && category !== 'Florida Regulations'){
+      return { pool: pool, count: Math.min(200, pool.length), minutes: 240 };
+    }
     var count = Math.min(50, pool.length);
-    return { pool: pool, count: count, minutes: Math.max(10, Math.round(count * 1.2)) };
+    return { pool: pool, count: count, minutes: Math.max(10, Math.round(count * pace)) };
   }
+  // Florida has no all-categories operator sitting — each category is
+  // examined separately — so the FL CO track offers no 'all' mock.
+  if(isFlCo) return null;
   var perCat = {};
   // The GA operator exam spans three categories only — General Knowledge,
   // HPC and WDO (Josh, 2026-11-25) — so its all-categories mock draws on
@@ -15969,7 +15986,7 @@ function dumpMockSpec(category){
   var total = (firstSet.id === 'ga-co' || firstSet.id === 'ga-re') ? 100 : 50; // the GA operator AND employee registration exams are each 100 questions (Josh + SPCC Notice 18-05, 2026-11-25)
   var picked = dumpStratifiedPick(perCat, total);
   if(picked.length < 10) return null;
-  return { pool: picked, count: picked.length, minutes: Math.round(picked.length * 1.2) };
+  return { pool: picked, count: picked.length, minutes: Math.round(picked.length * pace) };
 }
 function startMockExam(category,count,minutes){
   // Mock exams run on the exam-dump sets only (Josh, 2026-11-25): each
