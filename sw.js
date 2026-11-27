@@ -39,7 +39,7 @@ if (MIGRATING) {
 // offline. On activation it deletes every cache left by the old
 // offline-first worker (the app shell and the ~19 MB of photo packs), so
 // installed copies stop working offline as soon as they take this update.
-const CACHE='ga-pest-bba0a63525';          // rewritten by stamp-version.js on every build; holds ONLY offline.html
+const CACHE='ga-pest-6971462685';          // rewritten by stamp-version.js on every build; holds ONLY offline.html
 const OFFLINE_URL = './offline.html';
 
 self.addEventListener('install', e => {
