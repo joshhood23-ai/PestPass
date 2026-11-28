@@ -10,9 +10,12 @@
 // it on the end ping lost every session whose browser never delivered a
 // hide/close event, which mobile browsers routinely skip (fix 2026-10-30).
 // Stores ONLY: daily + total open counts, the set of SHA-256-hashed IDs (for unique
-// counts), per-version open counts, session seconds, per-feature open counts, and
+// counts), per-version open counts, session seconds, per-feature open counts,
 // per-device-type visit counts bucketed from the request's user-agent (the
-// user-agent itself is never stored).
+// user-agent itself is never stored), and — on visit pings that carry one —
+// the exam state selected on the device (st: 'ga' | 'fl' | 'tx'), counted as
+// per-state distinct-user sets plus per-state visit counts, so the owner can
+// see which state's exams people are studying for.
 // Bot/automated user-agents are counted in opens and in their device bucket, but
 // their IDs NEVER enter the user sets — bots are not users, new or otherwise
 // (directive 2026-10-24). The same applies to per-feature user sets.
@@ -128,13 +131,22 @@ module.exports = async (req, res) => {
     // Bots still count as visits (opens + device bucket) but their IDs are kept
     // out of the user sets, so they never appear as users — new or returning.
     const bucket = deviceBucket(req.headers && req.headers['user-agent']);
+    // Exam state picked on the device (allowlisted; older app versions send
+    // none). State user sets follow the same bot rule as every user set;
+    // state visit counts include bots, like the device buckets do.
+    const STATES = ['ga', 'fl', 'tx'];
+    const st = STATES.indexOf(body.st) >= 0 ? body.st : null;
     const userAdds = bucket === 'Bot / automated' ? [] : [
       ['SADD', 'pp:users:all', hash],
       ['SADD', 'pp:users:day:' + day, hash],
       // A session is one visit; it is counted here, at visit start, so a
       // session is never lost when the browser drops the closing events.
       ['INCR', 'pp:sessions:total'],
-      ['INCR', 'pp:sessions:day:' + day]
+      ['INCR', 'pp:sessions:day:' + day],
+      ...(st ? [
+        ['SADD', 'pp:state:' + st + ':users', hash],
+        ['SADD', 'pp:state:' + st + ':day:' + day, hash]
+      ] : [])
     ];
     pipeline = [
       ['INCR', 'pp:opens:total'],
@@ -142,7 +154,11 @@ module.exports = async (req, res) => {
       ...userAdds,
       ['HINCRBY', 'pp:versions', v, 1],
       ['HINCRBY', 'pp:devices:all', bucket, 1],
-      ['HINCRBY', 'pp:devices:day:' + day, bucket, 1]
+      ['HINCRBY', 'pp:devices:day:' + day, bucket, 1],
+      ...(st ? [
+        ['HINCRBY', 'pp:states:visits', st, 1],
+        ['HINCRBY', 'pp:states:visits:day:' + day, st, 1]
+      ] : [])
     ];
   }
 
