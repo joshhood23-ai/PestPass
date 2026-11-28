@@ -63,6 +63,21 @@ export async function onRequestGet({ request, env }) {
     FEATURES.forEach(f => { pipeline.push(['GET', 'pp:feat:' + f + ':day:' + days[di]]); });
   }
 
+  // State-pick block (appended last of all): which exam state visits are
+  // studying under. Per state: all-time distinct users, today's distinct
+  // users, visit-count hashes (all-time + today), and distinct users for
+  // each of the last 7 days.
+  const STATES = ['ga', 'fl', 'tx'];
+  STATES.forEach(s => {
+    pipeline.push(['SCARD', 'pp:state:' + s + ':users']);
+    pipeline.push(['SCARD', 'pp:state:' + s + ':day:' + days[0]]);
+  });
+  pipeline.push(['HGETALL', 'pp:states:visits']);
+  pipeline.push(['HGETALL', 'pp:states:visits:day:' + days[0]]);
+  for (let di = 0; di < 7; di++) {
+    STATES.forEach(s => { pipeline.push(['SCARD', 'pp:state:' + s + ':day:' + days[di]]); });
+  }
+
   let out;
   try {
     const r = await fetch(cfg.url + '/pipeline', {
@@ -149,6 +164,24 @@ export async function onRequestGet({ request, env }) {
     }
   });
 
+  // State picks sit after the daily-feature block: per state, a SCARD pair
+  // (all-time users, today's users), then the two visit hashes, then one
+  // SCARD per state for each of the last 7 days.
+  const stateBase = featDayBase + FEAT_DAYS * FEATURES.length;
+  const STATE_LABELS = { ga: 'Georgia', fl: 'Florida', tx: 'Texas' };
+  const stateVisitsAll = hashOf(stateBase + STATES.length * 2);
+  const stateVisitsToday = hashOf(stateBase + STATES.length * 2 + 1);
+  const states = { totals: {}, today: {}, last7Days: [] };
+  STATES.forEach((s, i) => {
+    states.totals[s] = { label: STATE_LABELS[s], users: parseInt(val(stateBase + i * 2), 10) || 0, visits: stateVisitsAll[s] || 0 };
+    states.today[s] = { users: parseInt(val(stateBase + i * 2 + 1), 10) || 0, visits: stateVisitsToday[s] || 0 };
+  });
+  for (let di = 0; di < 7; di++) {
+    const row = { day: days[di] };
+    STATES.forEach((s, si) => { row[s] = parseInt(val(stateBase + STATES.length * 2 + 2 + di * STATES.length + si), 10) || 0; });
+    states.last7Days.push(row);
+  }
+
   const data = {
     totalOpens: parseInt(val(0), 10) || 0,
     totalUniqueUsers: parseInt(val(1), 10) || 0,
@@ -157,6 +190,7 @@ export async function onRequestGet({ request, env }) {
     totalSessions: parseInt(val(4), 10) || 0,
     devices: devices,
     features: features,
+    states: states,
     last30Days: byDay
   };
 
@@ -294,6 +328,19 @@ function renderHtml(data) {
     return '<div class="verrow"><span>' + k + ' — ' + pct + '%</span><strong>' + n + ' visits (' + t + ' today)</strong></div>';
   }).join('\n');
 
+  const stateOrder = ['ga', 'fl', 'tx'];
+  const stUsersTotal = stateOrder.reduce((a, s) => a + data.states.totals[s].users, 0);
+  const stateRows = stateOrder.map(s => {
+    const t = data.states.totals[s];
+    const td = data.states.today[s];
+    const pct = stUsersTotal ? Math.round((t.users / stUsersTotal) * 100) : 0;
+    return '<div class="frow"><div class="frow-top"><span>' + t.label + ' — ' + pct + '% of users</span><strong>' + t.users + ' users · ' + t.visits + ' visits (' + td.users + ' users, ' + td.visits + ' visits today)</strong></div>' +
+      '<div class="ftrack"><div class="ffill" style="width:' + Math.max(2, stUsersTotal ? Math.round((t.users / stUsersTotal) * 100) : 0) + '%"></div></div></div>';
+  }).join('\n');
+  const stateDayRows = data.states.last7Days.map((r, i) =>
+    '<tr' + (i === 0 ? ' class="today"' : '') + '><td>' + (i === 0 ? 'Today' : prettyDay(r.day)) + '</td><td class="num">' + r.ga + '</td><td class="num">' + r.fl + '</td><td class="num">' + r.tx + '</td></tr>'
+  ).join('\n');
+
   const rangeBar = '<div class="rangebar">' +
     '<button class="rbtn" data-n="7" onclick="setRange(7)">7 days</button>' +
     '<button class="rbtn" data-n="15" onclick="setRange(15)">15 days</button>' +
@@ -378,8 +425,10 @@ function renderHtml(data) {
     '<h2>Feature use — what people open</h2><div id="feat-rows">' + featureRows + '</div>' +
     '<h2>Last 30 days</h2><table><tr><th>Day</th><th>Opens</th><th>Users</th><th>New</th><th>Time</th></tr><tbody id="days-body">' + rows + '</tbody></table>' +
     '<h2>Visits by device type</h2><div id="dev-rows">' + deviceRows + '</div>' +
+    '<h2>States — what people pick</h2><div id="state-rows">' + stateRows + '</div>' +
+    '<table><tr><th>Day</th><th>Georgia users</th><th>Florida users</th><th>Texas users</th></tr><tbody id="state-days">' + stateDayRows + '</tbody></table>' +
     '<h2>Opens by app version</h2><div id="ver-rows">' + versionRows + '</div>' +
-    '<div class="foot">Days run midnight to midnight, Eastern time. The two charts show the same 30 days as the table — in the users chart, green is first-time users and blue is returning users, and the numbers on top of the bars are the new and returning counts for the biggest day and for today. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Bots are not counted as users</strong> — automated visits still show in Opens and in the device chart, but since Oct 24, 2026 their IDs are kept out of the user counts entirely; days before that can still include bot visits in their user numbers. <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. <strong>Daily detail</strong> breaks the last 7 days down by timed sessions, device mix and top features; feature-by-day counting started Oct 22, 2026 and device-by-day on Oct 21, 2026, so earlier days show none. <strong>Avg time per session</strong> is reported time divided by the sessions that reported time — most visits never report time, so it is NOT an average over all visits. <strong>Feature use</strong> counts one ping each time a feature is opened — only the feature\'s name, never answers, scores or content — and is counted since Oct 22, 2026. Total opens in the last 30 days: ' + opens30 + '.</div>' +
+    '<div class="foot">Days run midnight to midnight, Eastern time. The two charts show the same 30 days as the table — in the users chart, green is first-time users and blue is returning users, and the numbers on top of the bars are the new and returning counts for the biggest day and for today. A "user" is one random on-device ID — reinstalling or clearing the app counts as a new user. <strong>Users</strong> = different users who opened the app that day; <strong>New</strong> = how many of them were opening it for the very first time. The rest were returning users — for example, today\'s returning count is Users minus New. (New is figured from the last 30 days of records.) <strong>Bots are not counted as users</strong> — automated visits still show in Opens and in the device chart, but since Oct 24, 2026 their IDs are kept out of the user counts entirely; days before that can still include bot visits in their user numbers. <strong>Time</strong> = total time the app was open on screen that day, reported when the app is closed or switched away from — so today\'s time can lag behind today\'s opens. A <strong>visit</strong> (counted in Opens) is a fresh app open, or returning to the app after it spent 30+ minutes in the background. <strong>Device types</strong> are counted from the browser\'s standard user-agent on each visit (the user-agent itself is never stored) and are only counted since this feature was added on Oct 21, 2026, so their total runs behind total opens. <strong>Daily detail</strong> breaks the last 7 days down by timed sessions, device mix and top features; feature-by-day counting started Oct 22, 2026 and device-by-day on Oct 21, 2026, so earlier days show none. <strong>Avg time per session</strong> is reported time divided by the sessions that reported time — most visits never report time, so it is NOT an average over all visits. <strong>Feature use</strong> counts one ping each time a feature is opened — only the feature\'s name, never answers, scores or content — and is counted since Oct 22, 2026. <strong>States</strong> counts the exam state selected on the device when the app is opened — a person who studies in two states counts in both, percentages are of users with a state recorded, and state counting started Nov 27, 2026, so it covers only visits on the newest app version. Total opens in the last 30 days: ' + opens30 + '.</div>' +
     '</div>' +
     '<script>' +
     // The page refreshes its own numbers from the JSON endpoint. Every fetch
@@ -420,6 +469,9 @@ function renderHtml(data) {
     ' document.getElementById("days-body").innerHTML = days.map(function (x, i) { return "<tr" + (i === 0 ? " class=\\"today\\"" : "") + "><td>" + (i === 0 ? "Today" : pd(x.day)) + "</td><td class=\\"num\\">" + x.opens + "</td><td class=\\"num\\">" + x.uniques + "</td><td class=\\"num newn\\">" + x.newUsers + "</td><td class=\\"num\\">" + fd(x.timeSeconds) + "</td></tr>"; }).join("");' +
     ' var dord = ["Android", "iPhone / iPad", "Desktop", "Bot / automated", "Other"]; document.getElementById("daily-detail").innerHTML = days.slice(0, 7).map(function (x, i) { var devs = dord.filter(function (k) { return (x.devices || {})[k]; }).map(function (k) { return k + " " + x.devices[k]; }).join(" · "); var feats = (x.features || []).slice(0, 5).map(function (f) { return f.label + " " + f.opens; }).join(" · "); return "<div class=\\"dday\\"><div class=\\"dhead\\">" + (i === 0 ? "Today" : pd(x.day)) + "</div>" + kv("Opens", x.opens) + kv("Users", x.uniques) + kv("New users", "<span class=\\"newn\\">" + x.newUsers + "</span>") + kv("Returning users", x.returningUsers) + kv("Time in app", fd(x.timeSeconds)) + kv("Avg per session", fd(x.avgTimePerSession || 0)) + kv("Sessions reporting time", x.sessions) + "<div class=\\"dline dim\\" style=\\"margin-top:6px\\">Devices: " + (devs || "no visits recorded") + "</div><div class=\\"dline dim\\">Top features: " + (feats || "none opened") + "</div></div>"; }).join("");' +
     ' var fr = (d.features || []).filter(function (f) { return f.opens > 0; }); var mf = 1; fr.forEach(function (f) { if (f.opens > mf) mf = f.opens; }); document.getElementById("feat-rows").innerHTML = fr.length ? fr.map(function (f) { return "<div class=\\"frow\\"><div class=\\"frow-top\\"><span>" + f.label + "</span><strong>" + f.opens + " opens · " + f.users + " users (" + f.today + " today)</strong></div><div class=\\"ftrack\\"><div class=\\"ffill\\" style=\\"width:" + Math.max(2, Math.round(f.opens / mf * 100)) + "%\\"></div></div></div>"; }).join("") : "<div class=\\"verrow\\"><span>No feature data yet — counting starts with the current app version</span></div>";' +
+    ' var so = ["ga", "fl", "tx"]; var stu = 0; so.forEach(function (s) { stu += ((d.states.totals[s] || {}).users || 0); });' +
+    ' document.getElementById("state-rows").innerHTML = so.map(function (s) { var t = d.states.totals[s]; var td = d.states.today[s]; var pct = stu ? Math.round(t.users / stu * 100) : 0; return "<div class=\\"frow\\"><div class=\\"frow-top\\"><span>" + t.label + " — " + pct + "% of users</span><strong>" + t.users + " users · " + t.visits + " visits (" + td.users + " users, " + td.visits + " visits today)</strong></div><div class=\\"ftrack\\"><div class=\\"ffill\\" style=\\"width:" + Math.max(2, stu ? Math.round(t.users / stu * 100) : 0) + "%\\"></div></div></div>"; }).join("");' +
+    ' document.getElementById("state-days").innerHTML = d.states.last7Days.map(function (x, i) { return "<tr" + (i === 0 ? " class=\\"today\\"" : "") + "><td>" + (i === 0 ? "Today" : pd(x.day)) + "</td><td class=\\"num\\">" + x.ga + "</td><td class=\\"num\\">" + x.fl + "</td><td class=\\"num\\">" + x.tx + "</td></tr>"; }).join("");' +
     ' var vk = Object.keys(d.opensByVersion).sort(); document.getElementById("ver-rows").innerHTML = vk.length ? vk.map(function (v) { return "<div class=\\"verrow\\"><span>Version " + v + "</span><strong>" + d.opensByVersion[v] + " opens</strong></div>"; }).join("") : "<div class=\\"verrow\\"><span>No version data yet</span></div>";' +
     ' document.getElementById("upd-t").textContent = new Date().toLocaleTimeString();' +
     '}).catch(function () {}); }' +

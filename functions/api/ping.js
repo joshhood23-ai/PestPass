@@ -99,13 +99,22 @@ export async function onRequestPost({ request, env }) {
     // Bots still count as visits (opens + device bucket) but their IDs are kept
     // out of the user sets, so they never appear as users — new or returning.
     const bucket = deviceBucket(ua);
+    // Exam state picked on the device (allowlisted; older app versions send
+    // none). State user sets follow the same bot rule as every user set;
+    // state visit counts include bots, like the device buckets do.
+    const STATES = ['ga', 'fl', 'tx'];
+    const st = STATES.indexOf(body.st) >= 0 ? body.st : null;
     const userAdds = bucket === 'Bot / automated' ? [] : [
       ['SADD', 'pp:users:all', hash],
       ['SADD', 'pp:users:day:' + day, hash],
       // A session is one visit; it is counted here, at visit start, so a
       // session is never lost when the browser drops the closing events.
       ['INCR', 'pp:sessions:total'],
-      ['INCR', 'pp:sessions:day:' + day]
+      ['INCR', 'pp:sessions:day:' + day],
+      ...(st ? [
+        ['SADD', 'pp:state:' + st + ':users', hash],
+        ['SADD', 'pp:state:' + st + ':day:' + day, hash]
+      ] : [])
     ];
     pipeline = [
       ['INCR', 'pp:opens:total'],
@@ -113,7 +122,11 @@ export async function onRequestPost({ request, env }) {
       ...userAdds,
       ['HINCRBY', 'pp:versions', v, 1],
       ['HINCRBY', 'pp:devices:all', bucket, 1],
-      ['HINCRBY', 'pp:devices:day:' + day, bucket, 1]
+      ['HINCRBY', 'pp:devices:day:' + day, bucket, 1],
+      ...(st ? [
+        ['HINCRBY', 'pp:states:visits', st, 1],
+        ['HINCRBY', 'pp:states:visits:day:' + day, st, 1]
+      ] : [])
     ];
   }
 
